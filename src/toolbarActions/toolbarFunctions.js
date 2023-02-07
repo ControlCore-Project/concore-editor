@@ -88,6 +88,42 @@ async function saveGraphMLFile(state) {
                     'text/graphml': ['.graphml'],
                 },
             },
+            {
+                description: 'Python',
+                accept: {
+                    'text/python': ['.py'],
+                },
+            },
+            {
+                description: 'C++',
+                accept: {
+                    'text/C++': ['.cpp'],
+                },
+            },
+            {
+                description: 'Shell scipt',
+                accept: {
+                    'text/script': ['.sh'],
+                },
+            },
+            {
+                description: 'V files',
+                accept: {
+                    'text/Vfiles': ['.v'],
+                },
+            },
+            {
+                description: 'C',
+                accept: {
+                    'text/C': ['.c'],
+                },
+            },
+            {
+                description: 'm',
+                accept: {
+                    'text/m': ['.m'],
+                },
+            },
         ],
         excludeAcceptAllOption: true,
         multiple: false,
