@@ -80,8 +80,22 @@ const saveAction = (state) => {
 };
 
 async function saveGraphMLFile(state) {
+    const pickerOpts = {
+        types: [
+            {
+                description: 'Graphml',
+                accept: {
+                    'text/graphml': ['.graphml'],
+                },
+            },
+        ],
+        excludeAcceptAllOption: true,
+        multiple: false,
+    };
+    const fileHandle = await window.showSaveFilePicker(pickerOpts);
     if (state.curGraphInstance) {
         const graph = state.graphs[state.curGraphIndex];
+        graph.fileHandle = fileHandle;
         if (graph.fileHandle) {
             const stream = await graph.fileHandle.createWritable();
             await stream.write(getGraphFun(state).saveToFolder());
