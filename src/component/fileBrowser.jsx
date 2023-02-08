@@ -43,8 +43,10 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             } else {
                 readFile(superState, dispatcher, data.fileObj, data.fileHandle);
             }
-        } else {
+        } else if (data.fileObj.name.split('.').pop() === 'txt') {
             readTextFile(superState, dispatcher, data.fileObj, data.fileHandle);
+        } else {
+            alert('invalid file format');
         }
     };
 
