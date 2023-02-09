@@ -144,7 +144,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                             });
                             window.localStorage.setItem('fileList', JSON.stringify(fileState));
                         }}
-                        directory
+                        directory="true"
                         webkitdirectory="true"
                     />
                 </label>
