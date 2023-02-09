@@ -128,17 +128,18 @@ async function saveGraphMLFile(state) {
         excludeAcceptAllOption: true,
         multiple: false,
     };
-    const fileHandle = await window.showSaveFilePicker(pickerOpts);
     if (state.curGraphInstance) {
         const graph = state.graphs[state.curGraphIndex];
-        graph.fileHandle = fileHandle;
-        if (graph.fileHandle) {
+        if (!graph.fileHandle) {
+            const fileHandle = await window.showSaveFilePicker(pickerOpts);
+            graph.fileHandle = fileHandle;
+        }
+        try {
             const stream = await graph.fileHandle.createWritable();
             await stream.write(getGraphFun(state).saveToFolder());
             await stream.close();
-        } else {
-            // eslint-disable-next-line no-alert
-            alert('Switch to Edge/Chrome!');
+        } catch (error) {
+            alert('Some error occured try again');
         }
     } else {
         // eslint-disable-next-line no-alert
