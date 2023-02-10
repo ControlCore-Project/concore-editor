@@ -80,14 +80,34 @@ const saveAction = (state) => {
 };
 
 async function saveGraphMLFile(state) {
+    const { userAgent } = navigator;
+    if (userAgent.match(/firefox|fxios/i)) {
+        getGraphFun(state).saveToDisk();
+        return;
+    }
+    const pickerOpts = {
+        types: [
+            {
+                description: 'Graphml',
+                accept: {
+                    'text/graphml': ['.graphml'],
+                },
+            },
+        ],
+        excludeAcceptAllOption: true,
+        multiple: false,
+    };
     if (state.curGraphInstance) {
         const graph = state.graphs[state.curGraphIndex];
-        if (graph.fileHandle) {
+        if (!graph.fileHandle) {
+            const fileHandle = await window.showSaveFilePicker(pickerOpts);
+            graph.fileHandle = fileHandle;
+        }
+        try {
             const stream = await graph.fileHandle.createWritable();
             await stream.write(getGraphFun(state).saveToFolder());
             await stream.close();
-        } else {
-            // eslint-disable-next-line no-alert
+        } catch (error) {
             alert('Switch to Edge/Chrome!');
         }
     } else {
