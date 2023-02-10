@@ -108,6 +108,7 @@ async function saveGraphMLFile(state) {
             await stream.write(getGraphFun(state).saveToFolder());
             await stream.close();
         } catch (error) {
+            // eslint-disable-next-line no-alert
             alert('Switch to Edge/Chrome!');
         }
     } else {
