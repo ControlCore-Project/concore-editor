@@ -31,6 +31,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
     }, [fileState]);
 
     const handleSelectFile = (data) => {
+        const fileExtensions = ['py', 'v', 'c', 'h', 'hpp', 'cpp', 'm', 'sh', 'txt'];
         if (data.fileObj.name.split('.').pop() === 'graphml') {
             let foundi = -1;
             superState.graphs.forEach((g, i) => {
@@ -43,8 +44,11 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             } else {
                 readFile(superState, dispatcher, data.fileObj, data.fileHandle);
             }
-        } else {
+        } else if (fileExtensions.includes(data.fileObj.name.split('.').pop())) {
             readTextFile(superState, dispatcher, data.fileObj, data.fileHandle);
+        } else {
+            // eslint-disable-next-line no-alert
+            alert('Wrong file extension');
         }
     };
 
