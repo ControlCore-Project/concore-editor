@@ -117,7 +117,7 @@ class GraphComponent extends GraphCanvas {
             type: T.Model_Open_Create_Edge,
             cb: (edgeLabel, edgeStyle) => {
                 const message = this.validiateEdge(edgeLabel, edgeStyle,
-                    edgeData.targetID, edgeData.targetID, null, 'New');
+                    edgeData.sourceID, edgeData.targetID, null, 'New');
                 if (message.ok) this.addEdgeWithLabel({ ...edgeData, type: edgeData.type || 'ordin' }, tid);
                 return message;
             },
