@@ -4,6 +4,7 @@ import graphmlBuilder from '../graphml/builder';
 import BendingDistanceWeight from '../calculations/bending-dist-weight';
 import GraphUndoRedo from './4-undo-redo';
 import graphMLParser from '../graphml/parser';
+import { actionType as T } from '../../reducer';
 
 class GraphLoadSave extends GraphUndoRedo {
     autoSaveIntervalId
@@ -124,6 +125,32 @@ class GraphLoadSave extends GraphUndoRedo {
             const fileName = prompt('Filename:');
             saveAs(blob, `${fileName || `${this.getName()}-concore`}.graphml`);
         }
+    }
+
+    async saveWithoutFileHandle() {
+        const str = graphmlBuilder(this.jsonifyGraph());
+        const bytes = new TextEncoder().encode(str);
+        const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' });
+        const options = {
+            types: [
+                {
+                    description: 'GraphMl Files',
+                    accept: {
+                        'text/graphml': ['.graphml'],
+                    },
+                },
+            ],
+        };
+        const handle = await window.showSaveFilePicker(options);
+        this.dispatcher({
+            type: T.SET_FILE_HANDLE,
+            payload: { curGraphIndex: this.superState.curGraphIndex, fileHandle: handle },
+        });
+        const stream = await handle.createWritable();
+        await stream.write(blob);
+        await stream.close();
+        // eslint-disable-next-line no-alert
+        alert('File saved Successfully');
     }
 
     saveToFolder() {

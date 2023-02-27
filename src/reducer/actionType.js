@@ -31,6 +31,7 @@ const actionType = {
     SET_EDIT_DETAILS_MODAL: 'SET_EDIT_DETAILS_MODAL',
     SET_NEW_GRAPH_MODAL: 'SET_NEW_GRAPH_MODAL',
     EDIT_TEXTFILE: 'EDIT_TEXTFILE',
+    SET_FILE_HANDLE: 'SET_FILE_HANDLE',
 };
 
 export default zealit(actionType);

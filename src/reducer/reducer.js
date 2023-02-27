@@ -139,6 +139,15 @@ const reducer = (state, action) => {
         return { ...state, fileRef: action.payload };
     }
 
+    case T.SET_FILE_HANDLE: {
+        const newState = { ...state };
+        newState.graphs = newState.graphs.map((g) => (
+            newState.curGraphIndex === action.payload.curGraphIndex ? { ...g, fileHandle: action.payload.fileHandle }
+                : g
+        ));
+        return { ...newState };
+    }
+
     case T.SET_HISTORY_MODAL: {
         return { ...state, viewHistory: action.payload };
     }

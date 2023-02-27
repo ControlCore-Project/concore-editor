@@ -113,7 +113,7 @@ const toolbarList = (state, dispatcher) => [
         text: 'History',
         icon: FaHistory,
         action: viewHistory,
-        active: true,
+        active: state.curGraphInstance,
         visibility: true,
     },
     { type: 'vsep' },
