@@ -23,6 +23,7 @@ const setHotKeys = (actions) => {
             });
         }
     });
+    keys = keys.substring(0, keys.length - 1);
     hotkeys(keys, (event, handler) => {
         event.preventDefault();
         map[handler.shortcut].click();

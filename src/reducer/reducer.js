@@ -141,8 +141,8 @@ const reducer = (state, action) => {
 
     case T.SET_FILE_HANDLE: {
         const newState = { ...state };
-        newState.graphs = newState.graphs.map((g) => (
-            newState.curGraphIndex === action.payload.curGraphIndex ? { ...g, fileHandle: action.payload.fileHandle }
+        newState.graphs = newState.graphs.map((g, index) => (
+            index === action.payload.curGraphIndex ? { ...g, fileHandle: action.payload.fileHandle }
                 : g
         ));
         return { ...newState };
