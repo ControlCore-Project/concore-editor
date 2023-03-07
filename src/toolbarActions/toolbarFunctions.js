@@ -140,7 +140,9 @@ const newProject = (state, setState) => {
 };
 
 const clearAll = (state) => {
-    getGraphFun(state).clearAll();
+    if (getGraphFun(state) !== null) {
+        getGraphFun(state).clearAll();
+    }
 };
 
 const editDetails = (state, setState) => {
