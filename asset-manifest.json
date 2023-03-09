@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/concore-editor/static/css/main.6b7be924.chunk.css",
-    "main.js": "/concore-editor/static/js/main.12db661f.chunk.js",
-    "main.js.map": "/concore-editor/static/js/main.12db661f.chunk.js.map",
+    "main.js": "/concore-editor/static/js/main.36b134ed.chunk.js",
+    "main.js.map": "/concore-editor/static/js/main.36b134ed.chunk.js.map",
     "runtime-main.js": "/concore-editor/static/js/runtime-main.ceebbdaa.js",
     "runtime-main.js.map": "/concore-editor/static/js/runtime-main.ceebbdaa.js.map",
     "static/css/2.722d9791.chunk.css": "/concore-editor/static/css/2.722d9791.chunk.css",
-    "static/js/2.bd0af1f9.chunk.js": "/concore-editor/static/js/2.bd0af1f9.chunk.js",
-    "static/js/2.bd0af1f9.chunk.js.map": "/concore-editor/static/js/2.bd0af1f9.chunk.js.map",
+    "static/js/2.88d20b6d.chunk.js": "/concore-editor/static/js/2.88d20b6d.chunk.js",
+    "static/js/2.88d20b6d.chunk.js.map": "/concore-editor/static/js/2.88d20b6d.chunk.js.map",
     "static/js/3.b83ef93a.chunk.js": "/concore-editor/static/js/3.b83ef93a.chunk.js",
     "static/js/3.b83ef93a.chunk.js.map": "/concore-editor/static/js/3.b83ef93a.chunk.js.map",
     "index.html": "/concore-editor/index.html",
@@ -15,13 +15,13 @@
     "service-worker.js.map": "/concore-editor/service-worker.js.map",
     "static/css/2.722d9791.chunk.css.map": "/concore-editor/static/css/2.722d9791.chunk.css.map",
     "static/css/main.6b7be924.chunk.css.map": "/concore-editor/static/css/main.6b7be924.chunk.css.map",
-    "static/js/2.bd0af1f9.chunk.js.LICENSE.txt": "/concore-editor/static/js/2.bd0af1f9.chunk.js.LICENSE.txt"
+    "static/js/2.88d20b6d.chunk.js.LICENSE.txt": "/concore-editor/static/js/2.88d20b6d.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.ceebbdaa.js",
     "static/css/2.722d9791.chunk.css",
-    "static/js/2.bd0af1f9.chunk.js",
+    "static/js/2.88d20b6d.chunk.js",
     "static/css/main.6b7be924.chunk.css",
-    "static/js/main.12db661f.chunk.js"
+    "static/js/main.36b134ed.chunk.js"
   ]
 }
