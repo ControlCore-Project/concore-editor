@@ -6,11 +6,13 @@ import './nodeDetails.css';
 import localStorageManager from '../../graph-builder/local-storage-manager';
 
 const NodeDetails = ({
-    data, setData, submit, labelAllowed,
+    data, setData, submit, labelAllowed, state,
 }) => {
     const inputRef = useCallback((node) => node && node.focus(), []);
     const textRef = createRef();
     const [widthSet] = useState(false);
+    const [mdList, setMdList] = useState([]);
+    const [mdCont, setMdCont] = useState(new Map(''));
     const [labelName, setLabelName] = useState('');
     const [labelFile, setLabelFile] = useState('');
     const indexOfFile = [];
@@ -19,6 +21,25 @@ const NodeDetails = ({
     const setStyle = (prop) => {
         setData({ ...data, style: { ...data.style, ...prop } });
     };
+
+    useEffect(() => {
+        const list = mdList;
+        state.fileState.forEach((ele) => {
+            if (ele.key.toString().includes('.md')) {
+                list.push(ele);
+                setMdList(list);
+                let mdmap = new Map();
+                mdmap = mdCont;
+                const fr = new FileReader();
+                fr.onload = (x) => {
+                    const strCont = '   DESC: ';
+                    mdmap.set(ele, strCont.concat(x.target.result.slice(0, 50).replace('#', '')));
+                    setMdCont(mdmap);
+                };
+                fr.readAsText(ele.fileObj);
+            }
+        });
+    }, [state.fileState]);
 
     useEffect(() => {
         if (!widthSet) {
@@ -101,16 +122,27 @@ const NodeDetails = ({
                             type="text"
                             label="Node Label file"
                             placeholder="Select file"
+                            value={data.label.split(':')[1]}
                             onChange={(e) => {
-                                setLabelFile(e.target.value.split('/').pop());
+                                setLabelFile(e.target.value.split('/').pop().split('   DESC: ')[0]);
                                 if (labelName) {
                                     let lname = labelName;
                                     if (labelName.slice(-1) !== ':') {
                                         setLabelName(`${labelName}:`);
                                         lname += ':';
                                     }
-                                    setData({ ...data, label: lname + e.target.value.split('/').pop() });
-                                } else setData({ ...data, label: `:${e.target.value.split('/').pop()}` });
+                                    setData({
+                                        ...data,
+                                        // eslint-disable-next-line max-len
+                                        label: lname + e.target.value.split('/').pop().split('   DESC: ')[0],
+                                    });
+                                } else {
+                                    setData({
+                                        ...data,
+                                        // eslint-disable-next-line max-len
+                                        label: `:${e.target.value.split('/').pop().split('   DESC: ')[0]}`,
+                                    });
+                                }
                             }}
                             list="files"
                         />
@@ -118,18 +150,38 @@ const NodeDetails = ({
                             {
                                 localStorageManager.getFileList()
                                     // eslint-disable-next-line max-len, prefer-arrow-callback
-                                    ? JSON.parse(localStorageManager.getFileList())
+                                    ? state.fileState
                                         .map((item) => {
                                             const list = [];
                                             const acceptedTypes = ['.v', '.c', '.cpp', '.py', '.m', '.sh'];
                                             let index;
+                                            if (item.key.toString().includes('.md')) {
+                                                return null;
+                                            }
+                                            if (item.key.toString().split('/').length > 2) {
+                                                return null;
+                                            }
                                             // eslint-disable-next-line max-len
                                             if ((acceptedTypes.some((substring) => item.key.toString().includes(substring)))) {
-                                                list.push(item.key.toString());
+                                                const fileName = item.key.toString().split('.')[0].concat('.md');
+                                                // eslint-disable-next-line max-len
+                                                const matchingFile = mdList.find((ele) => ele.key.toString() === fileName);
+                                                if (mdCont.get(matchingFile)) {
+                                                    list.push(item.key.toString().concat(mdCont.get(matchingFile)));
+                                                } else {
+                                                    list.push(item.key.toString());
+                                                }
                                                 indexOfFile.push(indexOfFile[indexOfFile.length - 1] + 1);
                                                 index = indexOfFile[indexOfFile.length - 1] + 1;
-                                                // eslint-disable-next-line jsx-a11y/control-has-associated-label
-                                                return <option value={list} key={index} />;
+                                                /* eslint-disable */
+                                                return (
+                                                    <>
+                                                        <label htmlFor="dropdown">
+                                                            <option value={list} key={index} />
+                                                        </label>
+                                                    </>
+                                                );
+                                                /* eslint-enable */
                                             }
                                             return null;
                                         })

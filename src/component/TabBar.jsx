@@ -18,6 +18,7 @@ const TabBar = ({ superState, dispatcher }) => {
         dispatcher({ type: T.REMOVE_GRAPH, payload: i });
         if (!superState.curGraphIndex && superState.graphs.length === 1) {
             dispatcher({ type: T.SET_CUR_INSTANCE, payload: null });
+            dispatcher({ type: T.SET_CUR_INDEX, payload: -1 });
         }
     };
     const editCur = (e) => {

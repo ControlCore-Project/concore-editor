@@ -13,20 +13,31 @@ const initialState = {
     settingsModal: false,
     editDetailsModal: false,
     newGraphModal: false,
+    optionsModal: false,
+    markDownModal: false,
     contributeModal: false,
-
     eleSelected: false,
     drawModeOn: true,
     undoEnabled: false,
     redoEnabled: false,
     graphs: [],
-    curGraphIndex: 0,
+    curGraphIndex: -1,
     viewHistory: false,
     isWorkflowOnServer: false,
     curGraphInstance: null,
     zoomLevel: 100,
     uploadedDirName: null,
     resetEnabled: false,
+    fileState: [],
+    inputFile: '',
+    params: '',
+    maxTime: '',
+    library: '',
+    dockerCheck: false,
+    unlockCheck: false,
+    octave: false,
+    logs: false,
+    logsmessage: '',
 };
 
 const initialGraphState = {
@@ -40,6 +51,12 @@ const initialGraphState = {
     id: null,
     fileHandle: null,
     fileName: null,
+    built: true,
+    debugged: false,
+    ran: false,
+    destroyed: false,
+    cleared: false,
+    stopped: false,
 };
 
 export { initialState, initialGraphState };

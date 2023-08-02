@@ -30,6 +30,10 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
         window.localStorage.setItem('fileList', JSON.stringify(fileState));
     }, [fileState]);
 
+    useEffect(() => {
+        setFileState(superState.fileState);
+    }, [superState.fileState]);
+
     const handleSelectFile = (data) => {
         const fileExtensions = ['jpeg', 'jpg', 'png', 'exe'];
         if (fileExtensions.includes(data.fileObj.name.split('.').pop())) {
@@ -67,7 +71,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                     modified: fileData.lastModified,
                     size: fileData.size,
                     fileObj: fileData,
-                    fileHandle: value,
+                    fileHandle: valueSubDir,
                 }]);
             } else if (valueSubDir.kind === 'directory') {
                 topLevel = `${topKey}/${value.name}`;
@@ -100,6 +104,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
         setFileState([]);
         setFileState(state);
         dispatcher({ type: T.SET_DIR_NAME, payload: state[0].key.split('/')[0] });
+        dispatcher({ type: T.SET_FILE_STATE, payload: state });
     };
 
     const newFeatureFile = async () => {

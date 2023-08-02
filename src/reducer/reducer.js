@@ -13,6 +13,7 @@ const reducer = (state, action) => {
             modalPayload: {
                 title: 'Create Node',
                 submitText: 'Create Node',
+                type: 'Node',
                 Children: NodeDetails,
                 defaultStyle: NodeStyle,
                 defaultLabel: '',
@@ -41,6 +42,7 @@ const reducer = (state, action) => {
             modalPayload: {
                 title: 'Edit Node',
                 submitText: 'Edit Node',
+                type: 'Node',
                 Children: NodeDetails,
                 defaultStyle: action.style,
                 defaultLabel: action.label,
@@ -111,6 +113,9 @@ const reducer = (state, action) => {
     case T.SET_CUR_INSTANCE: {
         return { ...state, curGraphInstance: action.payload };
     }
+    case T.SET_CUR_INDEX: {
+        return { ...state, curGraphIndex: action.payload };
+    }
     case T.CHANGE_TAB: return { ...state, curGraphIndex: action.payload };
 
     case T.NEW_GRAPH: return { ...state, newGraphModal: true };
@@ -135,12 +140,40 @@ const reducer = (state, action) => {
         return { ...state, shareModal: action.payload };
     }
 
+    case T.SET_OPTIONS_MODAL: {
+        return { ...state, optionsModal: action.payload };
+    }
+
+    case T.SET_FILE_STATE: {
+        return { ...state, fileState: action.payload };
+    }
+
     case T.SET_SETTING_MODAL: {
         return { ...state, settingsModal: action.payload };
     }
 
+    case T.SET_MARKDOWN_MODAL: {
+        return { ...state, markDownModal: action.payload };
+    }
+
+    case T.SET_INPUT_FILE: {
+        return { ...state, inputFile: action.payload.content, inputFileName: action.payload.fname };
+    }
+
     case T.SET_FILE_REF: {
         return { ...state, fileRef: action.payload };
+    }
+
+    case T.SET_OPTIONS: {
+        return {
+            ...state,
+            dockerCheck: action.payload.docker,
+            unlockCheck: action.payload.unlock,
+            params: action.payload.param,
+            maxTime: action.payload.maxT,
+            octave: action.payload.octave,
+            library: action.payload.library,
+        };
     }
 
     case T.SET_FILE_HANDLE: {
@@ -179,6 +212,12 @@ const reducer = (state, action) => {
     case T.CHANGE_RESET: {
         return { ...state, resetEnabled: action.payload };
     }
+    case T.SET_LOGS_MESSAGE: {
+        return { ...state, logsmessage: action.payload };
+    }
+    case T.SET_LOGS: {
+        return { ...state, logs: action.payload };
+    }
 
     case T.EDIT_TEXTFILE: {
         return {
@@ -191,6 +230,17 @@ const reducer = (state, action) => {
 
     case T.SET_DIR_NAME: {
         return { ...state, uploadedDirName: action.payload };
+    }
+
+    case T.SET_FUNCTIONS: {
+        const newState = { ...state };
+        newState.graphs[state.curGraphIndex].built = action.payload.built;
+        newState.graphs[state.curGraphIndex].debugged = action.payload.debugged;
+        newState.graphs[state.curGraphIndex].ran = action.payload.ran;
+        newState.graphs[state.curGraphIndex].cleared = action.payload.cleared;
+        newState.graphs[state.curGraphIndex].destroyed = action.payload.destroyed;
+        newState.graphs[state.curGraphIndex].stopped = action.payload.stopped;
+        return { ...newState };
     }
 
     default:

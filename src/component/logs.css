@@ -1,0 +1,48 @@
+.terminal {
+    display: none;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    margin-right: -50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 350px;
+    border: 1px solid #ccc;
+    background-color: #000;
+    color: #fff;
+    font-family: monospace;
+    margin: 20px auto;
+    z-index: 10000;
+  }
+  
+  .terminal-header {
+    padding: 5px;
+    background-color: #333;
+    text-align: center;
+  }
+
+  .clear {
+    background-color: rgb(187, 184, 184);
+    border-radius: 20px;
+    position: absolute;
+    right: 30px;
+  }
+
+  .closelogs {
+    background-color: rgba(249, 37, 37, 0.575);
+    color: white;
+    position: absolute;
+    right: 1px;
+  }
+  
+  .terminal-body {
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+  }
+  
+  .terminal-line {
+    padding: 5px 0;
+  }
