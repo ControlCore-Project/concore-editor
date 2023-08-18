@@ -16,6 +16,14 @@
     margin: 20px auto;
     z-index: 10000;
   }
+
+  .outlay {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999;
+    display: none;
+  }
   
   .terminal-header {
     padding: 5px;

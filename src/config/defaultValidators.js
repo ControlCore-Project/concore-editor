@@ -43,7 +43,7 @@ edges.forEach((e) => {
         break;
         }
     }
-    if (numE === numEdge && numE != "0") {
+    if (numE === numEdge && numE != "0" && numE !== "") {
         message = {
             ok: false,
             err: '2 edges cannot have same prefixes if they are number',

@@ -121,6 +121,16 @@ class GraphLoadSave extends GraphUndoRedo {
             const stream = await handle.createWritable();
             await stream.write(blob);
             await stream.close();
+            const fileData = await handle.getFile();
+            let fS = this.superState.fileState;
+            fS = fS.concat([{
+                key: `${this.superState.uploadedDirName}/${handle.name}`,
+                modified: fileData.lastModified,
+                size: fileData.size,
+                fileObj: fileData,
+                fileHandle: handle,
+            }]);
+            this.dispatcher({ type: T.SET_FILE_STATE, payload: fS });
         } else {
             // eslint-disable-next-line no-alert
             const fileName = prompt('Filename:');

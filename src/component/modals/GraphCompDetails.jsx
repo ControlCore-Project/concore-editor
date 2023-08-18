@@ -109,13 +109,14 @@ const ModalComp = ({ closeModal, superState, dispatcher }) => {
         }
     };
 
-    const createLibrary = () => {
+    const createLibrary = (e) => {
         const fileName = data.label.split(':')[1];
         if (fileName === undefined || fileName === '') {
             toast.error('Enter File Name');
             return;
         }
         superState.curGraphInstance.library(fileName);
+        submit(e);
     };
 
     return (

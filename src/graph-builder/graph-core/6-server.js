@@ -79,7 +79,7 @@ class GraphServer extends GraphLoadSave {
                 this.dispatcher({
                     type: T.SET_FUNCTIONS,
                     payload: {
-                        built: false, ran: false, debugged: true, cleared: false, stopped: false, destroyed: true,
+                        built: false, ran: true, debugged: true, cleared: false, stopped: false, destroyed: true,
                     },
                 });
                 this.dispatcher({ type: T.SET_LOGS_MESSAGE, payload: this.superState.logsmessage + res.data.output });

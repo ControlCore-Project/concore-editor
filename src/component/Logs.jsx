@@ -16,28 +16,32 @@ const Logs = ({ superState, dispatcher }) => {
 
     useEffect(() => {
         if (superState.logs) {
+            document.getElementById('outlay').style.display = 'block';
             document.getElementById('terminal').style.display = 'block';
             setOutput(superState.logsmessage);
         } else {
             document.getElementById('terminal').style.display = 'none';
+            document.getElementById('outlay').style.display = 'none';
             setOutput(superState.logsmessage);
         }
     }, [superState.logs]);
 
     return (
         <>
-            <div className="terminal" id="terminal">
-                <div className="terminal-header">
-                    Logs
-                    <button type="button" className="clear" onClick={clearTerminal}>Clear</button>
-                    <button type="button" className="closelogs" onClick={closeTerminal}>X</button>
-                </div>
-                <div className="terminal-body">
-                    {output.split('\n').map((line) => (
-                        <div className="terminal-line">
-                            {line}
-                        </div>
-                    ))}
+            <div className="outlay" id="outlay">
+                <div className="terminal" id="terminal">
+                    <div className="terminal-header">
+                        Logs
+                        <button type="button" className="clear" onClick={clearTerminal}>Clear</button>
+                        <button type="button" className="closelogs" onClick={closeTerminal}>X</button>
+                    </div>
+                    <div className="terminal-body">
+                        {output.split('\n').map((line) => (
+                            <div className="terminal-line">
+                                {line}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </>
