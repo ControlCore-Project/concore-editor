@@ -10,18 +10,20 @@ input {
   height: 100vh;
   display: flex;
   width: 100vw;
-  height: 100vh;
-  display: flex;
-  width: 100vw;
-  background: red;
   flex-direction: column;
 }
 
 .body {
-  padding: 50px;
   background-color: rgb(240, 242, 245);
   height: -webkit-fill-available;
   flex: 1;
+}
+
+.graph {
+  padding: 50px;
+  background-color: rgb(240, 242, 245);
+  height: -webkit-fill-available;
+  flex: 80;
 }
 
 .graph-container {
@@ -67,19 +69,19 @@ input {
 }
 
 @media screen and (max-width: 1000px) {
-  .body {
+  .graph {
     padding: 40px;
   }
 }
 
 @media screen and (max-width: 650px) {
-  .body {
+  .graph {
     padding: 35px;
   }
 }
 
 @media screen and (max-width: 500px) {
-  .body {
+  .graph {
     padding: 20px;
   }
 }

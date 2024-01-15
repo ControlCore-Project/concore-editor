@@ -57,7 +57,11 @@
 } */
 
 .nodeform .nodeLabel {
-    grid-column: 2 / span 3;
+    grid-column: 2 / span 1;
+}
+
+.nodeform .nodeLabelFile {
+    grid-column: 3 / span 2;
 }
 
 .nodeform .color-box {
@@ -103,6 +107,9 @@
         width: auto
     }
     .nodeform .nodeLabel {
-        grid-column: 2;
+        grid-column: 2 / span 1;
+    }
+    .nodeform .nodeLabelFile {
+        grid-column: 2 / span 1;
     }
 }

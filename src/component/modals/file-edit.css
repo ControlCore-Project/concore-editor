@@ -1,0 +1,26 @@
+.setting-container{
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 0px;
+    margin: 0px;
+    width: 90vw;
+    min-height: '400px',
+}
+
+.save-bar{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.save-bar .btn {
+    margin-right: 5px;
+}
+
+@media screen and (max-width: 890px) {
+    .setting-container{
+        grid-template-columns: auto;
+    }
+}

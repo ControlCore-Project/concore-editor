@@ -46,9 +46,9 @@ const parseActionML = (({ actionName, parameters }) => ({ actionName: actionName
 
 const parseActionHistory = (grahML) => grahML.parseProps('graphml.graph.actionHistory', 1)
     .map(({
-        authorName, equivalent, inverse, tid,
+        equivalent, inverse, tid,
     }) => ({
-        authorName: authorName[0],
+
         equivalent: parseActionML(equivalent[0]),
         inverse: parseActionML(inverse[0]),
         tid: tid[0],

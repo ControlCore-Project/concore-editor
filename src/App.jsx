@@ -1,7 +1,8 @@
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import ReactTooltip from 'react-tooltip';
-import { ToastContainer } from 'react-toastify';
 import GraphWorkspace from './GraphWorkspace';
 import GraphCompDetails from './component/modals/GraphCompDetails';
 import { Header } from './component/Header';
@@ -11,38 +12,53 @@ import ShareModal from './component/modals/ShareModal';
 import SettingsModal from './component/modals/Settings';
 import FileDragDrop from './component/File-drag-drop';
 import HistoryModal from './component/modals/History';
-import 'react-toastify/dist/ReactToastify.css';
+import LocalFileBrowser from './component/fileBrowser';
+import FileEditModal from './component/modals/FileEdit';
+import MarkDown from './component/modals/markDown';
+import OptionsModal from './component/modals/OptionsModal';
+import Logs from './component/Logs';
+import ContributeDetails from './component/modals/ContributeDetails';
 
 const app = () => {
     const [superState, dispatcher] = useReducer(reducer, initialState);
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            e.returnValue = 'Are you sure you want to leave this page?';
+            return 'Are you sure you want to leave this page?';
+        };
+        window.onbeforeunload = handleBeforeUnload;
+        return () => {
+            window.onbeforeunload = null;
+        };
+    }, []);
     return (
         <div className="container">
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
             <ProjectDetails superState={superState} dispatcher={dispatcher} />
             <ShareModal superState={superState} dispatcher={dispatcher} />
             <SettingsModal superState={superState} dispatcher={dispatcher} />
             <HistoryModal superState={superState} dispatcher={dispatcher} />
+            <ContributeDetails superState={superState} dispatcher={dispatcher} />
+            <FileEditModal superState={superState} dispatcher={dispatcher} />
+            <OptionsModal superState={superState} dispatcher={dispatcher} />
             <GraphCompDetails
                 closeModal={() => dispatcher({ type: T.Model_Close })}
                 superState={superState}
+                dispatcher={dispatcher}
             />
+            <Logs superState={superState} dispatcher={dispatcher} />
+            <MarkDown superState={superState} dispatcher={dispatcher} />
             <FileDragDrop dispatcher={dispatcher} />
             <Header superState={superState} dispatcher={dispatcher} />
             <section className="body" style={{ display: 'flex', overflow: 'hidden' }}>
-                <GraphWorkspace dispatcher={dispatcher} superState={superState} />
+                <div style={{ display: 'flex', overflow: 'auto' }}>
+                    <LocalFileBrowser superState={superState} dispatcher={dispatcher} />
+                </div>
+                <div className="graph" style={{ display: 'flex', overflow: 'hidden' }}>
+                    <GraphWorkspace dispatcher={dispatcher} superState={superState} />
+                </div>
             </section>
             <ReactTooltip place="bottom" type="dark" effect="solid" />
+            <ToastContainer position="bottom-left" autoClose={8000} pauseOnHover={false} />
         </div>
     );
 };

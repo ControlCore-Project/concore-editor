@@ -1,5 +1,5 @@
 export default {
-    baseURL: 'https://dhgworkflow.herokuapp.com/',
+    baseURL: 'http://localhost:8000/',
     getGraph: (id) => `workflow/${id}`,
     postGraph: 'workflow',
     updateGraph: (id) => `workflow/${id}`,

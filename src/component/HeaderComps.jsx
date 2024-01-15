@@ -3,13 +3,13 @@ import Switch from 'rc-switch';
 import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
 
 function DropDown({
-    Icon, text, action, active, tabIndex, hotkey,
+    Icon, text, action, active, visibility, tabIndex, hotkey,
 }) {
     return (
         <Menu menuButton={(
             <MenuButton>
                 <ActionButton {...{
-                    Icon, text, action, active, tabIndex, hotkey,
+                    Icon, text, action, active, visibility, tabIndex, hotkey,
                 }}
                 />
             </MenuButton>
@@ -21,10 +21,10 @@ function DropDown({
 }
 
 const FileUploader = ({
-    Icon, text, active, tabIndex, hotkey, superState,
+    Icon, text, active, visibility, tabIndex, hotkey, superState,
 }) => (
     <ActionButton {...{
-        Icon, text, active, tabIndex, action: () => superState.fileRef.current.click(), hotkey,
+        Icon, text, active, visibility, tabIndex, action: () => superState.fileRef.current.click(), hotkey,
     }}
     />
 );
@@ -51,7 +51,7 @@ const Switcher = ({
 );
 
 const ActionButton = ({
-    Icon, text, action, active, tabIndex, hotkey,
+    Icon, text, action, active, visibility, tabIndex, hotkey,
 }) => (
     <div
         role="button"
@@ -61,9 +61,10 @@ const ActionButton = ({
         onClick={() => (active && action())}
         onKeyDown={(ev) => active && ev.key === ' ' && action()}
         data-tip={hotkey ? hotkey.split(',')[0] : ''}
+        style={{ display: `${visibility ? '' : 'none'}` }}
     >
-        <div className="icon"><Icon size="25" /></div>
-        <div style={{ fontSize: 16 }}>{text}</div>
+        <div className="icon"><Icon size="20" /></div>
+        <div style={{ fontSize: 14 }}>{text}</div>
     </div>
 );
 

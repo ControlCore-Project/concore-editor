@@ -20,7 +20,7 @@
 
 .textField .mainTextField {
     height: 100px;
-    padding-left: 50px;
+    padding-left: 10px;
     width: calc(100% - 50px);
 }
 

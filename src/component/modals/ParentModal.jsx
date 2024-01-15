@@ -33,7 +33,7 @@ const Modal = ({
         <ReactModal
             isOpen={isOpen}
             contentLabel="onRequestClose Example"
-            onRequestClose={closeModal}
+            // onRequestClose={closeModal} // prevent modal from closing when clicked outside
             className="Modal"
             overlayClassName={`Overlay ${curClass}`}
         >

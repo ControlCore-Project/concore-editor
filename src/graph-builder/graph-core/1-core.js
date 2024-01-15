@@ -17,11 +17,13 @@ class CoreGraph {
 
     projectName;
 
+    authorName;
+
     cy;
 
     bendNode;
 
-    constructor(id, element, dispatcher, superState, projectName) {
+    constructor(id, element, dispatcher, superState, projectName, nodeValidator, edgeValidator, authorName) {
         if (dispatcher) this.dispatcher = dispatcher;
         if (superState) this.superState = superState;
         if (typeof cytoscape('core', 'edgehandles') !== 'function') {
@@ -37,11 +39,12 @@ class CoreGraph {
         this.cy = cytoscape({ ...cyOptions, container: element });
         this.id = id;
         this.projectName = projectName;
+        this.authorName = authorName;
         this.cy.emit('graph-modified');
         this.bendNode = this.cy.add(
             { group: 'nodes', data: { type: 'bend' }, classes: ['hidden'] },
         );
-        this.regesterEvents();
+        this.registerEvents();
         this.cy.emit('graph-modified');
         this.initizialize();
     }
@@ -83,12 +86,13 @@ class CoreGraph {
     }
 
     set({
-        cy, dispatcher, superState, projectName,
+        cy, dispatcher, superState, projectName, authorName,
     }) {
         if (dispatcher) this.dispatcher = dispatcher;
         if (superState) this.superState = superState;
         if (cy) this.cy = cy;
         if (projectName) this.projectName = projectName;
+        if (authorName) this.authorName = authorName;
     }
 
     setProjectName(projectName, shouldEmit = true) {
@@ -100,6 +104,21 @@ class CoreGraph {
                     value: projectName,
                     graphID: this.id,
                     type: 'projectName',
+                },
+            });
+        }
+        this.cy.emit('graph-modified');
+    }
+
+    setProjectAuthor(authorName, shouldEmit = true) {
+        this.authorName = authorName;
+        if (shouldEmit) {
+            this.dispatcher({
+                type: T.SET_AUTHOR,
+                payload: {
+                    value: authorName,
+                    graphID: this.id,
+                    type: 'authorName',
                 },
             });
         }
@@ -137,7 +156,7 @@ class CoreGraph {
         });
     }
 
-    regesterEvents() {
+    registerEvents() {
         this.cy.on('select unselect', () => this.selectDeselectEventHandler());
         this.cy.on('grab', 'node[type = "ordin"]', (e) => {
             e.target.forEach((node) => {

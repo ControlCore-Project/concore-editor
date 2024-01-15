@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify';
+import parser from '../graph-builder/graphml/parser';
 import { actionType as T } from '../reducer';
 
 const getGraphFun = (superState) => superState.curGraphInstance;
@@ -66,32 +68,80 @@ const editElement = (state, setState) => {
     }
 };
 
-const deleteElem = (state) => {
+const deleteElem = (state, dispatcher) => {
     const tid = new Date().getTime();
     state.eleSelectedPayload.ids.forEach((id) => getGraphFun(state).deleteElem(id, tid));
+    dispatcher({ type: T.ELE_UNSELECTED, payload: null });
 };
 
 const downloadImg = (state, setState, format) => {
     getGraphFun(state).downloadImg(format);
 };
 
-const saveAction = (state, d, fileName) => {
-    getGraphFun(state).saveToDisk(fileName);
+const saveAction = (state) => {
+    getGraphFun(state).saveToDisk();
 };
 
-const readFile = (state, setState, e) => {
-    if (e.target && e.target.files && e.target.files[0]) {
-        const fr = new FileReader();
-        const projectName = e.target.files[0]
-            .name.split('.').slice(0, -1).join('.').split('-')[0];
-        fr.onload = (x) => {
-            setState({
-                type: T.ADD_GRAPH,
-                payload: { projectName, graphML: x.target.result },
-            });
-        };
-        fr.readAsText(e.target.files[0]);
+async function saveGraphMLFile(state) {
+    if (state.curGraphInstance) {
+        const graph = state.graphs[state.curGraphIndex];
+        if (graph.fileHandle) {
+            const stream = await graph.fileHandle.createWritable();
+            await stream.write(getGraphFun(state).saveToFolder());
+            await stream.close();
+            toast.success('File saved Successfully');
+        } else if (!graph.fileHandle) {
+            getGraphFun(state).saveWithoutFileHandle();
+        } else {
+            toast.info('Switch to Edge/Chrome!');
+        }
+    } else {
+        toast.info('Switch to Edge/Chrome!');
     }
+}
+
+const readFile = async (state, setState, file, fileHandle) => {
+    if (file) {
+        const fr = new FileReader();
+        const projectName = file.name;
+        if (file.name.split('.').pop() === 'graphml') {
+            fr.onload = (x) => {
+                parser(x.target.result).then(({ authorName }) => {
+                    setState({
+                        type: T.ADD_GRAPH,
+                        payload: {
+                            projectName, graphML: x.target.result, fileHandle, fileName: file.name, authorName,
+                        },
+                    });
+                });
+            };
+            if (fileHandle) fr.readAsText(await fileHandle.getFile());
+            else fr.readAsText(file);
+        }
+    }
+};
+
+const readTextFile = (state, setState, file, fileHandle) => {
+    if (file) {
+        setState({
+            type: T.EDIT_TEXTFILE,
+            payload: { show: true, fileObj: file, fileHandle },
+        });
+    }
+};
+
+const optionModalToggle = (state, setState) => {
+    setState({
+        type: T.SET_OPTIONS_MODAL,
+        payload: true,
+    });
+};
+
+const createFile = (state, setState) => {
+    setState({
+        type: T.EDIT_TEXTFILE,
+        payload: { show: true },
+    });
 };
 
 const newProject = (state, setState) => {
@@ -102,6 +152,18 @@ const clearAll = (state) => {
     getGraphFun(state).clearAll();
 };
 
+const contribute = (state, setState) => {
+    setState({ type: T.SET_CONTRIBUTE_MODAL, payload: true });
+};
+
+const resetAfterClear = (state) => {
+    getGraphFun(state).resetAfterClear();
+};
+
+const toggleLogs = (state, dispatcher) => {
+    dispatcher({ type: T.SET_LOGS, payload: !state.logs });
+};
+
 const editDetails = (state, setState) => {
     setState({
         type: T.SET_EDIT_DETAILS_MODAL,
@@ -110,7 +172,7 @@ const editDetails = (state, setState) => {
 };
 
 const undo = (state) => {
-    if (getGraphFun(state))getGraphFun(state).undo();
+    if (getGraphFun(state)) getGraphFun(state).undo();
 };
 const redo = (state) => {
     getGraphFun(state).redo();
@@ -128,8 +190,17 @@ const viewHistory = (state, setState) => {
     setState({ type: T.SET_HISTORY_MODAL, payload: true });
 };
 
+const toggleServer = (state, dispatcher) => {
+    if (state.isWorkflowOnServer) {
+        dispatcher({ type: T.IS_WORKFLOW_ON_SERVER, payload: false });
+    } else {
+        dispatcher({ type: T.IS_WORKFLOW_ON_SERVER, payload: true });
+    }
+};
+
 export {
-    createNode, editElement, deleteElem, downloadImg, saveAction,
-    readFile, newProject, clearAll, editDetails, undo, redo,
-    openShareModal, openSettingModal, viewHistory,
+    createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
+    createFile, readFile, readTextFile, newProject, clearAll, editDetails, undo, redo,
+    openShareModal, openSettingModal, viewHistory, resetAfterClear, toggleLogs,
+    toggleServer, optionModalToggle, contribute,
 };

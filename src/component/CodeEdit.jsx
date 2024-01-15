@@ -17,28 +17,39 @@ const CodeEdit = ({
             role="textbox"
             tabIndex={0}
         >
-            <div className="docStr">{parseMD(docString)}</div>
+            {docString
+                ? (
+                    <div className="docStr">
+                        {parseMD(docString)}
+                    </div>
+                ) : <div />}
             <br />
-            <textarea
-                className="preTextField"
-                value={pre}
-                readOnly
-                spellCheck="false"
-            />
+            {pre
+                ? (
+                    <textarea
+                        className="preTextField"
+                        value={pre}
+                        readOnly
+                        spellCheck="false"
+                    />
+                ) : <div />}
             <textarea
                 className="mainTextField"
                 spellCheck="false"
                 {...{ value, onChange }}
                 data-gramm_editor="false"
-                style={{ height }}
+                style={{ height, width: '90vw' }}
                 ref={inputRef}
             />
-            <textarea
-                className="postTextField"
-                readOnly
-                value={post}
-                spellCheck="false"
-            />
+            {post
+                ? (
+                    <textarea
+                        className="postTextField"
+                        readOnly
+                        value={post}
+                        spellCheck="false"
+                    />
+                ) : <div />}
         </div>
     );
 };

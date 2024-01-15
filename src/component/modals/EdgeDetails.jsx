@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import ColorBox from './ColorBox';
+// import ColorBox from './ColorBox';
 import './edgeDetails.css';
 
 const Triangle = ({ size, color }) => {
@@ -18,20 +18,20 @@ const Triangle = ({ size, color }) => {
 const EdgeDetails = ({
     data, setData, submit, labelAllowed,
 }) => {
-    const setStyle = (prop) => setData({ ...data, style: { ...data.style, ...prop } });
+    // const setStyle = (prop) => setData({ ...data, style: { ...data.style, ...prop } });
     const inputRef = useCallback((node) => node && node.focus(), []);
-    const RadioBtn = ({ name, shape }) => (
-        <label htmlFor="ellipse">
-            <input
-                type="radio"
-                name="shape"
-                value={shape}
-                checked={data.style.shape === shape}
-                onChange={() => setStyle({ shape })}
-            />
-            {name}
-        </label>
-    );
+    // const RadioBtn = ({ name, shape }) => (
+    //     <label htmlFor="ellipse">
+    //         <input
+    //             type="radio"
+    //             name="shape"
+    //             value={shape}
+    //             checked={data.style.shape === shape}
+    //             onChange={() => setStyle({ shape })}
+    //         />
+    //         {name}
+    //     </label>
+    // );
 
     return (
         <div className="edgeform" onSubmit={submit}>
@@ -61,7 +61,7 @@ const EdgeDetails = ({
                         onChange={(e) => setData({ ...data, label: `${e.target.value}` })}
                     />
                 ) : ''}
-                <div> Shape</div>
+                {/* <div> Shape</div>
                 <div className="span-rest hascheckbox">
                     <div><RadioBtn name="Solid" shape="solid" /></div>
                     <div><RadioBtn name="Dotted" shape="dotted" /></div>
@@ -78,7 +78,7 @@ const EdgeDetails = ({
                     color={data.style.backgroundColor}
                     setColor={(color) => setStyle({ backgroundColor: color })}
                     type="dark"
-                />
+                /> */}
             </div>
         </div>
     );

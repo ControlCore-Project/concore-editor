@@ -8,7 +8,7 @@ import {
     ActionButton, Vsep, Hsep, Space, TextBox, Switcher, DropDown, FileUploader,
 } from './HeaderComps';
 import 'rc-switch/assets/index.css';
-import ServerActions from './serverActions/ServerActions';
+// import ServerActions from './serverActions/ServerActions';
 
 const setHotKeys = (actions) => {
     let keys = '';
@@ -23,6 +23,7 @@ const setHotKeys = (actions) => {
             });
         }
     });
+    keys = keys.substring(0, keys.length - 1);
     hotkeys(keys, (event, handler) => {
         event.preventDefault();
         map[handler.shortcut].click();
@@ -30,7 +31,7 @@ const setHotKeys = (actions) => {
 };
 
 const Header = ({ superState, dispatcher }) => {
-    const actions = toolbarList(superState);
+    const actions = toolbarList(superState, dispatcher);
     React.useEffect(() => {
         setHotKeys(actions, superState, dispatcher);
     }, []);
@@ -41,17 +42,18 @@ const Header = ({ superState, dispatcher }) => {
                 {
                     superState.curGraphInstance ? `${
                         superState.curGraphInstance.projectName
-                    } - DHGWorkflow Editor` : ''
+                    } - concore Editor` : 'untitled'
                 }
             </section>
             <section className="toolbar">
                 {
                     actions.map(({
-                        text, active, action, icon, type, hotkey,
+                        text, active, visibility, action, icon, type, hotkey,
                     }, i) => {
                         const props = {
                             text,
                             active,
+                            visibility,
                             tabIndex: i + 1,
                             key: text,
                             action: (e) => action(superState, dispatcher, e),
@@ -65,7 +67,7 @@ const Header = ({ superState, dispatcher }) => {
                         case 'menu': return <DropDown {...props} />;
                         case 'file-upload': return <FileUploader {...props} superState={superState} />;
                         case 'action': return <ActionButton {...props} />;
-                        case 'serverActions': return <ServerActions superState={superState} />;
+                        // case 'serverActions': return <ServerActions superState={superState} />;
                         default: return <></>;
                         }
                     })

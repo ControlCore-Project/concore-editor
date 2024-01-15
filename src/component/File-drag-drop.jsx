@@ -39,7 +39,7 @@ const app = ({ superState, dispatcher }) => {
             fileRef.current.value = null;
             if (e.dataTransfer.files.length === 1
                 && e.dataTransfer.files[0].name.split('.').slice(-1)[0] === 'graphml') {
-                readFile(superState, dispatcher, { target: e.dataTransfer });
+                readFile(superState, dispatcher, e.dataTransfer.files[0]);
             }
         });
     }, []);

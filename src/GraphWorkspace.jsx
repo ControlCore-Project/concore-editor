@@ -10,8 +10,7 @@ import Graph from './GraphArea';
 const GraphComp = (props) => {
     const graphContainerRef = React.useRef();
     const { dispatcher, superState } = props;
-    const [loadedFromStorage, setLoadedFromStorage] = React.useState(false);
-    const [loadedFromURL, setLoadedFromURL] = React.useState(false);
+    // const [loadedFromStorage, setLoadedFromStorage] = React.useState(false);
 
     useEffect(() => {
         const allSavedGs = localStorageManager.getAllGraphs().map((graphID) => ({
@@ -21,33 +20,33 @@ const GraphComp = (props) => {
             type: T.ADD_GRAPH_BULK,
             payload: allSavedGs,
         });
-        setLoadedFromStorage(true);
+        // setLoadedFromStorage(true);
     }, []);
 
-    useEffect(() => {
-        if (!loadedFromStorage) return;
-        const graphFromParams = Object.fromEntries(new URLSearchParams(window.location.search).entries()).g;
-        if (graphFromParams) {
-            const graphContent = JSON.parse(window.atob(graphFromParams));
-            const gid = new Date().getTime().toString();
-            localStorageManager.addToFront(gid);
-            localStorageManager.save(gid, graphContent);
-            window.history.replaceState({}, document.title, window.location.pathname);
-            dispatcher({ type: T.ADD_GRAPH, payload: { graphID: gid } });
-        }
-        const urlParms = window.location.pathname.split('/');
-        const serverIDIndex = urlParms.indexOf('s');
-        const localIDIndex = urlParms.indexOf('l');
-        if (serverIDIndex !== -1 && serverIDIndex + 1 < urlParms.length) {
-            const serverID = urlParms[serverIDIndex + 1];
-            dispatcher({ type: T.ADD_GRAPH, payload: { serverID } });
-        }
-        if (localIDIndex !== -1 && localIDIndex + 1 < urlParms.length) {
-            const graphID = urlParms[localIDIndex + 1];
-            dispatcher({ type: T.ADD_GRAPH, payload: { graphID } });
-        }
-        setLoadedFromURL(true);
-    }, [loadedFromStorage]);
+    // Remote server implementation - Not being used.
+    // useEffect(() => {
+    //     if (!loadedFromStorage) return;
+    //     const graphFromParams = Object.fromEntries(new URLSearchParams(window.location.search).entries()).g;
+    //     if (graphFromParams) {
+    //         const graphContent = JSON.parse(window.atob(graphFromParams));
+    //         const gid = new Date().getTime().toString();
+    //         localStorageManager.addToFront(gid);
+    //         localStorageManager.save(gid, graphContent);
+    //         window.history.replaceState({}, document.title, window.location.pathname);
+    //         dispatcher({ type: T.ADD_GRAPH, payload: { graphID: gid } });
+    //     }
+    //     const urlParms = window.location.pathname.split('/');
+    //     const serverIDIndex = urlParms.indexOf('s');
+    //     const localIDIndex = urlParms.indexOf('l');
+    //     if (serverIDIndex !== -1 && serverIDIndex + 1 < urlParms.length) {
+    //         const serverID = urlParms[serverIDIndex + 1];
+    //         dispatcher({ type: T.ADD_GRAPH, payload: { serverID } });
+    //     }
+    //     if (localIDIndex !== -1 && localIDIndex + 1 < urlParms.length) {
+    //         const graphID = urlParms[localIDIndex + 1];
+    //         dispatcher({ type: T.ADD_GRAPH, payload: { graphID } });
+    //     }
+    // }, [loadedFromStorage]);
 
     return (
         <div
@@ -73,7 +72,9 @@ const GraphComp = (props) => {
                         serverID={el.serverID}
                         graphML={el.graphML}
                         projectName={el.projectName}
-                        loaded={loadedFromURL}
+                        fileHandle={el.fileHandle}
+                        fileName={el.fileName}
+                        authorName={el.authorName}
                     />
                 ))}
                 <ZoomComp dispatcher={dispatcher} superState={superState} />

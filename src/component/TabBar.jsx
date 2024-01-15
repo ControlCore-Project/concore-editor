@@ -16,6 +16,10 @@ const TabBar = ({ superState, dispatcher }) => {
         if (!window.confirm('Do you confirm to close the tab? This action is irreversable.')) return;
         localStorageManager.remove(superState.graphs[i] ? superState.graphs[i].graphID : null);
         dispatcher({ type: T.REMOVE_GRAPH, payload: i });
+        if (!superState.curGraphIndex && superState.graphs.length === 1) {
+            dispatcher({ type: T.SET_CUR_INSTANCE, payload: null });
+            dispatcher({ type: T.SET_CUR_INDEX, payload: -1 });
+        }
     };
     const editCur = (e) => {
         e.stopPropagation();
@@ -60,7 +64,7 @@ const TabBar = ({ superState, dispatcher }) => {
                     id={`tab_${i}`}
                 >
                     <span className="tab-text">
-                        {el.projectName}
+                        {el.fileName || el.projectName}
                     </span>
 
                     {superState.curGraphIndex === i ? (

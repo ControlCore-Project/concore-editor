@@ -28,6 +28,9 @@ const builder = (G) => {
         id: G.id,
         actionHistory: G.actionHistory,
         serverID: G.serverID,
+        fileHandle: G.fileHandle,
+        fileName: G.fileName,
+        authorName: G.authorName,
     });
     const xml = new xml2js.Builder().buildObject(X);
     return xml;

@@ -58,5 +58,8 @@ const localStorageManager = {
     clearGraph(id) {
         window.localStorage.removeItem(id);
     },
+    getFileList() {
+        return localStorage.getItem('fileList') || '';
+    },
 };
 export default localStorageManager;

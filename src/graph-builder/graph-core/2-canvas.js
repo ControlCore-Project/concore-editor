@@ -7,6 +7,8 @@ class GraphCanvas extends Core {
 
     resetZoom() {
         this.cy.reset();
+        this.cy.center();
+        this.dispatcher({ type: T.SET_ZOOM_LEVEL, payload: this.getZoom() });
     }
 
     setOnZoom(cb) {
@@ -17,6 +19,7 @@ class GraphCanvas extends Core {
 
     fitZoom() {
         this.cy.fit();
+        this.dispatcher({ type: T.SET_ZOOM_LEVEL, payload: this.getZoom() });
     }
 
     setZoom(v) {
@@ -32,7 +35,8 @@ class GraphCanvas extends Core {
         // eslint-disable-next-line no-alert
         if (!window.confirm('Do want to clear all elements?')) return false;
         this.cy.elements().forEach((el) => this.deleteElem(el.id(), 0));
-        this.actionArr = [];
+        // this.actionArr = [];
+        this.dispatcher({ type: T.CHANGE_RESET, payload: true });
         this.cy.emit('graph-modified');
         return true;
     }

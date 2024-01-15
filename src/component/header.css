@@ -7,7 +7,8 @@
     height: auto;
     display: flex;
     box-sizing: border-box;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .toolbar .tool {
@@ -16,14 +17,14 @@
     padding-bottom: 5px;
     display: inline-flex;
     flex-direction: column;
-    min-width: 64px;
+    min-width: 60px;
     align-items: center;
     cursor: pointer;
     justify-content: space-between;
     box-sizing: border-box;
     color: rgba(0, 0, 0, 0.3);
     transition: none;
-    height: 64px;
+    height: 60px;
 }
 
 .toolbar .tool.active {

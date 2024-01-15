@@ -6,42 +6,40 @@ import localStorageManager from '../../graph-builder/local-storage-manager';
 
 const ProjectDetails = ({ superState, dispatcher }) => {
     const curGraph = superState.graphs[superState.curGraphIndex];
-    const [projectName, setProjectName] = useState('');
-    const [authorName, setAuthorName] = useState('');
-    const [serverID, setServerID] = useState('');
+    const [projectName, setProjectName] = useState('Untitled');
+    const [authorName, setAuthorName] = useState('Default');
+    // const [serverID, setServerID] = useState('');
     const inputRef = useCallback((node) => node && node.focus(), []);
-    const newGraphModal = superState.newGraphModal || superState.graphs.length === 0;
+    const { newGraphModal } = superState;
     const editDetailsModal = superState.editDetailsModal || (curGraph && !curGraph.projectName);
-
-    const setProjAuthorName = (a) => {
-        setAuthorName(a);
-        dispatcher({
-            type: T.SET_AUTHOR,
-            payload: a,
-        });
-    };
 
     useEffect(() => {
         if (superState.editDetailsModal && curGraph) {
             setProjectName(curGraph.projectName);
-        } else setProjectName('');
-    }, [superState.authorName, superState.editDetailsModal, curGraph]);
+            setAuthorName(curGraph.authorName);
+        } else {
+            setProjectName('');
+        }
+    }, [curGraph?.authorName, superState.editDetailsModal, curGraph]);
+
     useEffect(() => {
-        if (superState.authorName) setAuthorName(superState.authorName);
-        else {
+        if (curGraph?.authorName) {
+            setAuthorName(curGraph.authorName);
+        } else {
             const authorNameE = localStorageManager.getAuthorName();
-            setProjAuthorName(authorNameE);
+            setAuthorName(authorNameE);
         }
     }, []);
 
     const submit = (e) => {
         e.preventDefault();
-        if (newGraphModal) dispatcher({ type: T.ADD_GRAPH, payload: { projectName } });
+        if (newGraphModal) dispatcher({ type: T.ADD_GRAPH, payload: { projectName, authorName } });
         else if (editDetailsModal) {
             superState.curGraphInstance.setProjectName(projectName);
+            superState.curGraphInstance.setProjectAuthor(authorName);
             dispatcher({ type: T.SET_EDIT_DETAILS_MODAL, payload: false });
         }
-        setProjAuthorName(authorName);
+        localStorageManager.saveAllgs();
         localStorageManager.setAuthorName(authorName);
     };
 
@@ -53,12 +51,12 @@ const ProjectDetails = ({ superState, dispatcher }) => {
         if (superState.newGraphModal) dispatcher({ type: T.SET_NEW_GRAPH_MODAL, payload: false });
         else if (superState.editDetailsModal) dispatcher({ type: T.SET_EDIT_DETAILS_MODAL, payload: false });
     };
-    const loadFromServer = () => {
-        dispatcher({ type: T.ADD_GRAPH, payload: { serverID } });
-    };
-    const NewWrokflow = () => (
+    // const loadFromServer = () => {
+    //     dispatcher({ type: T.ADD_GRAPH, payload: { serverID } });
+    // };
+    const NewWorkflow = () => (
         <>
-            <div className="divider" />
+            {/* <div className="divider" />
             <input
                 placeholder="Enter the Server ID of Workflow"
                 value={serverID}
@@ -72,7 +70,7 @@ const ProjectDetails = ({ superState, dispatcher }) => {
             >
                 Load From Server
 
-            </button>
+            </button> */}
             <div className="divider" />
             <button
                 type="button"
@@ -111,7 +109,7 @@ const ProjectDetails = ({ superState, dispatcher }) => {
                     <button type="submit" className="btn btn-primary">Save</button>
                 </div>
                 <div className="expand">
-                    {newGraphModal && <NewWrokflow />}
+                    {newGraphModal && <NewWorkflow />}
                 </div>
             </form>
         </Modal>

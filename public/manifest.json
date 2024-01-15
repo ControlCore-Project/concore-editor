@@ -1,6 +1,6 @@
 {
-  "short_name": "DHGWorkflow",
-  "name": "DHGWorkflow",
+  "short_name": "concore-editor",
+  "name": "concore-editor",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",

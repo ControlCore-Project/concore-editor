@@ -1,0 +1,43 @@
+.contribute-details{
+    padding: 20px;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 20px;
+}
+
+.contribute-details *{
+    padding: 10px 5px;
+    text-align: center;
+}
+
+.contribute-details .expand{
+    grid-column: 1 / span 2;
+    padding: 0;
+}
+
+.contribute-details .btn{
+    width: 100%;
+}
+.contribute-details .btn-secondary{
+    align-self: flex-end;
+}
+.contribute-details textarea{
+    resize: vertical;
+    max-height: 200px;
+    max-width: 300px;
+    text-align: left;
+    max-lines: 10;
+}
+.Toastify__toast-container {
+    /* width: 350px; */
+    /* height: 80px; */
+    padding: 3px 15px;
+    display: inline-block;
+  }
+  
+  .Toastify__toast {
+    /* width: 350px; */
+    /* height: 80px; */
+    width: fit-content;
+    font-size: 16px;
+  }
