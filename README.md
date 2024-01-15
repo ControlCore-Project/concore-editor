@@ -21,7 +21,7 @@ Steps to start it locally
 1. Clone the repository
 2. At the root of the repository, run the following commands:
    1. `npm i`
-   2. `npm start`
+   2. `npm start` if you're on Linux or macOS, use `npm run start:windows` if you're on windows
 3. It should start a development server and tool will be accessible at
    `http://localhost:3000/DHGWorkflow`
 4. Note - In case, you're using Windows and see the linebreak-error please modify line 53 in `.eslintrc.json` file to `"linebreak-style": ["error", "windows"]`. Make sure you do not commit this change to prevent default environment.
