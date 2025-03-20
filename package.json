@@ -16,7 +16,7 @@
     "cytoscape-node-editing": "^4.0.0",
     "file-saver": "^2.0.5",
     "hotkeys-js": "^3.8.7",
-    "jquery": "^3.0.0",
+    "jquery": "^3.5.0",
     "konva": "^7.0.3",
     "md5": "^2.3.0",
     "moment": "^2.29.4",
