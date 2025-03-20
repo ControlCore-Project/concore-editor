@@ -1,6 +1,6 @@
 from model.workflows import *
 from flask import request, make_response, Blueprint
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 workFlow = Blueprint('workflow', __name__)
 workFlowModel = WorkFlowModel()
