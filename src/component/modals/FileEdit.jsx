@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import Editor from 'react-simple-code-editor';
-import { highlight, languages } from 'prismjs/components/prism-core';
+import Editor from '@monaco-editor/react';
 import { saveAs } from 'file-saver';
 import Modal from './ParentModal';
 import './file-edit.css';
-import 'prismjs/components/prism-bash';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-c';
-import 'prismjs/components/prism-cpp';
-import 'prismjs/components/prism-matlab';
-import 'prismjs/components/prism-verilog';
-import 'prismjs/components/prism-python';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/themes/prism.css';
 import { actionType as T } from '../../reducer';
 
 const FileEditModal = ({ superState, dispatcher }) => {
     const [codeStuff, setCodeStuff] = useState('');
     const [fileName, setFileName] = useState('');
     const [dirButton, setDirButton] = useState(false);
+    const [language, setLanguage] = useState('plaintext');
 
     useEffect(() => {
         if (navigator.userAgent.indexOf('Edg') !== -1 || navigator.userAgent.indexOf('Chrome') !== -1) {
@@ -38,7 +29,6 @@ const FileEditModal = ({ superState, dispatcher }) => {
             await stream.write(codeStuff);
             await stream.close();
         } else {
-            // eslint-disable-next-line no-alert
             alert('Switch to Edge/Chrome!');
         }
         dispatcher({ type: T.EDIT_TEXTFILE, payload: { show: false } });
@@ -59,48 +49,45 @@ const FileEditModal = ({ superState, dispatcher }) => {
             fileHandle: handle,
         }]);
         dispatcher({ type: T.SET_FILE_STATE, payload: fS });
-        // dispatcher({ type: T.EDIT_TEXTFILE, payload: { show: false } });
     }
 
     async function saveSubmit() {
-        // eslint-disable-next-line no-alert
         const newFileName = prompt('Filename:');
         const bytes = new TextEncoder().encode(codeStuff);
         const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' });
         saveAs(blob, newFileName);
-        // dispatcher({ type: T.EDIT_TEXTFILE, payload: { show: false } });
     }
 
-    useEffect(async () => {
-        if (superState.fileObj) {
-            setFileName(superState.fileObj.name);
-            const fr = new FileReader();
-            fr.onload = (x) => {
-                setCodeStuff(x.target.result);
-            };
-            if (superState.fileHandle) fr.readAsText(await superState.fileHandle.getFile());
-            else fr.readAsText(superState.fileObj);
-        }
-    }, [superState.fileObj]);
-
-    function highlightSyntax(code) {
-        const extensions = ['v', 'c', 'h', 'hpp', 'cpp', 'py', 'm', 'sh'];
-        const fileEx = fileName.split('.').pop();
-        if (extensions.includes(fileEx)) {
-            switch (fileEx) {
-            case 'v': return highlight(code, languages.verilog, 'verilog');
-            case 'c': return highlight(code, languages.c, 'c');
-            case 'h': return highlight(code, languages.c, 'c');
-            case 'hpp': return highlight(code, languages.c, 'c');
-            case 'cpp': return highlight(code, languages.cpp, 'cpp');
-            case 'py': return highlight(code, languages.python, 'python');
-            case 'm': return highlight(code, languages.matlab, 'matlab');
-            case 'sh': return highlight(code, languages.bash, 'bash');
-            default: return highlight(code, languages.plaintext);
+    useEffect(() => {
+        async function loadFile() {
+            if (superState.fileObj) {
+                setFileName(superState.fileObj.name);
+                const fr = new FileReader();
+                fr.onload = (x) => {
+                    setCodeStuff(x.target.result);
+                };
+                if (superState.fileHandle) fr.readAsText(await superState.fileHandle.getFile());
+                else fr.readAsText(superState.fileObj);
             }
         }
-        return highlight(code, languages.plaintext);
-    }
+        loadFile();
+    }, [superState.fileObj]);
+
+    useEffect(() => {
+        if (!fileName) return;
+        const fileEx = fileName.split('.').pop();
+        const langMap = {
+            v: 'verilog',
+            c: 'c',
+            h: 'c',
+            hpp: 'cpp',
+            cpp: 'cpp',
+            py: 'python',
+            m: 'matlab',
+            sh: 'bash',
+        };
+        setLanguage(langMap[fileEx] || 'plaintext');
+    }, [fileName]);
 
     return (
         <Modal
@@ -109,41 +96,26 @@ const FileEditModal = ({ superState, dispatcher }) => {
             title={fileName}
         >
             <div>
-                <div className="save-bar">
-                    {fileName
-                        && (
-                            <button type="submit" className="btn btn-primary" onClick={submit}>Save</button>
-                        )}
-                    {dirButton && (
-                        <button type="submit" className="btn btn-primary" onClick={saveAsSubmit}>
-                            Save
-                            {fileName ? ' As' : ''}
-                        </button>
-                    )}
-                    {!dirButton && (
-                        <button type="submit" className="btn btn-primary" onClick={saveSubmit}>Save As</button>
-                    )}
-                </div>
                 <div className="setting-container">
                     <Editor
+                        height="60vh"
+                        language={language}
+                        theme="vs-light"
                         value={codeStuff}
-                        onValueChange={(e) => setCodeStuff(e)}
-                        highlight={(code) => highlightSyntax(code)}
-                        padding={10}
-                        style={{
-                            fontFamily: '"Arial", "Helvetica", sans-serif',
+                        onChange={(value) => setCodeStuff(value)}
+                        options={{
+                            inlineSuggest: true,
                             fontSize: 16,
-                            minHeight: '100vh',
-                            minWidth: '90vw',
-                            border: '1px solid black',
+                            formatOnType: true,
+                            autoClosingBrackets: true,
+                            minimap: { enabled: true },
                         }}
                     />
                 </div>
                 <div className="save-bar">
-                    {fileName
-                        && (
-                            <button type="submit" className="btn btn-primary" onClick={submit}>Save</button>
-                        )}
+                    {fileName && (
+                        <button type="submit" className="btn btn-primary" onClick={submit}>Save</button>
+                    )}
                     {dirButton && (
                         <button type="submit" className="btn btn-primary" onClick={saveAsSubmit}>Save As</button>
                     )}

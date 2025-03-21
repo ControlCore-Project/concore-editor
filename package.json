@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://controlcore-project.github.io/concore-editor",
   "dependencies": {
+    "@monaco-editor/react": "^4.4.5",
     "@szhsin/react-menu": "^1.10.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -20,7 +21,7 @@
     "konva": "^7.0.3",
     "md5": "^2.3.0",
     "moment": "^2.29.4",
-    "prismjs": "^1.29.0",
+    "prismjs": "^1.30.0",
     "rc-slider": "^9.7.2",
     "rc-switch": "^3.2.2",
     "react": "^17.0.2",
