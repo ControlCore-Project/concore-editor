@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { saveAs } from 'file-saver';
 import Modal from './ParentModal';
+import { toast } from 'react-toastify';
 import './file-edit.css';
 import { actionType as T } from '../../reducer';
 
@@ -29,7 +30,7 @@ const FileEditModal = ({ superState, dispatcher }) => {
             await stream.write(codeStuff);
             await stream.close();
         } else {
-            alert('Switch to Edge/Chrome!');
+            toast.warn('Switch to Edge/Chrome!');
         }
         dispatcher({ type: T.EDIT_TEXTFILE, payload: { show: false } });
     }
