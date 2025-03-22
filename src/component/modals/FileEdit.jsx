@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { saveAs } from 'file-saver';
-import Modal from './ParentModal';
 import ReactModal from 'react-modal';
+import Modal from './ParentModal';
 import './file-edit.css';
 import { actionType as T } from '../../reducer';
 
