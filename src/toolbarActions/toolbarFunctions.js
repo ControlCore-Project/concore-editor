@@ -191,10 +191,18 @@ const viewHistory = (state, setState) => {
 };
 
 const toggleServer = (state, dispatcher) => {
-    if (state.isWorkflowOnServer) {
-        dispatcher({ type: T.IS_WORKFLOW_ON_SERVER, payload: false });
+    if (state.serverVisibility) {
+        dispatcher({ type: T.SERVER_VISIBILITY, payload: false });
     } else {
-        dispatcher({ type: T.IS_WORKFLOW_ON_SERVER, payload: true });
+        dispatcher({ type: T.SERVER_VISIBILITY, payload: true });
+    }
+};
+
+const toggleVersionControl = (state, dispatcher) => {
+    if (state.versionControlVisibility) {
+        dispatcher({ type: T.VERSION_CONTROL_VISIBILITY, payload: false });
+    } else {
+        dispatcher({ type: T.VERSION_CONTROL_VISIBILITY, payload: true });
     }
 };
 
@@ -202,5 +210,5 @@ export {
     createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
     createFile, readFile, readTextFile, newProject, clearAll, editDetails, undo, redo,
     openShareModal, openSettingModal, viewHistory, resetAfterClear, toggleLogs,
-    toggleServer, optionModalToggle, contribute,
+    toggleServer, optionModalToggle, contribute, toggleVersionControl,
 };

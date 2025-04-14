@@ -24,6 +24,8 @@ const initialState = {
     curGraphIndex: -1,
     viewHistory: false,
     isWorkflowOnServer: false,
+    versionControlVisibility: false,
+    serverVisibility: false,
     curGraphInstance: null,
     zoomLevel: 100,
     uploadedDirName: null,
