@@ -200,6 +200,15 @@ const reducer = (state, action) => {
     case T.IS_WORKFLOW_ON_SERVER: {
         return { ...state, isWorkflowOnServer: action.payload };
     }
+
+    case T.SERVER_VISIBILITY: {
+        return { ...state, serverVisibility: action.payload };
+    }
+
+    case T.VERSION_CONTROL_VISIBILITY: {
+        return { ...state, versionControlVisibility: action.payload };
+    }
+
     case T.SET_ZOOM_LEVEL: {
         return { ...state, zoomLevel: action.payload };
     }

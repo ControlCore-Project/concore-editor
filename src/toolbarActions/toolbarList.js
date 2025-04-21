@@ -5,6 +5,10 @@ import {
 } from 'react-icons/fa';
 
 import {
+    FiChevronDown,
+    FiChevronsDown,
+    FiChevronsUp,
+    FiChevronUp,
     // FiChevronDown, FiChevronsDown, FiChevronsUp, FiChevronUp,
     FiPlay, FiStopCircle, FiToggleLeft, FiTriangle,
 } from 'react-icons/fi';
@@ -13,6 +17,7 @@ import {
     createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
     createFile, readFile, clearAll, undo, redo, viewHistory, resetAfterClear,
     toggleServer, optionModalToggle, toggleLogs, contribute,
+    toggleVersionControl,
     // openSettingModal,
 } from './toolbarFunctions';
 
@@ -137,8 +142,48 @@ const toolbarList = (state, dispatcher) => [
     },
     {
         type: 'action',
+        text: 'Version Control',
+        icon: state.versionControlVisibility ? FaToggleOn : FiToggleLeft,
+        action: () => toggleVersionControl(state, dispatcher),
+        active: state.curGraphInstance,
+        visibility: true,
+    },
+    {
+        type: 'action',
+        text: 'Push',
+        icon: FiChevronUp,
+        action: () => state.curGraphInstance && state.curGraphInstance.pushToServer(),
+        active: state.curGraphInstance && state.isWorkflowOnServer,
+        visibility: state.versionControlVisibility,
+    },
+    {
+        type: 'action',
+        text: 'Pull',
+        icon: FiChevronDown,
+        action: () => state.curGraphInstance && state.curGraphInstance.pullFromServer(),
+        active: state.curGraphInstance && state.isWorkflowOnServer,
+        visibility: state.versionControlVisibility,
+    },
+    {
+        type: 'action',
+        text: 'Force Push',
+        icon: FiChevronsUp,
+        action: () => state.curGraphInstance && state.curGraphInstance.forcePushToServer(),
+        active: state.curGraphInstance && state.isWorkflowOnServer,
+        visibility: state.versionControlVisibility,
+    },
+    {
+        type: 'action',
+        text: 'Force Pull',
+        icon: FiChevronsDown,
+        action: () => state.curGraphInstance && state.curGraphInstance.forcePullFromServer(),
+        active: state.curGraphInstance && state.isWorkflowOnServer,
+        visibility: state.versionControlVisibility,
+    },
+    {
+        type: 'action',
         text: 'Server',
-        icon: state.isWorkflowOnServer ? FaToggleOn : FiToggleLeft,
+        icon: state.serverVisibility ? FaToggleOn : FiToggleLeft,
         action: () => toggleServer(state, dispatcher),
         active: state.curGraphInstance,
         visibility: true,
@@ -148,8 +193,8 @@ const toolbarList = (state, dispatcher) => [
         text: 'Options',
         icon: FaCogs,
         action: () => optionModalToggle(state, dispatcher),
-        active: state.isWorkflowOnServer,
-        visibility: state.isWorkflowOnServer && state.curGraphInstance,
+        active: state.serverVisibility,
+        visibility: state.serverVisibility && state.curGraphInstance,
     },
     {
         type: 'action',
@@ -157,9 +202,9 @@ const toolbarList = (state, dispatcher) => [
         icon: FaHammer,
         action: () => state.curGraphInstance && state.curGraphInstance.build(),
         active: state.curGraphIndex !== -1
-            ? state.isWorkflowOnServer && state.graphs[state.curGraphIndex].built
-            : state.isWorkflowOnServer,
-        visibility: state.isWorkflowOnServer && state.curGraphInstance,
+            ? state.serverVisibility && state.graphs[state.curGraphIndex].built
+            : state.serverVisibility,
+        visibility: state.serverVisibility && state.curGraphInstance,
     },
     {
         type: 'action',
@@ -167,9 +212,9 @@ const toolbarList = (state, dispatcher) => [
         icon: FaBug,
         action: () => state.curGraphInstance && state.curGraphInstance.debug(),
         active: state.curGraphIndex !== -1
-            ? state.isWorkflowOnServer && state.graphs[state.curGraphIndex].debugged
-            : state.isWorkflowOnServer,
-        visibility: state.isWorkflowOnServer && state.curGraphInstance,
+            ? state.serverVisibility && state.graphs[state.curGraphIndex].debugged
+            : state.serverVisibility,
+        visibility: state.serverVisibility && state.curGraphInstance,
     },
     {
         type: 'action',
@@ -177,9 +222,9 @@ const toolbarList = (state, dispatcher) => [
         icon: FiPlay,
         action: () => state.curGraphInstance && state.curGraphInstance.run(),
         active: state.curGraphIndex !== -1
-            ? state.isWorkflowOnServer && state.graphs[state.curGraphIndex].ran
-            : state.isWorkflowOnServer,
-        visibility: state.isWorkflowOnServer && state.curGraphInstance,
+            ? state.serverVisibility && state.graphs[state.curGraphIndex].ran
+            : state.serverVisibility,
+        visibility: state.serverVisibility && state.curGraphInstance,
     },
     {
         type: 'action',
@@ -187,9 +232,9 @@ const toolbarList = (state, dispatcher) => [
         icon: FaRegTimesCircle,
         action: () => state.curGraphInstance && state.curGraphInstance.clear(),
         active: state.curGraphIndex !== -1
-            ? state.isWorkflowOnServer && state.graphs[state.curGraphIndex].cleared
-            : state.isWorkflowOnServer,
-        visibility: state.isWorkflowOnServer && state.curGraphInstance,
+            ? state.serverVisibility && state.graphs[state.curGraphIndex].cleared
+            : state.serverVisibility,
+        visibility: state.serverVisibility && state.curGraphInstance,
     },
     {
         type: 'action',
@@ -197,9 +242,9 @@ const toolbarList = (state, dispatcher) => [
         icon: FiStopCircle,
         action: () => state.curGraphInstance && state.curGraphInstance.stop(),
         active: state.curGraphIndex !== -1
-            ? state.isWorkflowOnServer && state.graphs[state.curGraphIndex].stopped
-            : state.isWorkflowOnServer,
-        visibility: state.isWorkflowOnServer && state.curGraphInstance,
+            ? state.serverVisibility && state.graphs[state.curGraphIndex].stopped
+            : state.serverVisibility,
+        visibility: state.serverVisibility && state.curGraphInstance,
     },
     {
         type: 'action',
@@ -207,40 +252,10 @@ const toolbarList = (state, dispatcher) => [
         icon: FaBomb,
         action: () => state.curGraphInstance && state.curGraphInstance.destroy(),
         active: state.curGraphIndex !== -1
-            ? state.isWorkflowOnServer && state.graphs[state.curGraphIndex].destroyed
-            : state.isWorkflowOnServer,
-        visibility: state.isWorkflowOnServer && state.curGraphInstance,
+            ? state.serverVisibility && state.graphs[state.curGraphIndex].destroyed
+            : state.serverVisibility,
+        visibility: state.serverVisibility && state.curGraphInstance,
     },
-
-    // Not being implemented in version 1
-    // {
-    //     type: 'action',
-    //     text: 'Push',
-    //     icon: FiChevronUp,
-    //     action: () => state.curGraphInstance && state.curGraphInstance.pushToServer(),
-    //     active: state.curGraphInstance && state.isWorkflowOnServer,
-    // },
-    // {
-    //     type: 'action',
-    //     text: 'Pull',
-    //     icon: FiChevronDown,
-    //     action: () => state.curGraphInstance && state.curGraphInstance.pullFromServer(),
-    //     active: state.curGraphInstance && state.isWorkflowOnServer,
-    // },
-    // {
-    //     type: 'action',
-    //     text: 'Force Push',
-    //     icon: FiChevronsUp,
-    //     action: () => state.curGraphInstance && state.curGraphInstance.forcePushToServer(),
-    //     active: state.curGraphInstance && state.isWorkflowOnServer,
-    // },
-    // {
-    //     type: 'action',
-    //     text: 'Force Pull',
-    //     icon: FiChevronsDown,
-    //     action: () => state.curGraphInstance && state.curGraphInstance.forcePullFromServer(),
-    //     active: state.curGraphInstance && state.isWorkflowOnServer,
-    // },
     // { type: 'vsep' },
     { type: 'space' },
     // Not being implemented in version 1
