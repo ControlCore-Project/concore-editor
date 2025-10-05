@@ -9,7 +9,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "axios": "^1.2.4",
+    "axios": "^1.12.0",
     "chokidar": "^3.5.3",
     "cytoscape": "^3.19.0",
     "cytoscape-edgehandles": "^3.6.0",
