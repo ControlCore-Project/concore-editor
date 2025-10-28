@@ -27,6 +27,9 @@ function Graph({
         }
         if (graphML) myGraph.setGraphML(graphML);
         myGraph.setCurStatus();
+        myGraph.cy.on('zoom', () => {
+            dispatcher({ type: T.SET_ZOOM_LEVEL, payload: (myGraph.cy.zoom() * 100).toFixed(0) });
+        });
         return myGraph;
     };
     // Remote server implementation - Not being used.
