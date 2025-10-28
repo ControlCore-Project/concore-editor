@@ -4,12 +4,14 @@
   "private": true,
   "homepage": "https://controlcore-project.github.io/concore-editor",
   "dependencies": {
+    "@craco/craco": "^7.1.0",
     "@monaco-editor/react": "^4.4.5",
     "@szhsin/react-menu": "^1.10.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "axios": "^1.2.4",
+    "buffer": "^6.0.3",
     "chokidar": "^3.5.3",
     "cytoscape": "^3.19.0",
     "cytoscape-edgehandles": "^3.6.0",
@@ -23,6 +25,7 @@
     "md5": "^2.3.0",
     "moment": "^2.29.4",
     "prismjs": "^1.30.0",
+    "process": "^0.11.10",
     "rc-slider": "^9.7.2",
     "rc-switch": "^3.2.2",
     "react": "^17.0.2",
@@ -37,9 +40,11 @@
     "react-spinners": "^0.13.8",
     "react-toastify": "^8.0.0",
     "react-tooltip": "^4.2.21",
+    "stream-browserify": "^3.0.0",
     "timers-browserify": "^2.0.12",
     "util": "^0.12.5",
     "web-vitals": "^0.2.4",
+    "webpack": "^5.102.1",
     "workbox-background-sync": "^5.1.3",
     "workbox-broadcast-update": "^5.1.3",
     "workbox-cacheable-response": "^5.1.3",
@@ -56,11 +61,11 @@
     "zealit": "^2.4.1"
   },
   "scripts": {
-    "start": "export NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
-    "start:windows": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
-    "build": "react-scripts build",
-    "build-localhost": "PUBLIC_URL=/ react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "start:windows": "set NODE_OPTIONS=--openssl-legacy-provider && craco start",
+    "build": "craco build",
+    "build-localhost": "PUBLIC_URL=/ craco build",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -82,6 +87,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
     "eslint": "^7.27.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-plugin-import": "^2.23.3",
