@@ -12,19 +12,6 @@ const GraphComp = (props) => {
     const { dispatcher, superState } = props;
     // const [loadedFromStorage, setLoadedFromStorage] = React.useState(false);
 
-    // The functionality for loading graphs from previous sessions is currently on hold.
-    // useEffect(() => {
-    //     const allSavedGs = localStorageManager.getAllGraphs().map((graphID) => ({
-    //         graphID,
-    //     }));
-    //     dispatcher({
-    //         type: T.ADD_GRAPH_BULK,
-    //         payload: allSavedGs,
-    //     });
-    //     // setLoadedFromStorage(true);
-    // }, []);
-
-    // a simple solution if we are loading graphs from previous session.
     useEffect(() => {
         const allSavedGs = localStorageManager.getAllGraphs().map((graphID) => ({
             graphID,

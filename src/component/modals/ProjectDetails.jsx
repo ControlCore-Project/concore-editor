@@ -86,7 +86,11 @@ const ProjectDetails = ({ superState, dispatcher }) => {
     return (
         <Modal
             ModelOpen={newGraphModal || editDetailsModal}
-            closeModal={superState.editDetailsModal || superState.newGraphModal ? closeModal : null}
+            closeModal={
+                (superState.editDetailsModal || superState.newGraphModal) && superState.graphs.length > 0
+                    ? closeModal
+                    : null
+            }
             title="Project Details"
         >
             <form className="proj-details" onSubmit={submit}>
