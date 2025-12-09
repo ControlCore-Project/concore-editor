@@ -35,21 +35,21 @@ edges.forEach((e) => {
             err: 'Edge with same label exists.',
         };
     }
-    // let numE = "";
-    // for (let char of e.label) {
-    //     if (!isNaN(parseInt(char))) {
-    //     numE += char;
-    //     } else if (numE !== "") {
-    //     break;
-    //     }
-    // }
-    // if (numE === numEdge && numE != "0" && numE !== "") {
-    //     message = {
-    //         ok: false,
-    //         err: '2 edges cannot have same prefixes if they are number',
-    //     };
-    //     return message;
-    // }
+    let numE = "";
+    for (let char of e.label) {
+        if (!isNaN(parseInt(char))) {
+        numE += char;
+        } else if (numE !== "") {
+        break;
+        }
+    }
+    if (numE === numEdge && numE != "0" && numE !== "") {
+        message = {
+            ok: false,
+            err: '2 edges cannot have same prefixes if they are number',
+        };
+        return message;
+    }
 });
 return message;
 }`;
