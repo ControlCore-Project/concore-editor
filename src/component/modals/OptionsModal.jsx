@@ -75,8 +75,8 @@ const OptionsModal = ({ superState, dispatcher }) => {
                 </label>
                 <br />
                 <br />
-                <span>Library Path:&nbsp;&nbsp;</span>
                 <label htmlFor="librarypath">
+                    Library Path:&nbsp;&nbsp;
                     <input
                         size="59"
                         type="text"

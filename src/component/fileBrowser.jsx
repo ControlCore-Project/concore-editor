@@ -141,25 +141,20 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                         style={{ display: 'none' }}
                         onClick={(e) => { e.target.value = null; }}
                         onChange={(e) => {
-                            setFileState([]);
-                            setFileState((state) => {
-                                for (let i = 0; i < e.target.files.length; i += 1) {
-                                    state = state.concat([{
-                                        key: e.target.files[i].webkitRelativePath,
-                                        modified: e.target.files[i].lastModified,
-                                        size: e.target.files[i].size,
-                                        fileObj: e.target.files[i],
-                                    }]);
-                                }
-                                return state;
-                            });
-                            window.localStorage.setItem('fileList', JSON.stringify(fileState));
+                            const filesArray = Array.from(e.target.files).map((file) => ({
+                                key: file.webkitRelativePath,
+                                modified: file.lastModified,
+                                size: file.size,
+                                fileObj: file,
+                            }));
+
+                            setFileState(filesArray);
+                            window.localStorage.setItem('fileList', JSON.stringify(filesArray));
                         }}
-                        directory
-                        webkitdirectory="true"
+                        webkitdirectory
                     />
                 </label>
-            ) }
+            )}
             {dirButton && (
                 <button
                     type="button"
@@ -204,7 +199,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             <h4>
                 Folder Name :
                 {' '}
-                {fileState[0] ? fileState[0].key.split('/')[0] : '' }
+                {fileState[0] ? fileState[0].key.split('/')[0] : ''}
             </h4>
             <FileBrowser
                 files={fileState}

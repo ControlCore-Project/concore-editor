@@ -1,6 +1,6 @@
 # The _concore_ Editor
 
-This is a fork of DHGWorkflow, visual Directed Hypergraph Workflow Composer, finetuned to operate as a frontend for _concore_.
+This is a Directed Hypergraph Workflow Composer, which operates as a visual frontend for _concore_.
 
 Key Features of the _concore_ Editor:
 * Export-import graph as a graphml file.
@@ -14,7 +14,7 @@ and many more!
 
 
 ## Installing it locally
-This is a frontend tool built with React Js.
+This is a tool built with React Js.
 Steps to start it locally
 1. Clone the repository
 2. At the root of the repository, run the following commands:

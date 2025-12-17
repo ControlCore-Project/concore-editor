@@ -8,6 +8,7 @@ import {
     ActionButton, Vsep, Hsep, Space, TextBox, Switcher, DropDown, FileUploader,
 } from './HeaderComps';
 import 'rc-switch/assets/index.css';
+import FullScreenButton from './FullScreenButton';
 // import ServerActions from './serverActions/ServerActions';
 
 const setHotKeys = (actions) => {
@@ -38,13 +39,15 @@ const Header = ({ superState, dispatcher }) => {
 
     return (
         <header className="header">
-            <section className="middle titlebar">
-                {
-                    superState.curGraphInstance ? `${
-                        superState.curGraphInstance.projectName
-                    } - concore Editor` : 'untitled'
-                }
-            </section>
+            <div style={{ display: 'flex' }}>
+                <section className="middle titlebar">
+                    {
+                        superState.curGraphInstance ? `${superState.curGraphInstance.projectName
+                        } - concore Editor` : 'untitled'
+                    }
+                </section>
+                <FullScreenButton />
+            </div>
             <section className="toolbar">
                 {
                     actions.map(({
@@ -67,7 +70,7 @@ const Header = ({ superState, dispatcher }) => {
                         case 'menu': return <DropDown {...props} />;
                         case 'file-upload': return <FileUploader {...props} superState={superState} />;
                         case 'action': return <ActionButton {...props} />;
-                        // case 'serverActions': return <ServerActions superState={superState} />;
+                            // case 'serverActions': return <ServerActions superState={superState} />;
                         default: return <></>;
                         }
                     })

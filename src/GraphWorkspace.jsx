@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ZoomComp from './component/ZoomSetter';
 
-import { actionType as T } from './reducer';
+// import { actionType as T } from './reducer';
 import './graphWorkspace.css';
-import localStorageManager from './graph-builder/local-storage-manager';
+// import localStorageManager from './graph-builder/local-storage-manager';
 import TabBar from './component/TabBar';
 import Graph from './GraphArea';
 
@@ -12,16 +12,17 @@ const GraphComp = (props) => {
     const { dispatcher, superState } = props;
     // const [loadedFromStorage, setLoadedFromStorage] = React.useState(false);
 
-    useEffect(() => {
-        const allSavedGs = localStorageManager.getAllGraphs().map((graphID) => ({
-            graphID,
-        }));
-        dispatcher({
-            type: T.ADD_GRAPH_BULK,
-            payload: allSavedGs,
-        });
-        // setLoadedFromStorage(true);
-    }, []);
+    // The functionality for loading graphs from previous sessions is currently on hold.
+    // useEffect(() => {
+    //     const allSavedGs = localStorageManager.getAllGraphs().map((graphID) => ({
+    //         graphID,
+    //     }));
+    //     dispatcher({
+    //         type: T.ADD_GRAPH_BULK,
+    //         payload: allSavedGs,
+    //     });
+    //     // setLoadedFromStorage(true);
+    // }, []);
 
     // Remote server implementation - Not being used.
     // useEffect(() => {

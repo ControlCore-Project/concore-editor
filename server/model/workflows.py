@@ -7,7 +7,8 @@ import os
 import xml.etree.ElementTree as ET
 import random
 import string
-
+from dotenv import load_dotenv
+load_dotenv()
 
 class WorkFlowModel:
     def __init__(self) -> None:
