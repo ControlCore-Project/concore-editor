@@ -19,6 +19,16 @@ const style = [
             borderWidth: 'data(style.borderWidth)',
             textValign: 'center',
             textHalign: 'center',
+            fontSize: (ele) => {
+                const w = ele.data('style').width;
+                const h = ele.data('style').height;
+                const val = Math.min(w, h);
+                if (val < 20) return 5;
+                if (val > 500) return 60;
+                return 10 + ((val - 20) * 50) / 480;
+            },
+            textWrap: 'wrap',
+            textMaxWidth: 'data(style.width)',
         },
     },
     {
