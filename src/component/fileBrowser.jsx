@@ -121,9 +121,15 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             multiple: false,
         };
 
-        const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
-        const fileObj = await fileHandle.getFile();
-        readFile(superState, dispatcher, fileObj, fileHandle);
+        try {
+            const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
+            const fileObj = await fileHandle.getFile();
+            readFile(superState, dispatcher, fileObj, fileHandle);
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error(error);
+            }
+        }
     };
 
     return (

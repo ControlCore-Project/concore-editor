@@ -117,26 +117,33 @@ class GraphLoadSave extends GraphUndoRedo {
                     },
                 ],
             };
-            const handle = await window.showSaveFilePicker(options);
-            const stream = await handle.createWritable();
-            await stream.write(blob);
-            await stream.close();
-            const fileData = await handle.getFile();
-            let fS = this.superState.fileState;
-            fS = fS.concat([{
-                key: `${this.superState.uploadedDirName}/${handle.name}`,
-                modified: fileData.lastModified,
-                size: fileData.size,
-                fileObj: fileData,
-                fileHandle: handle,
-            }]);
-            this.dispatcher({ type: T.SET_FILE_STATE, payload: fS });
+            try {
+                const handle = await window.showSaveFilePicker(options);
+                const stream = await handle.createWritable();
+                await stream.write(blob);
+                await stream.close();
+                const fileData = await handle.getFile();
+                let fS = this.superState.fileState;
+                fS = fS.concat([{
+                    key: `${this.superState.uploadedDirName}/${handle.name}`,
+                    modified: fileData.lastModified,
+                    size: fileData.size,
+                    fileObj: fileData,
+                    fileHandle: handle,
+                }]);
+                this.dispatcher({ type: T.SET_FILE_STATE, payload: fS });
+                toast.success('File saved Successfully');
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error(error);
+                }
+            }
         } else {
             // eslint-disable-next-line no-alert
             const fileName = prompt('Filename:');
             saveAs(blob, `${fileName || `${this.getName()}-concore`}.graphml`);
+            toast.success('File saved Successfully');
         }
-        toast.success('File saved Successfully');
     }
 
     async saveWithoutFileHandle() {
@@ -158,15 +165,21 @@ class GraphLoadSave extends GraphUndoRedo {
                 },
             ],
         };
-        const handle = await window.showSaveFilePicker(options);
-        this.dispatcher({
-            type: T.SET_FILE_HANDLE,
-            payload: { curGraphIndex: this.superState.curGraphIndex, fileHandle: handle },
-        });
-        const stream = await handle.createWritable();
-        await stream.write(blob);
-        await stream.close();
-        toast.success('File saved Successfully');
+        try {
+            const handle = await window.showSaveFilePicker(options);
+            this.dispatcher({
+                type: T.SET_FILE_HANDLE,
+                payload: { curGraphIndex: this.superState.curGraphIndex, fileHandle: handle },
+            });
+            const stream = await handle.createWritable();
+            await stream.write(blob);
+            await stream.close();
+            toast.success('File saved Successfully');
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error(error);
+            }
+        }
     }
 
     saveToFolder() {

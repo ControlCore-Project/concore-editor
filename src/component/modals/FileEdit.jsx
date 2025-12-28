@@ -39,20 +39,26 @@ const FileEditModal = ({ superState, dispatcher }) => {
     }
 
     async function saveAsSubmit() {
-        const handle = await window.showSaveFilePicker();
-        const stream = await handle.createWritable();
-        await stream.write(codeStuff);
-        await stream.close();
-        const fileData = await handle.getFile();
-        let fS = superState.fileState;
-        fS = fS.concat([{
-            key: `${superState.uploadedDirName}/${handle.name}`,
-            modified: fileData.lastModified,
-            size: fileData.size,
-            fileObj: fileData,
-            fileHandle: handle,
-        }]);
-        dispatcher({ type: T.SET_FILE_STATE, payload: fS });
+        try {
+            const handle = await window.showSaveFilePicker();
+            const stream = await handle.createWritable();
+            await stream.write(codeStuff);
+            await stream.close();
+            const fileData = await handle.getFile();
+            let fS = superState.fileState;
+            fS = fS.concat([{
+                key: `${superState.uploadedDirName}/${handle.name}`,
+                modified: fileData.lastModified,
+                size: fileData.size,
+                fileObj: fileData,
+                fileHandle: handle,
+            }]);
+            dispatcher({ type: T.SET_FILE_STATE, payload: fS });
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error(error);
+            }
+        }
     }
 
     function handleSaveAsClick() {
