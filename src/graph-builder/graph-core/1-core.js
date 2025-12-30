@@ -81,12 +81,50 @@ class CoreGraph {
         this.cy.nodeEditing({
             resizeToContentCueEnabled: () => false,
             setWidth: (node, width) => {
-                // Allow smooth resizing - don't snap during drag
-                node.data('style', { ...node.data('style'), width });
+                // HARD ENFORCEMENT: Snap width every frame during resize
+                const snappedWidth = this.snapDimensionToGrid(width);
+                node.data('style', { ...node.data('style'), width: snappedWidth });
+                
+                // Adjust position to maintain edge alignment based on resize handle
+                const resizeType = node.scratch('resizeType');
+                if (resizeType && (resizeType.includes('left') || resizeType.includes('right'))) {
+                    const currentPos = node.position();
+                    const initialPos = node.scratch('resizeInitialPos');
+                    const initialWidth = node.scratch('width');
+                    const widthDelta = snappedWidth - initialWidth;
+                    
+                    let newX = currentPos.x;
+                    if (resizeType.includes('left')) {
+                        newX = initialPos.x - widthDelta / 2;
+                    } else if (resizeType.includes('right')) {
+                        newX = initialPos.x + widthDelta / 2;
+                    }
+                    node.position({ x: this.snapToGrid(newX), y: currentPos.y });
+                }
+                return snappedWidth;
             },
             setHeight: (node, height) => {
-                // Allow smooth resizing - don't snap during drag
-                node.data('style', { ...node.data('style'), height });
+                // HARD ENFORCEMENT: Snap height every frame during resize
+                const snappedHeight = this.snapDimensionToGrid(height);
+                node.data('style', { ...node.data('style'), height: snappedHeight });
+                
+                // Adjust position to maintain edge alignment based on resize handle
+                const resizeType = node.scratch('resizeType');
+                if (resizeType && (resizeType.includes('top') || resizeType.includes('bottom'))) {
+                    const currentPos = node.position();
+                    const initialPos = node.scratch('resizeInitialPos');
+                    const initialHeight = node.scratch('height');
+                    const heightDelta = snappedHeight - initialHeight;
+                    
+                    let newY = currentPos.y;
+                    if (resizeType.includes('top')) {
+                        newY = initialPos.y - heightDelta / 2;
+                    } else if (resizeType.includes('bottom')) {
+                        newY = initialPos.y + heightDelta / 2;
+                    }
+                    node.position({ x: currentPos.x, y: this.snapToGrid(newY) });
+                }
+                return snappedHeight;
             },
             isNoResizeMode(node) { return node.data('type') !== 'ordin'; },
             isNoControlsMode(node) { return node.data('type') !== 'ordin'; },
@@ -199,26 +237,36 @@ class CoreGraph {
 
         this.cy.on('free', 'node[type = "ordin"]', (e) => {
             e.target.forEach((node) => {
+                const initialPos = node.scratch('position');
                 const currentPos = node.position();
-                const snappedPos = this.snapPositionToGrid(currentPos);
-                node.position(snappedPos);
+                // Only snap if the node actually moved
+                const moved = !initialPos || initialPos.x !== currentPos.x || initialPos.y !== currentPos.y;
+                if (moved) {
+                    const snappedPos = this.snapPositionToGrid(currentPos);
+                    node.position(snappedPos);
+                }
             });
         });
 
         this.cy.on('nodeediting.resizestart', (e, type, node) => {
+            // Store initial state for resize operation
             node.scratch('height', node.data('style').height);
             node.scratch('width', node.data('style').width);
-            node.scratch('position', { ...node.position() });
+            node.scratch('resizeInitialPos', { ...node.position() });
+            node.scratch('resizeType', type);
         });
 
         this.cy.on('nodeediting.resizeend', (e, type, node) => {
-            // Snap dimensions to grid multiples
+            // Clean up scratch data
+            node.removeScratch('resizeType');
+            node.removeScratch('resizeInitialPos');
+            
+            // Final enforcement: ensure position and dimensions are grid-aligned
             const style = node.data('style') || {};
             const snappedWidth = this.snapDimensionToGrid(style.width || 100);
             const snappedHeight = this.snapDimensionToGrid(style.height || 50);
             node.data('style', { ...style, width: snappedWidth, height: snappedHeight });
-
-            // Snap position to ensure all corners align to grid
+            
             const snappedPos = this.snapPositionToGrid(node.position());
             node.position(snappedPos);
         });
