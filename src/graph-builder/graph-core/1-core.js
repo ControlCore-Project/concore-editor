@@ -23,6 +23,8 @@ class CoreGraph {
 
     bendNode;
 
+    gridSize = 20; // Configurable grid size in pixels
+
     constructor(id, element, dispatcher, superState, projectName, nodeValidator, edgeValidator, authorName) {
         if (dispatcher) this.dispatcher = dispatcher;
         if (superState) this.superState = superState;
@@ -49,13 +51,41 @@ class CoreGraph {
         this.initizialize();
     }
 
+    // Helper function to snap a value to the nearest grid point
+    snapToGrid(value) {
+        return Math.round(value / this.gridSize) * this.gridSize;
+    }
+
+    // Helper function to snap position to grid
+    snapPositionToGrid(position) {
+        return {
+            x: this.snapToGrid(position.x),
+            y: this.snapToGrid(position.y),
+        };
+    }
+
+    // Helper function to snap dimension to EVEN grid multiples
+    // This ensures all borders lie on grid lines when center is on a grid point
+    snapDimensionToGrid(dimension) {
+        let gridCells = Math.round(dimension / this.gridSize);
+        // Ensure at least 2 grid cells
+        if (gridCells < 2) {
+            gridCells = 2;
+        }
+        // Ensure always an even number
+        const evenCells = gridCells % 2 === 0 ? gridCells : gridCells + 1;
+        return evenCells * this.gridSize;
+    }
+
     initizialize() {
         this.cy.nodeEditing({
             resizeToContentCueEnabled: () => false,
-            setWidth(node, width) {
+            setWidth: (node, width) => {
+                // Allow smooth resizing - don't snap during drag
                 node.data('style', { ...node.data('style'), width });
             },
-            setHeight(node, height) {
+            setHeight: (node, height) => {
+                // Allow smooth resizing - don't snap during drag
                 node.data('style', { ...node.data('style'), height });
             },
             isNoResizeMode(node) { return node.data('type') !== 'ordin'; },
@@ -63,9 +93,12 @@ class CoreGraph {
         });
 
         this.cy.gridGuide({
-            snapToGridOnRelease: false,
+            snapToGridOnRelease: true,
+            snapToGridDuringDrag: true,
             zoomDash: true,
             panGrid: true,
+            gridSpacing: this.gridSize,
+            snapToAlignmentLocationOnRelease: true,
         });
         this.cy.edgehandles({
             preview: false,
@@ -164,10 +197,30 @@ class CoreGraph {
             });
         });
 
+        this.cy.on('free', 'node[type = "ordin"]', (e) => {
+            e.target.forEach((node) => {
+                const currentPos = node.position();
+                const snappedPos = this.snapPositionToGrid(currentPos);
+                node.position(snappedPos);
+            });
+        });
+
         this.cy.on('nodeediting.resizestart', (e, type, node) => {
             node.scratch('height', node.data('style').height);
             node.scratch('width', node.data('style').width);
             node.scratch('position', { ...node.position() });
+        });
+
+        this.cy.on('nodeediting.resizeend', (e, type, node) => {
+            // Snap dimensions to grid multiples
+            const style = node.data('style') || {};
+            const snappedWidth = this.snapDimensionToGrid(style.width || 100);
+            const snappedHeight = this.snapDimensionToGrid(style.height || 50);
+            node.data('style', { ...style, width: snappedWidth, height: snappedHeight });
+
+            // Snap position to ensure all corners align to grid
+            const snappedPos = this.snapPositionToGrid(node.position());
+            node.position(snappedPos);
         });
 
         this.cy.on('hide-bend remove', () => {
