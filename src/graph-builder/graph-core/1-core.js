@@ -84,7 +84,7 @@ class CoreGraph {
                 // HARD ENFORCEMENT: Snap width every frame during resize
                 const snappedWidth = this.snapDimensionToGrid(width);
                 node.data('style', { ...node.data('style'), width: snappedWidth });
-                
+
                 // Adjust position to maintain edge alignment based on resize handle
                 const resizeType = node.scratch('resizeType');
                 if (resizeType && (resizeType.includes('left') || resizeType.includes('right'))) {
@@ -92,7 +92,7 @@ class CoreGraph {
                     const initialPos = node.scratch('resizeInitialPos');
                     const initialWidth = node.scratch('width');
                     const widthDelta = snappedWidth - initialWidth;
-                    
+
                     let newX = currentPos.x;
                     if (resizeType.includes('left')) {
                         newX = initialPos.x - widthDelta / 2;
@@ -107,7 +107,7 @@ class CoreGraph {
                 // HARD ENFORCEMENT: Snap height every frame during resize
                 const snappedHeight = this.snapDimensionToGrid(height);
                 node.data('style', { ...node.data('style'), height: snappedHeight });
-                
+
                 // Adjust position to maintain edge alignment based on resize handle
                 const resizeType = node.scratch('resizeType');
                 if (resizeType && (resizeType.includes('top') || resizeType.includes('bottom'))) {
@@ -115,7 +115,7 @@ class CoreGraph {
                     const initialPos = node.scratch('resizeInitialPos');
                     const initialHeight = node.scratch('height');
                     const heightDelta = snappedHeight - initialHeight;
-                    
+
                     let newY = currentPos.y;
                     if (resizeType.includes('top')) {
                         newY = initialPos.y - heightDelta / 2;
@@ -260,13 +260,13 @@ class CoreGraph {
             // Clean up scratch data
             node.removeScratch('resizeType');
             node.removeScratch('resizeInitialPos');
-            
+
             // Final enforcement: ensure position and dimensions are grid-aligned
             const style = node.data('style') || {};
             const snappedWidth = this.snapDimensionToGrid(style.width || 100);
             const snappedHeight = this.snapDimensionToGrid(style.height || 50);
             node.data('style', { ...style, width: snappedWidth, height: snappedHeight });
-            
+
             const snappedPos = this.snapPositionToGrid(node.position());
             node.position(snappedPos);
         });
