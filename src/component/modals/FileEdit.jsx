@@ -56,7 +56,7 @@ const FileEditModal = ({ superState, dispatcher }) => {
             dispatcher({ type: T.SET_FILE_STATE, payload: fS });
         } catch (error) {
             if (error.name !== 'AbortError') {
-                console.error(error);
+                // console.error(error);
             }
         }
     }

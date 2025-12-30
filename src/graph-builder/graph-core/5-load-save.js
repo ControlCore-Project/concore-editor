@@ -135,7 +135,7 @@ class GraphLoadSave extends GraphUndoRedo {
                 toast.success('File saved Successfully');
             } catch (error) {
                 if (error.name !== 'AbortError') {
-                    console.error(error);
+                    // console.error(error);
                 }
             }
         } else {
@@ -177,7 +177,7 @@ class GraphLoadSave extends GraphUndoRedo {
             toast.success('File saved Successfully');
         } catch (error) {
             if (error.name !== 'AbortError') {
-                console.error(error);
+                // console.error(error);
             }
         }
     }

@@ -127,7 +127,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             readFile(superState, dispatcher, fileObj, fileHandle);
         } catch (error) {
             if (error.name !== 'AbortError') {
-                console.error(error);
+                // console.error(error);
             }
         }
     };
