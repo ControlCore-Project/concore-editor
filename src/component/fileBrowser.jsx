@@ -126,9 +126,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             const fileObj = await fileHandle.getFile();
             readFile(superState, dispatcher, fileObj, fileHandle);
         } catch (error) {
-            if (error.name !== 'AbortError') {
-                // console.error(error);
-            }
+            // AbortError is silently ignored (user cancelled)
         }
     };
 

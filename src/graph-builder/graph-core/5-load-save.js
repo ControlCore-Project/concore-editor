@@ -134,9 +134,7 @@ class GraphLoadSave extends GraphUndoRedo {
                 this.dispatcher({ type: T.SET_FILE_STATE, payload: fS });
                 toast.success('File saved Successfully');
             } catch (error) {
-                if (error.name !== 'AbortError') {
-                    // console.error(error);
-                }
+                // AbortError is silently ignored (user cancelled)
             }
         } else {
             // eslint-disable-next-line no-alert
@@ -176,9 +174,7 @@ class GraphLoadSave extends GraphUndoRedo {
             await stream.close();
             toast.success('File saved Successfully');
         } catch (error) {
-            if (error.name !== 'AbortError') {
-                // console.error(error);
-            }
+            // AbortError is silently ignored (user cancelled)
         }
     }
 
