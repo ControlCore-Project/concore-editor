@@ -23,6 +23,8 @@ class CoreGraph {
 
     bendNode;
 
+    gridSize = 20; // Configurable grid size in pixels
+
     constructor(id, element, dispatcher, superState, projectName, nodeValidator, edgeValidator, authorName) {
         if (dispatcher) this.dispatcher = dispatcher;
         if (superState) this.superState = superState;
@@ -49,23 +51,92 @@ class CoreGraph {
         this.initizialize();
     }
 
+    // Helper function to snap a value to the nearest grid point
+    snapToGrid(value) {
+        return Math.round(value / this.gridSize) * this.gridSize;
+    }
+
+    // Helper function to snap position to grid
+    snapPositionToGrid(position) {
+        return {
+            x: this.snapToGrid(position.x),
+            y: this.snapToGrid(position.y),
+        };
+    }
+
+    // Helper function to snap dimension to EVEN grid multiples
+    // This ensures all borders lie on grid lines when center is on a grid point
+    snapDimensionToGrid(dimension) {
+        let gridCells = Math.round(dimension / this.gridSize);
+        // Ensure at least 2 grid cells
+        if (gridCells < 2) {
+            gridCells = 2;
+        }
+        // Ensure always an even number
+        const evenCells = gridCells % 2 === 0 ? gridCells : gridCells + 1;
+        return evenCells * this.gridSize;
+    }
+
     initizialize() {
         this.cy.nodeEditing({
             resizeToContentCueEnabled: () => false,
-            setWidth(node, width) {
-                node.data('style', { ...node.data('style'), width });
+            setWidth: (node, width) => {
+                // HARD ENFORCEMENT: Snap width every frame during resize
+                const snappedWidth = this.snapDimensionToGrid(width);
+                node.data('style', { ...node.data('style'), width: snappedWidth });
+
+                // Adjust position to maintain edge alignment based on resize handle
+                const resizeType = node.scratch('resizeType');
+                if (resizeType && (resizeType.includes('left') || resizeType.includes('right'))) {
+                    const currentPos = node.position();
+                    const initialPos = node.scratch('resizeInitialPos');
+                    const initialWidth = node.scratch('width');
+                    const widthDelta = snappedWidth - initialWidth;
+
+                    let newX = currentPos.x;
+                    if (resizeType.includes('left')) {
+                        newX = initialPos.x - widthDelta / 2;
+                    } else if (resizeType.includes('right')) {
+                        newX = initialPos.x + widthDelta / 2;
+                    }
+                    node.position({ x: this.snapToGrid(newX), y: currentPos.y });
+                }
+                return snappedWidth;
             },
-            setHeight(node, height) {
-                node.data('style', { ...node.data('style'), height });
+            setHeight: (node, height) => {
+                // HARD ENFORCEMENT: Snap height every frame during resize
+                const snappedHeight = this.snapDimensionToGrid(height);
+                node.data('style', { ...node.data('style'), height: snappedHeight });
+
+                // Adjust position to maintain edge alignment based on resize handle
+                const resizeType = node.scratch('resizeType');
+                if (resizeType && (resizeType.includes('top') || resizeType.includes('bottom'))) {
+                    const currentPos = node.position();
+                    const initialPos = node.scratch('resizeInitialPos');
+                    const initialHeight = node.scratch('height');
+                    const heightDelta = snappedHeight - initialHeight;
+
+                    let newY = currentPos.y;
+                    if (resizeType.includes('top')) {
+                        newY = initialPos.y - heightDelta / 2;
+                    } else if (resizeType.includes('bottom')) {
+                        newY = initialPos.y + heightDelta / 2;
+                    }
+                    node.position({ x: currentPos.x, y: this.snapToGrid(newY) });
+                }
+                return snappedHeight;
             },
             isNoResizeMode(node) { return node.data('type') !== 'ordin'; },
             isNoControlsMode(node) { return node.data('type') !== 'ordin'; },
         });
 
         this.cy.gridGuide({
-            snapToGridOnRelease: false,
+            snapToGridOnRelease: true,
+            snapToGridDuringDrag: true,
             zoomDash: true,
             panGrid: true,
+            gridSpacing: this.gridSize,
+            snapToAlignmentLocationOnRelease: true,
         });
         this.cy.edgehandles({
             preview: false,
@@ -164,10 +235,40 @@ class CoreGraph {
             });
         });
 
+        this.cy.on('free', 'node[type = "ordin"]', (e) => {
+            e.target.forEach((node) => {
+                const initialPos = node.scratch('position');
+                const currentPos = node.position();
+                // Only snap if the node actually moved
+                const moved = !initialPos || initialPos.x !== currentPos.x || initialPos.y !== currentPos.y;
+                if (moved) {
+                    const snappedPos = this.snapPositionToGrid(currentPos);
+                    node.position(snappedPos);
+                }
+            });
+        });
+
         this.cy.on('nodeediting.resizestart', (e, type, node) => {
+            // Store initial state for resize operation
             node.scratch('height', node.data('style').height);
             node.scratch('width', node.data('style').width);
-            node.scratch('position', { ...node.position() });
+            node.scratch('resizeInitialPos', { ...node.position() });
+            node.scratch('resizeType', type);
+        });
+
+        this.cy.on('nodeediting.resizeend', (e, type, node) => {
+            // Clean up scratch data
+            node.removeScratch('resizeType');
+            node.removeScratch('resizeInitialPos');
+
+            // Final enforcement: ensure position and dimensions are grid-aligned
+            const style = node.data('style') || {};
+            const snappedWidth = this.snapDimensionToGrid(style.width || 100);
+            const snappedHeight = this.snapDimensionToGrid(style.height || 50);
+            node.data('style', { ...style, width: snappedWidth, height: snappedHeight });
+
+            const snappedPos = this.snapPositionToGrid(node.position());
+            node.position(snappedPos);
         });
 
         this.cy.on('hide-bend remove', () => {
