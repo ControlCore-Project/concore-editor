@@ -46,6 +46,7 @@ const style = [
         style: {
             curveStyle: 'bezier',
             targetArrowShape: 'triangle',
+            arrowScale: 1.2,
         },
     },
     {
@@ -54,7 +55,29 @@ const style = [
             width: 'data(style.thickness)',
             lineColor: 'data(style.backgroundColor)',
             targetArrowColor: 'data(style.backgroundColor)',
-            curveStyle: 'segments',
+            curveStyle: (ele) => {
+                const source = ele.source();
+                const target = ele.target();
+
+                // Get positions
+                const p1 = source.position();
+                const p2 = target.position();
+
+                // Calculate difference
+                const dx = Math.abs(p1.x - p2.x);
+                const dy = Math.abs(p1.y - p2.y);
+
+                // Define a threshold for what counts as "aligned"
+                const threshold = 10;
+
+                // If aligned horizontally OR vertically, be straight
+                if (dx < threshold || dy < threshold) {
+                    return 'straight';
+                }
+
+                // use unbundled-bezier to respect bend points
+                return 'unbundled-bezier';
+            },
             segmentDistances: 'data(bendData.bendDistance)',
             segmentWeights: 'data(bendData.bendWeight)',
             edgeDistances: 'node-position',
@@ -67,13 +90,13 @@ const style = [
             label: 'data(label)',
             edgeTextRotation: 'autorotate',
             zIndex: 999,
+            fontSize: 12,
             textBackgroundOpacity: 1,
-            color: '#000',
+            textBackgroundPadding: '3px',
+            textBorderWidth: 0,
+            color: '#333',
             textBackgroundColor: '#fff',
             textBackgroundShape: 'roundrectangle',
-            textBorderColor: '#fff',
-            textBorderWidth: 2,
-            textBorderOpacity: 1,
         },
     },
     {

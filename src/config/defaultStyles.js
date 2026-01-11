@@ -9,8 +9,8 @@ const NodeStyle = {
 };
 
 const EdgeStyle = {
-    thickness: 1,
-    backgroundColor: null,
+    thickness: 2,
+    backgroundColor: '#555',
     shape: 'solid',
 };
 
