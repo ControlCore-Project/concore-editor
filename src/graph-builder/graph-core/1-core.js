@@ -133,7 +133,7 @@ class CoreGraph {
 
         this.cy.gridGuide({
             snapToGridOnRelease: true,
-            snapToGridDuringDrag: true,
+            snapToGridDuringDrag: false,
             zoomDash: true,
             panGrid: true,
             gridSpacing: this.gridSize,

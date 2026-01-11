@@ -59,9 +59,18 @@ const style = [
                 const source = ele.source();
                 const target = ele.target();
 
+                // Check if there are parallel edges
+                const parallelEdges = source.edgesWith(target);
+                const hasParallelEdges = parallelEdges.length > 1;
+
                 // Get positions
                 const p1 = source.position();
                 const p2 = target.position();
+
+                // Calculate distance between nodes
+                const distance = Math.sqrt(
+                    (p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2,
+                );
 
                 // Calculate difference
                 const dx = Math.abs(p1.x - p2.x);
@@ -69,6 +78,20 @@ const style = [
 
                 // Define a threshold for what counts as "aligned"
                 const threshold = 10;
+
+                // Check if edge has custom bend data
+                const bendDistance = ele.data('bendData')?.bendDistance || 0;
+                const hasBend = Math.abs(bendDistance) > 0;
+
+                // When nodes are very close, always use straight style to prevent edge disappearance
+                if (distance < 50) {
+                    return 'straight';
+                }
+
+                // For parallel edges or edges with bend, use bezier curves
+                if (hasParallelEdges || hasBend) {
+                    return 'unbundled-bezier';
+                }
 
                 // If aligned horizontally OR vertically, be straight
                 if (dx < threshold || dy < threshold) {
@@ -78,16 +101,58 @@ const style = [
                 // use unbundled-bezier to respect bend points
                 return 'unbundled-bezier';
             },
-            segmentDistances: 'data(bendData.bendDistance)',
+            segmentDistances: (ele) => {
+                // When nodes are very close, don't apply bend to prevent edge disappearance
+                const source = ele.source();
+                const target = ele.target();
+                const p1 = source.position();
+                const p2 = target.position();
+                const distance = Math.sqrt(
+                    (p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2,
+                );
+
+                if (distance < 50) {
+                    return 0;
+                }
+
+                return ele.data('bendData.bendDistance');
+            },
             segmentWeights: 'data(bendData.bendWeight)',
             edgeDistances: 'node-position',
             lineStyle: 'data(style.shape)',
+            controlPointDistances: (ele) => {
+                // For parallel edges, ensure adequate control point spacing
+                const bendDistance = ele.data('bendData')?.bendDistance || 0;
+                return Math.abs(bendDistance) > 0 ? bendDistance : undefined;
+            },
+            controlPointWeights: (ele) => {
+                const bendWeight = ele.data('bendData')?.bendWeight;
+                return bendWeight !== undefined ? bendWeight : 0.5;
+            },
         },
     },
     {
         selector: 'edge[label]',
         style: {
-            label: 'data(label)',
+            label: (ele) => {
+                // Get source and target nodes
+                const source = ele.source();
+                const target = ele.target();
+
+                // Calculate distance between nodes
+                const p1 = source.position();
+                const p2 = target.position();
+                const distance = Math.sqrt(
+                    (p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2,
+                );
+
+                // Define minimum distance threshold (in pixels)
+                // Below this distance, hide the label to prevent visual clutter
+                const minDistanceForLabel = 80;
+
+                // Return label only if nodes are far enough apart
+                return distance >= minDistanceForLabel ? ele.data('label') : '';
+            },
             edgeTextRotation: 'autorotate',
             zIndex: 999,
             fontSize: 12,
