@@ -39,6 +39,9 @@ class CoreGraph {
         }
         // if (cy) this.cy = cy;
         this.cy = cytoscape({ ...cyOptions, container: element });
+        this.cy.on('position', 'node', () => {
+            this.cy.edges().updateStyle();
+        });
         this.id = id;
         this.projectName = projectName;
         this.authorName = authorName;
@@ -81,9 +84,8 @@ class CoreGraph {
         this.cy.nodeEditing({
             resizeToContentCueEnabled: () => false,
             setWidth: (node, width) => {
-                // HARD ENFORCEMENT: Snap width every frame during resize
-                const snappedWidth = this.snapDimensionToGrid(width);
-                node.data('style', { ...node.data('style'), width: snappedWidth });
+                // Allow free resizing during drag - snapping will happen on resizeend
+                node.data('style', { ...node.data('style'), width });
 
                 // Adjust position to maintain edge alignment based on resize handle
                 const resizeType = node.scratch('resizeType');
@@ -91,7 +93,7 @@ class CoreGraph {
                     const currentPos = node.position();
                     const initialPos = node.scratch('resizeInitialPos');
                     const initialWidth = node.scratch('width');
-                    const widthDelta = snappedWidth - initialWidth;
+                    const widthDelta = width - initialWidth;
 
                     let newX = currentPos.x;
                     if (resizeType.includes('left')) {
@@ -99,14 +101,13 @@ class CoreGraph {
                     } else if (resizeType.includes('right')) {
                         newX = initialPos.x + widthDelta / 2;
                     }
-                    node.position({ x: this.snapToGrid(newX), y: currentPos.y });
+                    node.position({ x: newX, y: currentPos.y });
                 }
-                return snappedWidth;
+                return width;
             },
             setHeight: (node, height) => {
-                // HARD ENFORCEMENT: Snap height every frame during resize
-                const snappedHeight = this.snapDimensionToGrid(height);
-                node.data('style', { ...node.data('style'), height: snappedHeight });
+                // Allow free resizing during drag - snapping will happen on resizeend
+                node.data('style', { ...node.data('style'), height });
 
                 // Adjust position to maintain edge alignment based on resize handle
                 const resizeType = node.scratch('resizeType');
@@ -114,7 +115,7 @@ class CoreGraph {
                     const currentPos = node.position();
                     const initialPos = node.scratch('resizeInitialPos');
                     const initialHeight = node.scratch('height');
-                    const heightDelta = snappedHeight - initialHeight;
+                    const heightDelta = height - initialHeight;
 
                     let newY = currentPos.y;
                     if (resizeType.includes('top')) {
@@ -122,9 +123,9 @@ class CoreGraph {
                     } else if (resizeType.includes('bottom')) {
                         newY = initialPos.y + heightDelta / 2;
                     }
-                    node.position({ x: currentPos.x, y: this.snapToGrid(newY) });
+                    node.position({ x: currentPos.x, y: newY });
                 }
-                return snappedHeight;
+                return height;
             },
             isNoResizeMode(node) { return node.data('type') !== 'ordin'; },
             isNoControlsMode(node) { return node.data('type') !== 'ordin'; },
@@ -132,7 +133,7 @@ class CoreGraph {
 
         this.cy.gridGuide({
             snapToGridOnRelease: true,
-            snapToGridDuringDrag: true,
+            snapToGridDuringDrag: false,
             zoomDash: true,
             panGrid: true,
             gridSpacing: this.gridSize,
