@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     MdEdit, MdClose, MdAdd,
 } from 'react-icons/md';
@@ -8,18 +8,33 @@ import localStorageManager from '../graph-builder/local-storage-manager';
 import { actionType as T } from '../reducer';
 import { newProject, editDetails } from '../toolbarActions/toolbarFunctions';
 import './tabBar.css';
+import ConfirmModal from './modals/ConfirmModal';
 
 const TabBar = ({ superState, dispatcher }) => {
-    const closeTab = (i, e) => {
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [tabToClose, setTabToClose] = useState(null);
+
+    const handleRequestCloseTab = (i, e) => {
         e.stopPropagation();
-        // eslint-disable-next-line no-alert
-        if (!window.confirm('Do you confirm to close the tab? This action is irreversable.')) return;
+        setTabToClose(i);
+        setConfirmOpen(true);
+    };
+
+    const handleConfirmClose = () => {
+        const i = tabToClose;
+        setConfirmOpen(false);
+        setTabToClose(null);
         localStorageManager.remove(superState.graphs[i] ? superState.graphs[i].graphID : null);
         dispatcher({ type: T.REMOVE_GRAPH, payload: i });
         if (!superState.curGraphIndex && superState.graphs.length === 1) {
             dispatcher({ type: T.SET_CUR_INSTANCE, payload: null });
             dispatcher({ type: T.SET_CUR_INDEX, payload: -1 });
         }
+    };
+
+    const handleCancelClose = () => {
+        setConfirmOpen(false);
+        setTabToClose(null);
     };
     const editCur = (e) => {
         e.stopPropagation();
@@ -80,7 +95,7 @@ const TabBar = ({ superState, dispatcher }) => {
                     ) : <></>}
                     <button
                         className="tab-act close"
-                        onClick={closeTab.bind(this, i)}
+                        onClick={handleRequestCloseTab.bind(this, i)}
                         type="button"
                         data-tip="Close current Workflow (Ctrl + Shift + L)"
                         data-for="header-tab"
@@ -90,6 +105,13 @@ const TabBar = ({ superState, dispatcher }) => {
                     <ReactTooltip place="bottom" type="dark" effect="solid" id="header-tab" />
                 </div>
             ))}
+            <ConfirmModal
+                isOpen={confirmOpen}
+                title="Close Tab"
+                message="Do you confirm to close the tab? This action is irreversible."
+                onConfirm={handleConfirmClose}
+                onCancel={handleCancelClose}
+            />
         </div>
     );
 };
