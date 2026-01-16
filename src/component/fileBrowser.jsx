@@ -7,17 +7,24 @@ import React, { useEffect, useState } from 'react';
 import FileBrowser, { FileRenderers, FolderRenderers } from 'react-keyed-file-browser';
 import { readFile, readTextFile } from '../toolbarActions/toolbarFunctions';
 import { actionType as T } from '../reducer';
+import ConfirmModal from './modals/ConfirmModal';
 import './fileBrowser.css';
 
 const LocalFileBrowser = ({ superState, dispatcher }) => {
     const fileRef = React.useRef();
+    const dirInputRef = React.useRef();
+    const tempFilesRef = React.useRef(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [pendingFolderName, setPendingFolderName] = useState('');
     const [dirButton, setDirButton] = useState(false);
     const [fileState, setFileState] = useState([]);
 
     useEffect(() => {
-        if (navigator.userAgent.indexOf('Edg') !== -1 || navigator.userAgent.indexOf('Chrome') !== -1) {
-            setDirButton(true);
-        }
+        // if (navigator.userAgent.indexOf('Edg') !== -1 || navigator.userAgent.indexOf('Chrome') !== -1) {
+        //     setDirButton(true);
+        // }
+        // Force fallback to webkitdirectory to allow custom popup flow
+        setDirButton(false);
         dispatcher({ type: T.SET_FILE_REF, payload: fileRef });
     }, []);
 
@@ -133,31 +140,32 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
     return (
         <div>
             {!dirButton && (
-                <label
-                    className="inputButton"
-                    htmlFor="fileButton"
-                >
-                    Upload Directory
+                <>
+                    <button
+                        type="button"
+                        className="inputButton"
+                        onClick={() => dirInputRef.current.click()}
+                    >
+                        Upload Directory
+                    </button>
                     <input
                         type="file"
                         accept=".py, .m, .c, .cpp, .v, .sh"
-                        id="fileButton"
+                        ref={dirInputRef}
                         style={{ display: 'none' }}
                         onClick={(e) => { e.target.value = null; }}
                         onChange={(e) => {
-                            const filesArray = Array.from(e.target.files).map((file) => ({
-                                key: file.webkitRelativePath,
-                                modified: file.lastModified,
-                                size: file.size,
-                                fileObj: file,
-                            }));
-
-                            setFileState(filesArray);
-                            window.localStorage.setItem('fileList', JSON.stringify(filesArray));
+                            const { files } = e.target;
+                            if (files && files.length > 0) {
+                                tempFilesRef.current = files;
+                                const folderName = files[0].webkitRelativePath.split('/')[0];
+                                setPendingFolderName(folderName);
+                                setConfirmOpen(true);
+                            }
                         }}
-                        webkitdirectory
+                        webkitdirectory=""
                     />
-                </label>
+                </>
             )}
             {dirButton && (
                 <button
@@ -211,6 +219,36 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                 detailRenderer={() => null}
                 fileRenderer={FileRenderers.TableFile}
                 folderRenderer={FolderRenderers.TableFolder}
+            />
+            <ConfirmModal
+                isOpen={confirmOpen}
+                title="Upload Directory"
+                message={`directory selected: [${pendingFolderName}]`}
+                onConfirm={() => {
+                    setConfirmOpen(false);
+                    const files = tempFilesRef.current;
+                    if (files && files.length > 0) {
+                        const filesArray = Array.from(files).map((file) => ({
+                            key: file.webkitRelativePath,
+                            modified: file.lastModified,
+                            size: file.size,
+                            fileObj: file,
+                        }));
+
+                        setFileState(filesArray);
+                        window.localStorage.setItem('fileList', JSON.stringify(filesArray));
+                        if (filesArray.length > 0) {
+                            dispatcher({ type: T.SET_DIR_NAME, payload: filesArray[0].key.split('/')[0] });
+                            dispatcher({ type: T.SET_FILE_STATE, payload: filesArray });
+                        }
+                    }
+                    tempFilesRef.current = null;
+                }}
+                onCancel={() => {
+                    setConfirmOpen(false);
+                    if (dirInputRef.current) dirInputRef.current.value = '';
+                    tempFilesRef.current = null;
+                }}
             />
         </div>
     );
