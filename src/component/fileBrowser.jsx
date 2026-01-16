@@ -223,7 +223,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             <ConfirmModal
                 isOpen={confirmOpen}
                 title="Upload Directory"
-                message={`directory selected: ${pendingFolderName}`}
+                message={`Directory Selected: ${pendingFolderName}`}
                 onConfirm={() => {
                     setConfirmOpen(false);
                     const files = tempFilesRef.current;
