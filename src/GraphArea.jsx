@@ -44,7 +44,8 @@ function Graph({
     useEffect(() => active && instance && instance.setCurStatus(), [active && instance]);
     useEffect(() => {
         if (active && instance) dispatcher({ type: T.SET_CUR_INSTANCE, payload: instance });
-    }, [active && instance]);
+        if (instance) dispatcher({ type: T.SET_GRAPH_INSTANCE, payload: { graphID, instance } });
+    }, [active, instance, graphID, dispatcher]);
 
     useEffect(() => {
         if (ref.current) {

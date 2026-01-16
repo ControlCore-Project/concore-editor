@@ -14,22 +14,30 @@ const TabBar = ({ superState, dispatcher }) => {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [tabToClose, setTabToClose] = useState(null);
 
-    const handleRequestCloseTab = (i, e) => {
-        e.stopPropagation();
-        setTabToClose(i);
-        setConfirmOpen(true);
-    };
-
-    const handleConfirmClose = () => {
-        const i = tabToClose;
-        setConfirmOpen(false);
-        setTabToClose(null);
+    const closeTab = (i) => {
         localStorageManager.remove(superState.graphs[i] ? superState.graphs[i].graphID : null);
         dispatcher({ type: T.REMOVE_GRAPH, payload: i });
         if (!superState.curGraphIndex && superState.graphs.length === 1) {
             dispatcher({ type: T.SET_CUR_INSTANCE, payload: null });
             dispatcher({ type: T.SET_CUR_INDEX, payload: -1 });
         }
+    };
+
+    const handleRequestCloseTab = (i, e) => {
+        e.stopPropagation();
+        const graph = superState.graphs[i];
+        if (graph && graph.instance && !graph.instance.isSaved) {
+            setTabToClose(i);
+            setConfirmOpen(true);
+        } else {
+            closeTab(i);
+        }
+    };
+
+    const handleConfirmClose = () => {
+        closeTab(tabToClose);
+        setConfirmOpen(false);
+        setTabToClose(null);
     };
 
     const handleCancelClose = () => {
