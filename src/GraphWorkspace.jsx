@@ -59,7 +59,7 @@ const GraphComp = (props) => {
             }}
         >
             <TabBar superState={superState} dispatcher={dispatcher} />
-            <div style={{ flex: 1, background: 'white' }} className="graph-container" ref={graphContainerRef}>
+            <div style={{ flex: 1 }} className="graph-container" ref={graphContainerRef}>
                 {superState.graphs.map((el, i) => (
                     <Graph
                         el={el}

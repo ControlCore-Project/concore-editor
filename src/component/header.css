@@ -98,3 +98,50 @@
     margin: 0;
     padding: 0;
 }
+
+/* ============================================
+   DARK MODE STYLES
+   ============================================ */
+
+[data-theme='dark'] .header {
+    background: #262626;
+}
+
+[data-theme='dark'] .toolbar {
+    background: #262626;
+}
+
+[data-theme='dark'] .toolbar .tool {
+    color: #6A6A6A;
+    /* Disabled/inactive icon color */
+}
+
+[data-theme='dark'] .toolbar .tool.active {
+    color: #E6E6E6;
+    /* Primary icons/text */
+}
+
+[data-theme='dark'] .toolbar .tool-text-only {
+    color: #B0B0B0;
+    /* Secondary text */
+}
+
+[data-theme='dark'] .toolbar .tool.active:hover {
+    background: #2A2A2A;
+    /* Hover effect */
+}
+
+[data-theme='dark'] .titlebar {
+    background-color: #2B8CF7;
+    /* Accent Blue for app title */
+    color: #fff;
+}
+
+[data-theme='dark'] .sep {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .rc-switch-checked {
+    border: 1px solid #2B8CF7;
+    background-color: #2B8CF7;
+}

@@ -2,7 +2,8 @@
     display: flex;
     overflow: auto;
     margin-bottom: -1px;
-    width: 100%;;
+    width: 100%;
+    ;
 }
 
 .tab {
@@ -57,4 +58,55 @@
 
 .tab-act:hover {
     text-shadow: 0px 0px 10px #000;
+}
+
+/* ============================================
+   DARK MODE - NODE / FLOW TAB BAR
+   ============================================ */
+
+/* Tab Bar Container */
+[data-theme='dark'] .tab-par {
+    background: #1B1B1B;
+    border-bottom: 1px solid #2A2A2A;
+}
+
+/* Inactive Tabs */
+[data-theme='dark'] .tab {
+    background-color: #1B1B1B;
+    border: 1px solid #2A2A2A;
+    border-bottom: 1px solid #2A2A2A;
+    color: #A0A0A0;
+    /* Inactive tab text */
+}
+
+[data-theme='dark'] .tab:hover {
+    background-color: #202020;
+}
+
+/* Active/Selected Tab */
+[data-theme='dark'] .tab.selected {
+    background-color: #232323;
+    color: #FFFFFF;
+    /* Active tab text */
+    border: 1px solid #2A2A2A;
+    border-bottom: 0;
+}
+
+/* Tab Action Icons (➕ ✏ ❌) */
+[data-theme='dark'] .tab-act {
+    color: #B5B5B5;
+    /* Default icon color */
+}
+
+[data-theme='dark'] .tab-act:hover {
+    color: #FFFFFF;
+    /* Hover icon color */
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.3);
+}
+
+/* Delete Icon Hover (specific red color) */
+[data-theme='dark'] .tab-act.delete-icon:hover {
+    color: #E5533D;
+    /* Delete hover - red */
+    text-shadow: 0px 0px 5px rgba(229, 83, 61, 0.5);
 }

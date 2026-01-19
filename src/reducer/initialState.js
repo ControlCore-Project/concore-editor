@@ -1,7 +1,7 @@
 const initialState = {
     ModelOpen: false,
     modalPayload: {
-        cb: () => {},
+        cb: () => { },
         title: '',
         submitText: '',
         Children: '',
@@ -38,6 +38,7 @@ const initialState = {
     octave: false,
     logs: false,
     logsmessage: '',
+    darkMode: false,
 };
 
 const initialGraphState = {

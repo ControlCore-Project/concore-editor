@@ -18,7 +18,15 @@ function Graph({
 
     const initialiseNewGraph = () => {
         const myGraph = new MyGraph(
-            graphID, ref.current, dispatcher, superState, projectName, nodeValidator, edgeValidator, authorName,
+            graphID,
+            ref.current,
+            dispatcher,
+            superState,
+            projectName,
+            nodeValidator,
+            edgeValidator,
+            authorName,
+            superState.darkMode,
         );
         if (graphID) myGraph.loadGraphFromLocalStorage();
         if (serverID) {
@@ -54,6 +62,13 @@ function Graph({
             setInstance(initialiseNewGraph());
         }
     }, [ref]);
+
+    // Update theme when darkMode changes
+    useEffect(() => {
+        if (instance && instance.updateTheme) {
+            instance.updateTheme(superState.darkMode);
+        }
+    }, [superState.darkMode, instance]);
 
     const { id } = el;
 

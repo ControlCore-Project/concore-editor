@@ -1,7 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import hotkeys from 'hotkeys-js';
+import { FaMoon, FaSun } from 'react-icons/fa';
 import toolbarList from '../toolbarActions/toolbarList';
+import { actionType as T } from '../reducer';
 import '@szhsin/react-menu/dist/index.css';
 import './header.css';
 import {
@@ -46,6 +48,25 @@ const Header = ({ superState, dispatcher }) => {
                         } - concore Editor` : 'untitled'
                     }
                 </section>
+                <div
+                    onClick={() => dispatcher({ type: T.TOGGLE_DARK_MODE })}
+                    style={{
+                        cursor: 'pointer',
+                        padding: '0 15px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'opacity 0.2s',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.7'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && dispatcher({ type: T.TOGGLE_DARK_MODE })}
+                    aria-label="Toggle dark mode"
+                >
+                    {superState.darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
+                </div>
                 <FullScreenButton />
             </div>
             <section className="toolbar">

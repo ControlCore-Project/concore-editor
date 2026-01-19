@@ -12,7 +12,8 @@
     border-bottom: none;
     border-top-left-radius: 3px;
 }
-.zoom-comp > *{
+
+.zoom-comp>* {
     padding: 2px 5px;
 }
 
@@ -31,13 +32,58 @@
     user-select: none;
 }
 
-.zoom-comp .zoom-btn{
+.zoom-comp .zoom-btn {
     cursor: pointer;
 }
-.zoom-comp .zoom-btn:hover{
+
+.zoom-comp .zoom-btn:hover {
     background: #eee;
 }
 
 .zoom-comp .zoom-value {
     width: 40px;
+}
+
+/* ============================================
+   DARK MODE - ZOOM CONTROLS
+   ============================================ */
+
+/* Container */
+[data-theme='dark'] .zoom-comp {
+    background: #1E1E1E;
+    border: 1px solid #2A2A2A;
+    border-right: none;
+    border-bottom: none;
+}
+
+/* Text & Icons */
+[data-theme='dark'] .zoom-comp .zoom-box {
+    color: #E0E0E0;
+    /* Text (100%) */
+    border-right: 1px solid #2A2A2A;
+}
+
+/* Button Hover State */
+[data-theme='dark'] .zoom-comp .zoom-btn:hover {
+    background: #2A2A2A;
+}
+
+/* Slider Track (Rail) */
+[data-theme='dark'] .zoom-comp .rc-slider-rail {
+    background-color: #2A2A2A;
+}
+
+/* Slider Thumb (Handle) */
+[data-theme='dark'] .zoom-comp .rc-slider-handle {
+    border-color: #2B8CF7;
+    background-color: #2B8CF7;
+    box-shadow: none;
+    /* Clean look */
+}
+
+/* Handle active/focus state for slider */
+[data-theme='dark'] .zoom-comp .rc-slider-handle:active,
+[data-theme='dark'] .zoom-comp .rc-slider-handle:focus,
+[data-theme='dark'] .zoom-comp .rc-slider-handle-click-focused {
+    box-shadow: 0 0 0 5px rgba(43, 140, 247, 0.2);
 }

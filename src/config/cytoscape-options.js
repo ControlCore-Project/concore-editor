@@ -1,11 +1,11 @@
-import style from './cytoscape-style';
+import getCytoscapeStyle from './cytoscape-style';
 
-const options = {
-    style: [...style],
+const getCytoscapeOptions = (darkMode = false) => ({
+    style: [...getCytoscapeStyle(darkMode)],
     zoomingEnabled: true,
     userZoomingEnabled: true,
     minZoom: 0.25,
     maxZoom: 5,
-};
+});
 
-export default options;
+export default getCytoscapeOptions;
