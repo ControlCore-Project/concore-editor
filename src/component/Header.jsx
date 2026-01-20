@@ -52,7 +52,8 @@ const Header = ({ superState, dispatcher }) => {
                     onClick={() => dispatcher({ type: T.TOGGLE_DARK_MODE })}
                     style={{
                         cursor: 'pointer',
-                        padding: '0 15px',
+                        border: '1px solid #ccc',
+                        padding: '0 8px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -65,7 +66,9 @@ const Header = ({ superState, dispatcher }) => {
                     onKeyDown={(e) => e.key === 'Enter' && dispatcher({ type: T.TOGGLE_DARK_MODE })}
                     aria-label="Toggle dark mode"
                 >
-                    {superState.darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
+                    {superState.darkMode
+                        ? <FaSun size={20} className="theme-icon" />
+                        : <FaMoon size={20} className="theme-icon" />}
                 </div>
                 <FullScreenButton />
             </div>

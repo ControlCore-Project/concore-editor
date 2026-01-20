@@ -1,6 +1,25 @@
 .main-div {
     padding: 30px;
 }
+
 .main-div-comp {
     margin: 20px;
+}
+
+/* DARK MODE STYLES */
+[data-theme='dark'] .main-div input[type="text"],
+[data-theme='dark'] .main-div textarea {
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    color: #e5e7eb;
+    padding: 5px;
+}
+
+[data-theme='dark'] .main-div input[type="checkbox"] {
+    accent-color: #3b82f6;
+}
+
+[data-theme='dark'] .main-div label,
+[data-theme='dark'] .main-div span {
+    color: #e5e7eb;
 }

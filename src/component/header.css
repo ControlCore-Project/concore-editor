@@ -145,3 +145,8 @@
     border: 1px solid #2B8CF7;
     background-color: #2B8CF7;
 }
+
+/* Theme Icon Color */
+.theme-icon {
+    color: black;
+}

@@ -116,7 +116,7 @@ const FileEditModal = ({ superState, dispatcher }) => {
                     <Editor
                         height="60vh"
                         language={language}
-                        theme="vs-light"
+                        theme={superState.darkMode ? 'vs-dark' : 'vs-light'}
                         value={codeStuff}
                         onChange={(value) => setCodeStuff(value)}
                         options={{
