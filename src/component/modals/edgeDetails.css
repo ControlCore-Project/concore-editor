@@ -2,7 +2,7 @@
     text-align: center;
 }
 
-.par-div{
+.par-div {
     height: 1px;
     min-height: 100px;
     width: auto;
@@ -13,7 +13,7 @@
     padding: 20px;
 }
 
-.edge-div{
+.edge-div {
     border: none;
     width: 240px;
     height: 0;
@@ -41,12 +41,12 @@
     padding: 20px;
 }
 
-.span-rest{
+.span-rest {
     grid-column: 2 / span 3;
 
 }
 
-.edgeform .color-box{
+.edgeform .color-box {
     width: 36px;
     height: 14px;
     border-radius: 2px;
@@ -54,7 +54,7 @@
     border: 1px solid gray
 }
 
-.color-box-par{
+.color-box-par {
     padding: 5px;
     background: rgba(0, 0, 0, 0.384);
     border-radius: 1px;
@@ -64,13 +64,15 @@
     width: fit-content;
     border: 1px solid gray
 }
-.color-picker{
+
+.color-picker {
     display: inline-block;
     margin: 13px 0px;
     position: absolute;
     background: transparent;
 }
-.color-picker .overlay{
+
+.color-picker .overlay {
     top: 0;
     bottom: 0;
     left: 0;
@@ -82,22 +84,85 @@
 }
 
 
-.edgeform .label{
+.edgeform .label {
     position: absolute;
     margin-top: 30px;
 }
 
-.hascheckbox{
+.hascheckbox {
     display: flex;
-justify-content: space-between;
+    justify-content: space-between;
 }
 
 @media screen and (max-width: 650px) {
-    .edgeform .form  {
+    .edgeform .form {
         grid-template-columns: auto auto;
         width: auto
     }
+
     .edgeform .span-rest {
         grid-column: 2;
     }
+}
+
+/* DARK MODE - EDGE DETAILS MODAL */
+
+[data-theme='dark'] .edgeform {
+    color: #EAEAEA;
+}
+
+/* Edge preview container */
+[data-theme='dark'] .par-div {
+    background: #202020;
+    border: 1px solid #2C2C2C;
+}
+
+/* Edge label text */
+[data-theme='dark'] .edgeform .label {
+    color: #FFFFFF;
+}
+
+/* Input field */
+[data-theme='dark'] .edgeform input[type="text"] {
+    background: #242424;
+    border: 1px solid #333333;
+    color: #FFFFFF;
+}
+
+[data-theme='dark'] .edgeform input[type="text"]::placeholder {
+    color: #888888;
+}
+
+[data-theme='dark'] .edgeform input[type="text"]:focus {
+    border-color: #2B8CF7;
+    outline: none;
+}
+
+/* Number inputs */
+[data-theme='dark'] .edgeform input[type="number"] {
+    background: #242424;
+    border: 1px solid #333333;
+    color: #FFFFFF;
+}
+
+[data-theme='dark'] .edgeform input[type="number"]:focus {
+    border-color: #2B8CF7;
+    outline: none;
+}
+
+/* Form container */
+[data-theme='dark'] .edgeform .form {
+    background: transparent;
+    color: #EAEAEA;
+}
+
+/* Color box container */
+[data-theme='dark'] .color-box-par {
+    background: #2A2A2A;
+    border: 1px solid #333333;
+    box-shadow: rgb(255 255 255 / 5%) 0px 0px 0px 1px;
+}
+
+[data-theme='dark'] .edgeform .color-box {
+    border: 1px solid #333333;
 }

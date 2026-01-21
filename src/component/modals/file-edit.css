@@ -1,4 +1,4 @@
-.setting-container{
+.setting-container {
     display: grid;
     grid-template-columns: auto auto;
     grid-gap: 0px;
@@ -7,7 +7,7 @@
     min-height: '400px',
 }
 
-.save-bar{
+.save-bar {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -20,7 +20,29 @@
 }
 
 @media screen and (max-width: 890px) {
-    .setting-container{
+    .setting-container {
         grid-template-columns: auto;
     }
+}
+
+/* DARK MODE - FILE EDIT MODAL */
+
+[data-theme='dark'] .save-bar .btn {
+    background: #2A2A2A;
+    border: 1px solid #333333;
+    color: #FFFFFF;
+}
+
+[data-theme='dark'] .save-bar .btn:hover {
+    background: #333333;
+    border-color: #2B8CF7;
+}
+
+[data-theme='dark'] .save-bar .btn-primary {
+    background: #2B8CF7;
+    border-color: #2B8CF7;
+}
+
+[data-theme='dark'] .save-bar .btn-primary:hover {
+    background: #1e88e5;
 }
