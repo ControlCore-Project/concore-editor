@@ -106,11 +106,9 @@
         grid-template-columns: auto auto;
         width: auto
     }
-
     .nodeform .nodeLabel {
         grid-column: 2 / span 1;
     }
-
     .nodeform .nodeLabelFile {
         grid-column: 2 / span 1;
     }

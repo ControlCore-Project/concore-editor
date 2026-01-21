@@ -2,8 +2,7 @@
     display: flex;
     overflow: auto;
     margin-bottom: -1px;
-    width: 100%;
-    ;
+    width: 100%;;
 }
 
 .tab {
@@ -60,9 +59,7 @@
     text-shadow: 0px 0px 10px #000;
 }
 
-/* ============================================
-   DARK MODE - NODE / FLOW TAB BAR
-   ============================================ */
+/* DARK MODE - NODE / FLOW TAB BAR */
 
 /* Tab Bar Container */
 [data-theme='dark'] .tab-par {

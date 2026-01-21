@@ -1,4 +1,4 @@
-.setting-container {
+.setting-container{
     display: grid;
     grid-template-columns: auto auto;
     grid-gap: 0px;
@@ -7,7 +7,7 @@
     min-height: '400px',
 }
 
-.save-bar {
+.save-bar{
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -20,7 +20,7 @@
 }
 
 @media screen and (max-width: 890px) {
-    .setting-container {
+    .setting-container{
         grid-template-columns: auto;
     }
 }

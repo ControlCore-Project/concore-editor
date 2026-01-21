@@ -2,7 +2,7 @@
     text-align: center;
 }
 
-.par-div {
+.par-div{
     height: 1px;
     min-height: 100px;
     width: auto;
@@ -13,7 +13,7 @@
     padding: 20px;
 }
 
-.edge-div {
+.edge-div{
     border: none;
     width: 240px;
     height: 0;
@@ -41,12 +41,12 @@
     padding: 20px;
 }
 
-.span-rest {
+.span-rest{
     grid-column: 2 / span 3;
 
 }
 
-.edgeform .color-box {
+.edgeform .color-box{
     width: 36px;
     height: 14px;
     border-radius: 2px;
@@ -54,7 +54,7 @@
     border: 1px solid gray
 }
 
-.color-box-par {
+.color-box-par{
     padding: 5px;
     background: rgba(0, 0, 0, 0.384);
     border-radius: 1px;
@@ -65,7 +65,7 @@
     border: 1px solid gray
 }
 
-.color-picker {
+.color-picker{
     display: inline-block;
     margin: 13px 0px;
     position: absolute;
@@ -84,22 +84,21 @@
 }
 
 
-.edgeform .label {
+.edgeform .label{
     position: absolute;
     margin-top: 30px;
 }
 
-.hascheckbox {
+.hascheckbox{
     display: flex;
-    justify-content: space-between;
+justify-content: space-between;
 }
 
 @media screen and (max-width: 650px) {
-    .edgeform .form {
+    .edgeform .form  {
         grid-template-columns: auto auto;
         width: auto
     }
-
     .edgeform .span-rest {
         grid-column: 2;
     }

@@ -1,7 +1,7 @@
 const initialState = {
     ModelOpen: false,
     modalPayload: {
-        cb: () => { },
+        cb: () => {},
         title: '',
         submitText: '',
         Children: '',

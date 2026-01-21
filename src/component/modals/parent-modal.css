@@ -2,8 +2,7 @@
     transition: all 200ms ease-out;
 }
 
-.ReactModalPortal,
-.ReactModal__Overlay {
+.ReactModalPortal, .ReactModal__Overlay {
     z-index: 3
 }
 
@@ -44,7 +43,7 @@
     line-height: 1.5;
 }
 
-.modal-body {
+.modal-body{
     max-height: calc(80vh - 70px);
     overflow: auto;
 }
@@ -115,8 +114,7 @@
 .ReactModalPortal .Overlay.closing {
     opacity: 0;
 }
-
-.ReactModal__Overlay.ReactModal__Overlay--after-open.Overlay {
+.ReactModal__Overlay.ReactModal__Overlay--after-open.Overlay{
     overflow: auto;
 }
 

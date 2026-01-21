@@ -24,7 +24,7 @@ class CoreGraph {
 
     bendNode;
 
-    darkMode = false; // Current theme state
+    darkMode = false;
 
     gridSize = 20; // Configurable grid size in pixels
 
@@ -34,7 +34,7 @@ class CoreGraph {
     ) {
         if (dispatcher) this.dispatcher = dispatcher;
         if (superState) this.superState = superState;
-        this.darkMode = darkMode; // Store dark mode state
+        this.darkMode = darkMode;
         if (typeof cytoscape('core', 'edgehandles') !== 'function') {
             cytoscape.use(edgehandles);
         }
@@ -351,20 +351,19 @@ class CoreGraph {
     }
 
     updateTheme(darkMode) {
-        this.darkMode = darkMode; // Update stored dark mode state
+        this.darkMode = darkMode;
         const newStyle = getCytoscapeStyle(darkMode);
         this.cy.style(newStyle);
 
         // Update grid colors for dark mode
         const gridColors = darkMode ? {
-            gridColor: '#606060', // Major grid lines - Light Grey
-            lineColor: 'rgba(96, 96, 96, 0.4)', // Minor grid lines - Light Grey (transparent)
+            gridColor: '#606060',
+            lineColor: 'rgba(96, 96, 96, 0.4)',
         } : {
-            gridColor: 'rgba(0, 0, 0, 0.2)', // Light mode major grid
-            lineColor: 'rgba(0, 0, 0, 0.1)', // Light mode minor grid
+            gridColor: 'rgba(0, 0, 0, 0.2)',
+            lineColor: 'rgba(0, 0, 0, 0.1)',
         };
 
-        // Update grid guide with new colors
         if (this.cy.gridGuide) {
             this.cy.gridGuide({
                 gridColor: gridColors.gridColor,

@@ -12,8 +12,7 @@
     border-bottom: none;
     border-top-left-radius: 3px;
 }
-
-.zoom-comp>* {
+.zoom-comp > *{
     padding: 2px 5px;
 }
 
@@ -32,11 +31,10 @@
     user-select: none;
 }
 
-.zoom-comp .zoom-btn {
+.zoom-comp .zoom-btn{
     cursor: pointer;
 }
-
-.zoom-comp .zoom-btn:hover {
+.zoom-comp .zoom-btn:hover{
     background: #eee;
 }
 
@@ -44,9 +42,7 @@
     width: 40px;
 }
 
-/* ============================================
-   DARK MODE - ZOOM CONTROLS
-   ============================================ */
+/* DARK MODE - ZOOM CONTROLS*/
 
 /* Container */
 [data-theme='dark'] .zoom-comp {
