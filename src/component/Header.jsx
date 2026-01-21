@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import hotkeys from 'hotkeys-js';
-import { FaMoon, FaSun } from 'react-icons/fa';
+import { FaMoon } from 'react-icons/fa';
 import toolbarList from '../toolbarActions/toolbarList';
 import { actionType as T } from '../reducer';
 import '@szhsin/react-menu/dist/index.css';
@@ -58,6 +58,7 @@ const Header = ({ superState, dispatcher }) => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'opacity 0.2s',
+                        backgroundColor: '#eee',
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.7'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
@@ -66,9 +67,7 @@ const Header = ({ superState, dispatcher }) => {
                     onKeyDown={(e) => e.key === 'Enter' && dispatcher({ type: T.TOGGLE_DARK_MODE })}
                     aria-label="Toggle dark mode"
                 >
-                    {superState.darkMode
-                        ? <FaSun size={20} className="theme-icon" />
-                        : <FaMoon size={20} className="theme-icon" />}
+                    <FaMoon size={20} className="theme-icon" />
                 </div>
                 <FullScreenButton />
             </div>
