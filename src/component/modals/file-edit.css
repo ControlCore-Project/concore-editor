@@ -24,3 +24,25 @@
         grid-template-columns: auto;
     }
 }
+
+/* DARK MODE - FILE EDIT MODAL */
+
+[data-theme='dark'] .save-bar .btn {
+    background: #2A2A2A;
+    border: 1px solid #333333;
+    color: #FFFFFF;
+}
+
+[data-theme='dark'] .save-bar .btn:hover {
+    background: #333333;
+    border-color: #2B8CF7;
+}
+
+[data-theme='dark'] .save-bar .btn-primary {
+    background: #2B8CF7;
+    border-color: #2B8CF7;
+}
+
+[data-theme='dark'] .save-bar .btn-primary:hover {
+    background: #1e88e5;
+}

@@ -44,7 +44,7 @@
 }
 
 .modal-body{
-    max-height: calc( 80vh - 70px);
+    max-height: calc(80vh - 70px);
     overflow: auto;
 }
 
@@ -128,4 +128,23 @@
     .ReactModalPortal .Modal {
         min-width: 90%;
     }
+}
+
+/* DARK MODE STYLES */
+[data-theme='dark'] .ReactModalPortal .modal-content {
+    background-color: #262626;
+    border: 1px solid #444;
+    color: #e5e7eb;
+}
+
+[data-theme='dark'] .ReactModalPortal .modal-header {
+    border-bottom: 1px solid #333;
+}
+
+[data-theme='dark'] .ReactModalPortal .modal-header .close {
+    color: #e5e7eb;
+}
+
+[data-theme='dark'] .ReactModalPortal .modal-title {
+    color: #e5e7eb;
 }

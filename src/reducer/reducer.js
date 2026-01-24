@@ -251,6 +251,10 @@ const reducer = (state, action) => {
         return { ...newState };
     }
 
+    case T.TOGGLE_DARK_MODE: {
+        return { ...state, darkMode: !state.darkMode };
+    }
+
     default:
         return state;
     }

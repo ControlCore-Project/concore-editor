@@ -5,6 +5,7 @@ import Konva from 'konva';
 import nodeEditing from 'cytoscape-node-editing';
 import $ from 'jquery';
 import cyOptions from '../../config/cytoscape-options';
+import getCytoscapeStyle from '../../config/cytoscape-style';
 import BendingDistanceWeight from '../calculations/bending-dist-weight';
 import { actionType as T } from '../../reducer';
 
@@ -23,11 +24,17 @@ class CoreGraph {
 
     bendNode;
 
+    darkMode = false;
+
     gridSize = 20; // Configurable grid size in pixels
 
-    constructor(id, element, dispatcher, superState, projectName, nodeValidator, edgeValidator, authorName) {
+    constructor(
+        id, element, dispatcher, superState, projectName,
+        nodeValidator, edgeValidator, authorName, darkMode = false,
+    ) {
         if (dispatcher) this.dispatcher = dispatcher;
         if (superState) this.superState = superState;
+        this.darkMode = darkMode;
         if (typeof cytoscape('core', 'edgehandles') !== 'function') {
             cytoscape.use(edgehandles);
         }
@@ -38,7 +45,7 @@ class CoreGraph {
             gridGuide(cytoscape);
         }
         // if (cy) this.cy = cy;
-        this.cy = cytoscape({ ...cyOptions, container: element });
+        this.cy = cytoscape({ ...cyOptions(darkMode), container: element });
         this.cy.on('position', 'node', () => {
             this.cy.edges().updateStyle();
         });
@@ -131,6 +138,15 @@ class CoreGraph {
             isNoControlsMode(node) { return node.data('type') !== 'ordin'; },
         });
 
+        // Grid colors based on dark mode
+        const gridColors = this.darkMode ? {
+            gridColor: '#606060', // Major grid lines - Light Grey
+            lineColor: 'rgba(96, 96, 96, 0.4)', // Minor grid lines - Light Grey (transparent)
+        } : {
+            gridColor: 'rgba(0, 0, 0, 0.2)', // Light mode major grid
+            lineColor: 'rgba(0, 0, 0, 0.1)', // Light mode minor grid
+        };
+
         this.cy.gridGuide({
             snapToGridOnRelease: true,
             snapToGridDuringDrag: false,
@@ -138,6 +154,8 @@ class CoreGraph {
             panGrid: true,
             gridSpacing: this.gridSize,
             snapToAlignmentLocationOnRelease: true,
+            gridColor: gridColors.gridColor,
+            lineColor: gridColors.lineColor,
         });
         this.cy.edgehandles({
             preview: false,
@@ -330,6 +348,28 @@ class CoreGraph {
 
     setCurStatus() {
         this.selectDeselectEventHandler();
+    }
+
+    updateTheme(darkMode) {
+        this.darkMode = darkMode;
+        const newStyle = getCytoscapeStyle(darkMode);
+        this.cy.style(newStyle);
+
+        // Update grid colors for dark mode
+        const gridColors = darkMode ? {
+            gridColor: '#606060',
+            lineColor: 'rgba(96, 96, 96, 0.4)',
+        } : {
+            gridColor: 'rgba(0, 0, 0, 0.2)',
+            lineColor: 'rgba(0, 0, 0, 0.1)',
+        };
+
+        if (this.cy.gridGuide) {
+            this.cy.gridGuide({
+                gridColor: gridColors.gridColor,
+                lineColor: gridColors.lineColor,
+            });
+        }
     }
 
     reset() {
