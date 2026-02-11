@@ -249,7 +249,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                     tempFilesRef.current = null;
                 }}
             />
-        </div >
+        </div>
     );
 };
 export default LocalFileBrowser;
