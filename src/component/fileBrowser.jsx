@@ -166,20 +166,17 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                     />
                 </>
             )}
-            {
-                dirButton && (
-                    <button
-                        type="button"
-                        className="inputButton"
-                        disabled={!dirButton}
-                        onClick={newFeature}
-                    >
-                        Upload Directory
-                    </button>
-                )
-            }
-            {
-                !dirButton
+            {dirButton && (
+                <button
+                    type="button"
+                    className="inputButton"
+                    disabled={!dirButton}
+                    onClick={newFeature}
+                >
+                    Upload Directory
+                </button>
+            )}
+            {!dirButton
                 && (
                     <input
                         type="file"
@@ -189,10 +186,8 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                         accept=".graphml"
                         onChange={(e) => readFile(superState, dispatcher, e.target.files[0])}
                     />
-                )
-            }
-            {
-                dirButton
+                )}
+            {dirButton
                 && (
                     <button
                         type="button"
@@ -211,8 +206,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                     //     accept=".graphml"
                     //     onChange={(e) => readFile(superState, dispatcher, e.target.files[0])}
                     // />
-                )
-            }
+                )}
             <h4>
                 Folder Name :
                 {' '}
