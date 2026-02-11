@@ -18,7 +18,7 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         
         issue_message: |
-          👋 Welcome to the Control-core Project, @${{ github.actor }}! Thank you for opening your first issue in concore-editor.
+          👋 Welcome to the CONTROL-CORE Project, @${{ github.actor }}! Thank you for opening your first issue in concore-editor.
           We appreciate your contribution to the organization and will review it as soon as possible.
           
           Before we get started, please check out these resources:
