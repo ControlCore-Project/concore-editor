@@ -111,7 +111,7 @@ class GraphLoadSave extends GraphUndoRedo {
         const str = graphmlBuilder(this.jsonifyGraph());
         const bytes = new TextEncoder().encode(str);
         const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' });
-        if (navigator.userAgent.indexOf('Edg') !== -1 || navigator.userAgent.indexOf('Chrome') !== -1) {
+        if ('showSaveFilePicker' in window) {
             const options = {
                 types: [
                     {
@@ -152,8 +152,7 @@ class GraphLoadSave extends GraphUndoRedo {
     }
 
     async saveWithoutFileHandle() {
-        const { userAgent } = navigator;
-        if (userAgent.match(/firefox|fxios/i)) {
+        if (!('showSaveFilePicker' in window)) {
             toast.info('Switch to Edge/Chrome!');
             return;
         }

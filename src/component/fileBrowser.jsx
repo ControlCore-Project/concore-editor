@@ -20,11 +20,10 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
     const [fileState, setFileState] = useState([]);
 
     useEffect(() => {
-        // if (navigator.userAgent.indexOf('Edg') !== -1 || navigator.userAgent.indexOf('Chrome') !== -1) {
-        //     setDirButton(true);
-        // }
-        // Force fallback to webkitdirectory to allow custom popup flow
-        setDirButton(false);
+        if ('showDirectoryPicker' in window) {
+            setDirButton(true);
+        }
+
         dispatcher({ type: T.SET_FILE_REF, payload: fileRef });
     }, []);
 
