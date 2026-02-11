@@ -15,7 +15,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
     const [fileState, setFileState] = useState([]);
 
     useEffect(() => {
-        if (navigator.userAgent.indexOf('Edg') !== -1 || navigator.userAgent.indexOf('Chrome') !== -1) {
+        if ('showDirectoryPicker' in window) {
             setDirButton(true);
         }
         dispatcher({ type: T.SET_FILE_REF, payload: fileRef });
@@ -159,7 +159,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                         webkitdirectory="true"
                     />
                 </label>
-            ) }
+            )}
             {dirButton && (
                 <button
                     type="button"
@@ -204,7 +204,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             <h4>
                 Folder Name :
                 {' '}
-                {fileState[0] ? fileState[0].key.split('/')[0] : '' }
+                {fileState[0] ? fileState[0].key.split('/')[0] : ''}
             </h4>
             <FileBrowser
                 files={fileState}
