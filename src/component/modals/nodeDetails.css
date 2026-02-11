@@ -113,3 +113,18 @@
         grid-column: 2 / span 1;
     }
 }
+
+/* DARK MODE STYLES */
+[data-theme='dark'] .parent-div {
+    background: #1a1a1a;
+}
+
+[data-theme='dark'] .nodeform input {
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    color: #e5e7eb;
+}
+
+[data-theme='dark'] .nodeform div {
+    color: #e5e7eb;
+}

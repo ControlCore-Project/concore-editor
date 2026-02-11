@@ -16,7 +16,7 @@ class GraphComponent extends GraphCanvas {
 
     constructor(...args) {
         super(...args);
-        const [,,,,, nodeValidator, edgeValidator] = args;
+        const [, , , , , nodeValidator, edgeValidator] = args;
         this.setEdgeNodeValidator({ nodeValidator, edgeValidator });
         this.getTid = () => new Date().getTime();
     }
@@ -70,7 +70,14 @@ class GraphComponent extends GraphCanvas {
             if (targetID === edge.target().id()) dists.add(edge.data('bendData').bendDistance);
             else dists.add(-edge.data('bendData').bendDistance);
         });
-        for (let d = 0; ;d += 20) {
+
+        // Calculate optimal spacing based on number of parallel edges
+        // Base spacing of 60px, increasing with more edges for better visibility
+        const edgeCount = edges.length;
+        const baseSpacing = 100;
+        const spacingIncrement = edgeCount > 4 ? baseSpacing * 1.5 : baseSpacing;
+
+        for (let d = 0; ; d += spacingIncrement) {
             if (!dists.has(d)) return d;
             if (!dists.has(-d)) return -d;
         }

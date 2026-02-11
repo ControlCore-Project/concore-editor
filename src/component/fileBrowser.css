@@ -199,3 +199,130 @@ div.rendered-file-browser div.files ul {
 
 div.rendered-file-browser p.loading, div.rendered-file-browser p.empty {
   margin: 16px 0; }
+
+/* DARK MODE - LEFT SIDEBAR / FILE BROWSER*/
+
+[data-theme='dark'] {
+  /* Main sidebar background */
+  background: #181818;
+}
+
+/* Upload Directory Button */
+[data-theme='dark'] .inputButton {
+  background-color: #2B8CF7; /* Accent Blue */
+  color: #FFFFFF;
+  border: 1px solid #2B8CF7;
+}
+
+[data-theme='dark'] .inputButton:hover {
+  background-color: #1e88e5;
+}
+
+/* Section Header (h4 - Folder Name) */
+[data-theme='dark'] h4 {
+  background-color: #202020;
+  color: #EAEAEA;
+  padding: 10px;
+  margin: 0;
+  border-bottom: 1px solid #2C2C2C;
+}
+
+/* Filter Input Field */
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.action-bar input[type="search"] {
+  background: #242424;
+  border: 1px solid #333333;
+  color: #FFFFFF;
+}
+
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.action-bar input[type="search"]::placeholder {
+  color: #888888;
+}
+
+/* File Browser Container */
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.files {
+  background: #181818;
+  color: #EAEAEA;
+}
+
+/* Table Column Headers */
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.files table thead th {
+  color: #9AA0A6;
+  border-bottom: 1px solid #2C2C2C;
+  background: #181818;
+}
+
+/* Table Rows */
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.files table tr td {
+  color: #EAEAEA;
+  border-bottom: 1px solid #202020;
+}
+
+/* Table Row Hover */
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.files table tr:hover td {
+  background: #252525;
+}
+
+/* Selected Row */
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.files table tr.selected td {
+  background: #2A2A2A;
+  color: #FFFFFF;
+}
+
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.files table tr.selected td.name:after {
+  background: #2B8CF7; /* Accent blue for selection indicator */
+}
+
+/* Dragover State */
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.files table tr.dragover td,
+[data-theme='dark'] div.rendered-react-keyed-file-browser div.files table tr.dragover th {
+  background: #2A2A2A;
+}
+
+/* Empty State ("No files.") */
+[data-theme='dark'] div.rendered-file-browser p.empty {
+  color: #6F6F6F;
+}
+
+[data-theme='dark'] div.rendered-file-browser p.loading {
+  color: #9AA0A6;
+}
+
+/* Folder/File Items in List View */
+[data-theme='dark'] div.rendered-file-browser div.files ul li.folder > div.item {
+  border: 1px solid #2C2C2C;
+  background: #181818;
+}
+
+[data-theme='dark'] div.rendered-file-browser div.files ul li.folder > div.item:hover {
+  background: #252525;
+}
+
+[data-theme='dark'] div.rendered-file-browser div.files li.file.selected > div.item,
+[data-theme='dark'] div.rendered-file-browser div.files li.folder.selected > div.item {
+  background: #2A2A2A;
+  color: #FFFFFF;
+  border: 1px solid #2B8CF7;
+}
+
+[data-theme='dark'] div.rendered-file-browser div.files ul li.file > div.item span.thumb {
+  border: 1px solid #2C2C2C;
+  background: #202020;
+}
+
+[data-theme='dark'] div.rendered-file-browser div.files li.file.dragover,
+[data-theme='dark'] div.rendered-file-browser div.files li.folder.dragover {
+  background: #2A2A2A;
+}
+
+/* Expanded Folder Borders */
+[data-theme='dark'] div.rendered-file-browser div.files ul li.folder.expanded {
+  border-bottom: 1px solid #2C2C2C;
+  border-left: 4px solid #2C2C2C;
+  border-right: 1px solid #2C2C2C;
+}
+
+[data-theme='dark'] div.rendered-file-browser div.files ul li.folder.expanded.selected {
+  border-bottom: 1px solid #2B8CF7;
+  border-left: 4px solid #2B8CF7;
+  border-right: 1px solid #2B8CF7;
+}

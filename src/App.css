@@ -1,9 +1,58 @@
+/* CSS Variables for Light Mode (Default) */
+:root {
+    /* Background colors */
+    --bg-primary: rgb(240, 242, 245);
+    --bg-secondary: #fff;
+
+    /* Text colors */
+    --text-primary: #212529;
+    --text-secondary: #fff;
+
+    /* Border colors */
+    --border-primary: #999;
+    --border-transparent: transparent;
+
+    /* Button colors */
+    --btn-primary-bg: #007bff;
+    --btn-primary-border: #007bff;
+    --btn-secondary-bg: #6c757d;
+    --btn-secondary-border: #6c757d;
+}
+
+/* Dark Mode Variables - Productivity Tool Theme */
+[data-theme='dark'] {
+    /* Background colors - Neutral dark grays (not pure black) */
+    --bg-primary: #1E1E1E;
+    /* Main background - matches VS Code */
+    --bg-secondary: #2D2D2D;
+    /* Cards, panels, elevated surfaces */
+
+    /* Text colors - Clear hierarchy, not harsh white */
+    --text-primary: #E4E4E4;
+    /* Primary text - softer than pure white */
+    --text-secondary: #E4E4E4;
+    /* Secondary text on buttons */
+
+    /* Border colors - Subtle separation */
+    --border-primary: #3E3E3E;
+    /* Borders - subtle but visible */
+    --border-transparent: transparent;
+
+    /* Button colors - Subtle blue accent matching brand */
+    --btn-primary-bg: #2B8CF7;
+    /* Accent blue - matching titlebar */
+    --btn-primary-border: #2B8CF7;
+    --btn-secondary-bg: #3E3E3E;
+    /* Neutral secondary actions */
+    --btn-secondary-border: #3E3E3E;
+}
+
 * {
-  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-family: 'Helvetica', 'Arial', sans-serif
 }
 
 input {
-  border: 1px solid #999;
+    border: 1px solid var(--border-primary);
 }
 
 .container {
@@ -14,20 +63,20 @@ input {
 }
 
 .body {
-  background-color: rgb(240, 242, 245);
+  background-color: var(--bg-primary);
   height: -webkit-fill-available;
   flex: 1;
 }
 
 .graph {
   padding: 50px;
-  background-color: rgb(240, 242, 245);
+  background-color: var(--bg-primary);
   height: -webkit-fill-available;
   flex: 80;
 }
 
 .graph-container {
-  background-color: #fff;
+    background-color: var(--bg-secondary);
 }
 
 .middle {
@@ -39,29 +88,29 @@ input {
 .btn {
   display: inline-block;
   font-weight: 400;
-  color: #212529;
+  color: var(--text-primary);
   text-align: center;
   vertical-align: middle;
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
   background-color: transparent;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-transparent);
   padding: .375rem .75rem;
   line-height: 1.5;
   border-radius: .25rem;
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+    color: var(--text-secondary);
+    background-color: var(--btn-primary-bg);
+    border-color: var(--btn-primary-border);
 }
 
 .btn-secondary {
-  color: #fff;
-  background-color: #6c757d;
-  border-color: #6c757d;
+    color: var(--text-secondary);
+    background-color: var(--btn-secondary-bg);
+    border-color: var(--btn-secondary-border);
 }
 
 .btn:not(:disabled):not(.disabled) {

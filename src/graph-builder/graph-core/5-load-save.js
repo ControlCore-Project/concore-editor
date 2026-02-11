@@ -13,6 +13,11 @@ class GraphLoadSave extends GraphUndoRedo {
     constructor(...args) {
         super(...args);
         this.autoSaveIntervalId = null;
+        this.lastSavedActionIndex = 0;
+    }
+
+    get isSaved() {
+        return this.curActionIndex === this.lastSavedActionIndex;
     }
 
     registerEvents() {
@@ -117,26 +122,33 @@ class GraphLoadSave extends GraphUndoRedo {
                     },
                 ],
             };
-            const handle = await window.showSaveFilePicker(options);
-            const stream = await handle.createWritable();
-            await stream.write(blob);
-            await stream.close();
-            const fileData = await handle.getFile();
-            let fS = this.superState.fileState;
-            fS = fS.concat([{
-                key: `${this.superState.uploadedDirName}/${handle.name}`,
-                modified: fileData.lastModified,
-                size: fileData.size,
-                fileObj: fileData,
-                fileHandle: handle,
-            }]);
-            this.dispatcher({ type: T.SET_FILE_STATE, payload: fS });
+            try {
+                const handle = await window.showSaveFilePicker(options);
+                const stream = await handle.createWritable();
+                await stream.write(blob);
+                await stream.close();
+                const fileData = await handle.getFile();
+                let fS = this.superState.fileState;
+                fS = fS.concat([{
+                    key: `${this.superState.uploadedDirName}/${handle.name}`,
+                    modified: fileData.lastModified,
+                    size: fileData.size,
+                    fileObj: fileData,
+                    fileHandle: handle,
+                }]);
+                this.dispatcher({ type: T.SET_FILE_STATE, payload: fS });
+                this.lastSavedActionIndex = this.curActionIndex;
+                toast.success('File saved Successfully');
+            } catch (error) {
+                // AbortError is silently ignored (user cancelled)
+            }
         } else {
             // eslint-disable-next-line no-alert
             const fileName = prompt('Filename:');
             saveAs(blob, `${fileName || `${this.getName()}-concore`}.graphml`);
+            this.lastSavedActionIndex = this.curActionIndex;
+            toast.success('File saved Successfully');
         }
-        toast.success('File saved Successfully');
     }
 
     async saveWithoutFileHandle() {
@@ -157,15 +169,20 @@ class GraphLoadSave extends GraphUndoRedo {
                 },
             ],
         };
-        const handle = await window.showSaveFilePicker(options);
-        this.dispatcher({
-            type: T.SET_FILE_HANDLE,
-            payload: { curGraphIndex: this.superState.curGraphIndex, fileHandle: handle },
-        });
-        const stream = await handle.createWritable();
-        await stream.write(blob);
-        await stream.close();
-        toast.success('File saved Successfully');
+        try {
+            const handle = await window.showSaveFilePicker(options);
+            this.dispatcher({
+                type: T.SET_FILE_HANDLE,
+                payload: { curGraphIndex: this.superState.curGraphIndex, fileHandle: handle },
+            });
+            const stream = await handle.createWritable();
+            await stream.write(blob);
+            await stream.close();
+            this.lastSavedActionIndex = this.curActionIndex;
+            toast.success('File saved Successfully');
+        } catch (error) {
+            // AbortError is silently ignored (user cancelled)
+        }
     }
 
     saveToFolder() {
@@ -203,6 +220,7 @@ class GraphLoadSave extends GraphUndoRedo {
         graphMLParser(graphML).then((graphObject) => {
             localStorageManager.save(this.id, graphObject);
             this.loadGraphFromLocalStorage();
+            this.lastSavedActionIndex = this.curActionIndex;
         });
     }
 
@@ -215,6 +233,10 @@ class GraphLoadSave extends GraphUndoRedo {
         const graphContent = localStorageManager.get(this.id);
         if (!graphContent) return false;
         this.loadJson(graphContent);
+        // If loaded from localStorage, assume UNSAVED unless actions are 0.
+        // Actually, loadJson sets curActionIndex based on history.
+        // If we want to support recovering unsaved work, we should leave lastSavedActionIndex as 0 (unless graph is empty and curActionIndex is 0).
+        if (this.curActionIndex === 0) this.lastSavedActionIndex = 0;
         return true;
     }
 

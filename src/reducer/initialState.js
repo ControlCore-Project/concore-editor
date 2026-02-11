@@ -38,6 +38,7 @@ const initialState = {
     octave: false,
     logs: false,
     logsmessage: '',
+    darkMode: false,
 };
 
 const initialGraphState = {

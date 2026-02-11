@@ -1,4 +1,15 @@
 .graph-container {
-  flex: 1;
-  border: 1px solid #888;
+    flex: 1;
+    border: 1px solid #888;
+}
+
+/*  DARK MODE - CANVAS / EDITOR AREA  */
+
+[data-theme='dark'] .graph-container {
+    background-color: #262626;
+    border: 1px solid #2C2C2C;
+}
+
+[data-theme='dark'] .graph-element {
+    background-color: #262626 !important;
 }
