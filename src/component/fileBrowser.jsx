@@ -23,8 +23,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
         if ('showDirectoryPicker' in window) {
             setDirButton(true);
         }
-        // Force fallback to webkitdirectory to allow custom popup flow
-        setDirButton(false);
+
         dispatcher({ type: T.SET_FILE_REF, payload: fileRef });
     }, []);
 
