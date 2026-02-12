@@ -40,7 +40,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           ISSUE_NUM: ${{ github.event.issue.number }}
-          
           #Use env vars for the API call to prevent injection
           #Use quotes around variables to prevent word splitting
         run: |
