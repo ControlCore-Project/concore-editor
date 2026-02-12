@@ -85,7 +85,7 @@ class GraphServer extends GraphLoadSave {
                 this.dispatcher({ type: T.SET_LOGS_MESSAGE, payload: this.superState.logsmessage + res.data.output });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -109,7 +109,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -133,7 +133,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -158,7 +158,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -182,7 +182,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -206,7 +206,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -224,7 +224,7 @@ class GraphServer extends GraphLoadSave {
                 toast.info(res.data['message'])
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
