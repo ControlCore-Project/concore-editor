@@ -1,5 +1,5 @@
 const nodeValidator = `(node, nodes, edges) => {
-    var regex = /^[A-za-z0-9]+[:[A-Za-z0-9.]+]|[^$]$/;
+    var regex = /^[A-Za-z0-9]+[:[A-Za-z0-9.]+]|[^$]$/;
     let message = { ok: true, err: null };
     if (!regex.test(node.label)) {
         message = {
@@ -9,7 +9,7 @@ const nodeValidator = `(node, nodes, edges) => {
         return message;
     }
     nodes.forEach((n) => {
-        if (n.id !== node.id && n.label.split(':')[0] === node.label.split(':')[0]) {
+        if (n.id !== node.id && n.label === node.label) {
             message = {
                 ok: false,
                 err: 'Node with same label exists.',
