@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 import Axios from 'axios';
 import { actionType as T } from '../../reducer';
+import { API_BASE_URL } from '../../serverCon/config';
 import GraphLoadSave from './5-load-save';
 // import {
 //     postGraph, updateGraph, forceUpdateGraph, getGraph, getGraphWithHashCheck,
@@ -73,7 +74,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/build/${this.superState.uploadedDirName}?fetch=${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}&unlock=${this.superState.unlockCheck}&docker=${this.superState.dockerCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}&octave=${this.superState.octave}`)
+        Axios.post(`${API_BASE_URL}/build/${this.superState.uploadedDirName}?fetch=${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}&unlock=${this.superState.unlockCheck}&docker=${this.superState.dockerCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}&octave=${this.superState.octave}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message']);
                 this.dispatcher({
@@ -98,7 +99,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/debug/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
+        Axios.post(`${API_BASE_URL}/debug/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message'])
                 this.dispatcher({
@@ -122,7 +123,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/run/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
+        Axios.post(`${API_BASE_URL}/run/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message'])
                 this.dispatcher({
@@ -146,7 +147,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/clear/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}
+        Axios.post(`${API_BASE_URL}/clear/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}
         ?unlock=${this.superState.unlockCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message']);
@@ -171,7 +172,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/stop/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
+        Axios.post(`${API_BASE_URL}/stop/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message'])
                 this.dispatcher({
@@ -195,7 +196,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.delete(`http://127.0.0.1:5000/destroy/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
+        Axios.delete(`${API_BASE_URL}/destroy/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message'])
                 this.dispatcher({
@@ -219,7 +220,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         // this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/library/${this.superState.uploadedDirName}?filename=${fileName}&path=${this.superState.library}`)
+        Axios.post(`${API_BASE_URL}/library/${this.superState.uploadedDirName}?filename=${fileName}&path=${this.superState.library}`)
             .then((res) => { // eslint-disable-next-line
                 toast.info(res.data['message'])
                 toast.dismiss(toastId);
