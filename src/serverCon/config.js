@@ -1,3 +1,5 @@
+export const EXECUTION_ENGINE_URL = process.env.REACT_APP_EXECUTION_ENGINE_URL || 'http://127.0.0.1:5000';
+
 export default {
     baseURL: 'http://localhost:8000/',
     getGraph: (id) => `workflow/${id}`,
