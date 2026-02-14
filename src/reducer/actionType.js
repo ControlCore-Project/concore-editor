@@ -44,6 +44,8 @@ const actionType = {
     SET_FUNCTIONS: 'SET_FUNCTIONS',
     SET_LOGS: 'SET_LOGS',
     SET_LOGS_MESSAGE: 'SET_LOGS_MESSAGE',
+    SET_GRAPH_INSTANCE: 'SET_GRAPH_INSTANCE',
+    TOGGLE_DARK_MODE: 'TOGGLE_DARK_MODE',
 };
 
 export default zealit(actionType);

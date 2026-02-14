@@ -1,5 +1,5 @@
 const nodeValidator = `(node, nodes, edges) => {
-    var regex = /^[A-za-z0-9]+[:[A-Za-z0-9.]+]|[^$]$/;
+    var regex = /^[A-Za-z0-9]+[:[A-Za-z0-9.]+]|[^$]$/;
     let message = { ok: true, err: null };
     if (!regex.test(node.label)) {
         message = {
@@ -9,7 +9,7 @@ const nodeValidator = `(node, nodes, edges) => {
         return message;
     }
     nodes.forEach((n) => {
-        if (n.id !== node.id && n.label.split(':')[0] === node.label.split(':')[0]) {
+        if (n.id !== node.id && n.label === node.label) {
             message = {
                 ok: false,
                 err: 'Node with same label exists.',
@@ -35,21 +35,21 @@ edges.forEach((e) => {
             err: 'Edge with same label exists.',
         };
     }
-    let numE = "";
-    for (let char of e.label) {
-        if (!isNaN(parseInt(char))) {
-        numE += char;
-        } else if (numE !== "") {
-        break;
-        }
-    }
-    if (numE === numEdge && numE != "0" && numE !== "") {
-        message = {
-            ok: false,
-            err: '2 edges cannot have same prefixes if they are number',
-        };
-        return message;
-    }
+    // let numE = "";
+    // for (let char of e.label) {
+    //     if (!isNaN(parseInt(char))) {
+    //     numE += char;
+    //     } else if (numE !== "") {
+    //     break;
+    //     }
+    // }
+    // if (numE === numEdge && numE != "0" && numE !== "") {
+    //     message = {
+    //         ok: false,
+    //         err: '2 edges cannot have same prefixes if they are number',
+    //     };
+    //     return message;
+    // }
 });
 return message;
 }`;

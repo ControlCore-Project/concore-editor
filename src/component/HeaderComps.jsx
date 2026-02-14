@@ -30,7 +30,7 @@ const FileUploader = ({
 );
 
 const Switcher = ({
-    text, action, active, tabIndex,
+    text, action, active, tabIndex, Icon,
 }) => (
     <div
         role="button"
@@ -39,12 +39,13 @@ const Switcher = ({
         onClick={action}
         onKeyDown={(ev) => ev.key === ' ' && action()}
     >
+        {Icon && <div className="icon"><Icon size="20" /></div>}
         <Switch
             onChange={action}
             checked={active}
             className="react-switch"
         />
-        <div>
+        <div style={{ fontSize: 14 }}>
             {text}
         </div>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { API_BASE_URL } from '../../serverCon/config';
+import { EXECUTION_ENGINE_URL } from '../../serverCon/config';
 import Modal from './ParentModal';
 import { actionType as T } from '../../reducer';
 import './contributeDetails.css';
@@ -25,7 +25,7 @@ const ContributeDetails = ({ superState, dispatcher }) => {
         const id = toast.loading('Processing your Request.Please wait...');
         try {
             e.preventDefault();
-            const result = await axios.post(`${API_BASE_URL}/contribute`, {
+            const result = await axios.post(`${EXECUTION_ENGINE_URL}/contribute`, {
                 study,
                 auth,
                 desc,

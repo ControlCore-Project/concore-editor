@@ -64,13 +64,15 @@
     width: fit-content;
     border: 1px solid gray
 }
+
 .color-picker{
     display: inline-block;
     margin: 13px 0px;
     position: absolute;
     background: transparent;
 }
-.color-picker .overlay{
+
+.color-picker .overlay {
     top: 0;
     bottom: 0;
     left: 0;
@@ -100,4 +102,66 @@ justify-content: space-between;
     .edgeform .span-rest {
         grid-column: 2;
     }
+}
+
+/* DARK MODE - EDGE DETAILS MODAL */
+
+[data-theme='dark'] .edgeform {
+    color: #EAEAEA;
+}
+
+/* Edge preview container */
+[data-theme='dark'] .par-div {
+    background: #202020;
+    border: 1px solid #2C2C2C;
+}
+
+/* Edge label text */
+[data-theme='dark'] .edgeform .label {
+    color: #FFFFFF;
+}
+
+/* Input field */
+[data-theme='dark'] .edgeform input[type="text"] {
+    background: #242424;
+    border: 1px solid #333333;
+    color: #FFFFFF;
+}
+
+[data-theme='dark'] .edgeform input[type="text"]::placeholder {
+    color: #888888;
+}
+
+[data-theme='dark'] .edgeform input[type="text"]:focus {
+    border-color: #2B8CF7;
+    outline: none;
+}
+
+/* Number inputs */
+[data-theme='dark'] .edgeform input[type="number"] {
+    background: #242424;
+    border: 1px solid #333333;
+    color: #FFFFFF;
+}
+
+[data-theme='dark'] .edgeform input[type="number"]:focus {
+    border-color: #2B8CF7;
+    outline: none;
+}
+
+/* Form container */
+[data-theme='dark'] .edgeform .form {
+    background: transparent;
+    color: #EAEAEA;
+}
+
+/* Color box container */
+[data-theme='dark'] .color-box-par {
+    background: #2A2A2A;
+    border: 1px solid #333333;
+    box-shadow: rgb(255 255 255 / 5%) 0px 0px 0px 1px;
+}
+
+[data-theme='dark'] .edgeform .color-box {
+    border: 1px solid #333333;
 }

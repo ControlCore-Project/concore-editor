@@ -18,7 +18,15 @@ function Graph({
 
     const initialiseNewGraph = () => {
         const myGraph = new MyGraph(
-            graphID, ref.current, dispatcher, superState, projectName, nodeValidator, edgeValidator, authorName,
+            graphID,
+            ref.current,
+            dispatcher,
+            superState,
+            projectName,
+            nodeValidator,
+            edgeValidator,
+            authorName,
+            superState.darkMode,
         );
         if (graphID) myGraph.loadGraphFromLocalStorage();
         if (serverID) {
@@ -27,6 +35,9 @@ function Graph({
         }
         if (graphML) myGraph.setGraphML(graphML);
         myGraph.setCurStatus();
+        myGraph.cy.on('zoom', () => {
+            dispatcher({ type: T.SET_ZOOM_LEVEL, payload: (myGraph.cy.zoom() * 100).toFixed(0) });
+        });
         return myGraph;
     };
     // Remote server implementation - Not being used.
@@ -41,7 +52,8 @@ function Graph({
     useEffect(() => active && instance && instance.setCurStatus(), [active && instance]);
     useEffect(() => {
         if (active && instance) dispatcher({ type: T.SET_CUR_INSTANCE, payload: instance });
-    }, [active && instance]);
+        if (instance) dispatcher({ type: T.SET_GRAPH_INSTANCE, payload: { graphID, instance } });
+    }, [active, instance, graphID, dispatcher]);
 
     useEffect(() => {
         if (ref.current) {
@@ -50,6 +62,13 @@ function Graph({
             setInstance(initialiseNewGraph());
         }
     }, [ref]);
+
+    // Update theme when darkMode changes
+    useEffect(() => {
+        if (instance && instance.updateTheme) {
+            instance.updateTheme(superState.darkMode);
+        }
+    }, [superState.darkMode, instance]);
 
     const { id } = el;
 

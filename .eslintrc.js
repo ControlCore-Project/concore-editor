@@ -1,5 +1,16 @@
 module.exports = {
-    parser: 'babel-eslint',
+    parser: '@babel/eslint-parser',
+    parserOptions: {
+        requireConfigFile: false, // allows using without a separate babel config
+        babelOptions: {
+            presets: ['@babel/preset-react'], // React JSX support
+        },
+        ecmaFeatures: {
+            jsx: true,
+        },
+        ecmaVersion: 12,
+        sourceType: 'module',
+    },
     env: {
         browser: true,
         es2021: true,
@@ -8,29 +19,13 @@ module.exports = {
         'plugin:react/recommended',
         'airbnb',
     ],
-    parserOptions: {
-        ecmaFeatures: {
-            jsx: true,
-        },
-        ecmaVersion: 12,
-        sourceType: 'module',
-    },
     plugins: [
         'react',
     ],
     rules: {
-        indent: [
-            'error',
-            4,
-        ],
-        'react/jsx-indent': [
-            'error',
-            4,
-        ],
-        'react/jsx-indent-props': [
-            'error',
-            4,
-        ],
+        indent: ['error', 4],
+        'react/jsx-indent': ['error', 4],
+        'react/jsx-indent-props': ['error', 4],
         'max-len': [
             'error',
             {
@@ -54,14 +49,9 @@ module.exports = {
     },
     overrides: [
         {
-            files: [
-                '*ML.js',
-            ],
+            files: ['*ML.js'],
             rules: {
-                indent: [
-                    'error',
-                    2,
-                ],
+                indent: ['error', 2],
             },
         },
     ],
