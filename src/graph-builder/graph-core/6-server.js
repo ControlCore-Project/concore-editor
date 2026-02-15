@@ -147,8 +147,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`${EXECUTION_ENGINE_URL}/clear/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}
-        ?unlock=${this.superState.unlockCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}`)
+        Axios.post(`${EXECUTION_ENGINE_URL}/clear/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}?unlock=${this.superState.unlockCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message']);
                 this.dispatcher({
