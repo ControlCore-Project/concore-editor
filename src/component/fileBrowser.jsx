@@ -5,6 +5,7 @@
 /* eslint-disable react/state-in-constructor */
 import React, { useEffect, useState } from 'react';
 import FileBrowser, { FileRenderers, FolderRenderers } from 'react-keyed-file-browser';
+import { toast } from 'react-toastify';
 import { readFile, readTextFile } from '../toolbarActions/toolbarFunctions';
 import { actionType as T } from '../reducer';
 import ConfirmModal from './modals/ConfirmModal';
@@ -33,7 +34,11 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
         //     const allFiles = window.localStorage.getItem('fileList');
         //     setFileState({ files: allFiles });
         // }
-        window.localStorage.setItem('fileList', JSON.stringify(fileState));
+        try {
+            window.localStorage.setItem('fileList', JSON.stringify(fileState));
+        } catch (e) {
+            toast.error(e.message);
+        }
     }, [fileState]);
 
     useEffect(() => {
@@ -235,7 +240,11 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                         }));
 
                         setFileState(filesArray);
-                        window.localStorage.setItem('fileList', JSON.stringify(filesArray));
+                        try {
+                            window.localStorage.setItem('fileList', JSON.stringify(filesArray));
+                        } catch (e) {
+                            toast.error(e.message);
+                        }
                         if (filesArray.length > 0) {
                             dispatcher({ type: T.SET_DIR_NAME, payload: filesArray[0].key.split('/')[0] });
                             dispatcher({ type: T.SET_FILE_STATE, payload: filesArray });

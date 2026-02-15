@@ -1,8 +1,37 @@
-const getSet = (ALL_GRAPHS) => {
-    if (!window.localStorage.getItem(ALL_GRAPHS)) {
-        window.localStorage.setItem(ALL_GRAPHS, window.btoa(JSON.stringify([])));
+import { toast } from 'react-toastify';
+
+const lsGet = (key) => {
+    try {
+        return window.localStorage.getItem(key);
+    } catch (e) {
+        toast.error(e.message);
+        return null;
     }
-    return new Set(JSON.parse(window.atob(window.localStorage.getItem(ALL_GRAPHS))));
+};
+
+const lsSet = (key, value) => {
+    try {
+        window.localStorage.setItem(key, value);
+    } catch (e) {
+        toast.error(e.message);
+    }
+};
+
+const lsRemove = (key) => {
+    try {
+        window.localStorage.removeItem(key);
+    } catch (e) {
+        toast.error(e.message);
+    }
+};
+
+const getSet = (ALL_GRAPHS) => {
+    if (!lsGet(ALL_GRAPHS)) {
+        lsSet(ALL_GRAPHS, window.btoa(JSON.stringify([])));
+    }
+    const raw = lsGet(ALL_GRAPHS);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(window.atob(raw)));
 };
 
 const localStorageManager = {
@@ -12,27 +41,28 @@ const localStorageManager = {
     allgs: getSet(window.btoa('ALL_GRAPHS')),
 
     saveAllgs() {
-        window.localStorage.setItem(this.ALL_GRAPHS, window.btoa(JSON.stringify(Array.from(this.allgs))));
+        lsSet(this.ALL_GRAPHS, window.btoa(JSON.stringify(Array.from(this.allgs))));
     },
 
     addEmptyIfNot() {
-        if (!window.localStorage.getItem(this.ALL_GRAPHS)) {
-            window.localStorage.setItem(this.ALL_GRAPHS, window.btoa(JSON.stringify([])));
+        if (!lsGet(this.ALL_GRAPHS)) {
+            lsSet(this.ALL_GRAPHS, window.btoa(JSON.stringify([])));
         }
     },
 
     get(id) {
-        if (window.localStorage.getItem(id) === null) return null;
-        return JSON.parse(window.atob(window.localStorage.getItem(id)));
+        const raw = lsGet(id);
+        if (raw === null) return null;
+        return JSON.parse(window.atob(raw));
     },
     save(id, graphContent) {
         this.addGraph(id);
         const serializedJson = JSON.stringify(graphContent);
-        window.localStorage.setItem(id, window.btoa(serializedJson));
+        lsSet(id, window.btoa(serializedJson));
     },
     remove(id) {
         if (this.allgs.delete(id)) this.saveAllgs();
-        localStorage.removeItem(id);
+        lsRemove(id);
     },
     addGraph(id) {
         if (this.allgs.has(id)) return;
@@ -40,26 +70,30 @@ const localStorageManager = {
         this.saveAllgs();
     },
     getAllGraphs() {
-        return JSON.parse(window.atob(window.localStorage.getItem(this.ALL_GRAPHS)));
+        const raw = lsGet(this.ALL_GRAPHS);
+        if (!raw) return [];
+        return JSON.parse(window.atob(raw));
     },
     addToFront(id) {
         if (this.allgs.has(id)) return;
         this.allgs.add(id);
-        const Garr = JSON.parse(window.atob(window.localStorage.getItem(this.ALL_GRAPHS)));
+        const raw = lsGet(this.ALL_GRAPHS);
+        if (!raw) return;
+        const Garr = JSON.parse(window.atob(raw));
         Garr.unshift(id);
-        window.localStorage.setItem(this.ALL_GRAPHS, window.btoa(JSON.stringify(Garr)));
+        lsSet(this.ALL_GRAPHS, window.btoa(JSON.stringify(Garr)));
     },
     getAuthorName() {
-        return localStorage.getItem(this.AUTHOR_NAME) || '';
+        return lsGet(this.AUTHOR_NAME) || '';
     },
     setAuthorName(authorName) {
-        localStorage.setItem(this.AUTHOR_NAME, authorName);
+        lsSet(this.AUTHOR_NAME, authorName);
     },
     clearGraph(id) {
-        window.localStorage.removeItem(id);
+        lsRemove(id);
     },
     getFileList() {
-        return localStorage.getItem('fileList') || '';
+        return lsGet('fileList') || '';
     },
 };
 export default localStorageManager;
