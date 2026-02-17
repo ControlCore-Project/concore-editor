@@ -67,153 +67,71 @@ class GraphServer extends GraphLoadSave {
     //     }
     // }
 
-    build() {
-        // TODO
+    serverAction(method, url, successPayload, onSuccess) {
         const toastId = toast.info('LOADING.......', {
             position: 'bottom-left',
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`${EXECUTION_ENGINE_URL}/build/${this.superState.uploadedDirName}?fetch=${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}&unlock=${this.superState.unlockCheck}&docker=${this.superState.dockerCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}&octave=${this.superState.octave}`)
+        Axios[method](url)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message']);
-                this.dispatcher({
-                    type: T.SET_FUNCTIONS,
-                    payload: {
-                        built: false, ran: true, debugged: true, cleared: false, stopped: false, destroyed: true,
-                    },
-                });
-                this.dispatcher({ type: T.SET_LOGS_MESSAGE, payload: this.superState.logsmessage + res.data.output });
+                if (successPayload) {
+                    this.dispatcher({ type: T.SET_FUNCTIONS, payload: successPayload });
+                }
+                if (onSuccess) onSuccess(res);
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
                 toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
-        if (this.serverID);
+    }
+
+    build() {
+        const url = `${EXECUTION_ENGINE_URL}/build/${this.superState.uploadedDirName}?fetch=${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}&unlock=${this.superState.unlockCheck}&docker=${this.superState.dockerCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}&octave=${this.superState.octave}`;
+        this.serverAction('post', url, {
+            built: false, ran: true, debugged: true, cleared: false, stopped: false, destroyed: true,
+        }, (res) => {
+            this.dispatcher({ type: T.SET_LOGS_MESSAGE, payload: this.superState.logsmessage + res.data.output });
+        });
     }
 
     debug() {
-        // TODO
-        const toastId = toast.info('LOADING.......', {
-            position: 'bottom-left',
-            autoClose: false,
+        const url = `${EXECUTION_ENGINE_URL}/debug/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`;
+        this.serverAction('post', url, {
+            built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
         });
-        this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`${EXECUTION_ENGINE_URL}/debug/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
-            .then((res) => { // eslint-disable-next-line
-                toast.success(res.data['message'])
-                this.dispatcher({
-                    type: T.SET_FUNCTIONS,
-                    payload: {
-                        built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
-                    },
-                });
-                toast.dismiss(toastId);
-            }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.response?.data?.message || err.message);
-                toast.dismiss(toastId);
-            });
-        if (this.serverID);
     }
 
     run() {
-        // TODO
-        const toastId = toast.info('LOADING.......', {
-            position: 'bottom-left',
-            autoClose: false,
+        const url = `${EXECUTION_ENGINE_URL}/run/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`;
+        this.serverAction('post', url, {
+            built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
         });
-        this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`${EXECUTION_ENGINE_URL}/run/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
-            .then((res) => { // eslint-disable-next-line
-                toast.success(res.data['message'])
-                this.dispatcher({
-                    type: T.SET_FUNCTIONS,
-                    payload: {
-                        built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
-                    },
-                });
-                toast.dismiss(toastId);
-            }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.response?.data?.message || err.message);
-                toast.dismiss(toastId);
-            });
-        if (this.serverID);
     }
 
     clear() {
-        // TODO
-        const toastId = toast.info('LOADING.......', {
-            position: 'bottom-left',
-            autoClose: false,
+        const url = `${EXECUTION_ENGINE_URL}/clear/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}?unlock=${this.superState.unlockCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}`;
+        this.serverAction('post', url, {
+            built: false, ran: true, debugged: true, cleared: false, stopped: true, destroyed: true,
         });
-        this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`${EXECUTION_ENGINE_URL}/clear/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}?unlock=${this.superState.unlockCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}`)
-            .then((res) => { // eslint-disable-next-line
-                toast.success(res.data['message']);
-                this.dispatcher({
-                    type: T.SET_FUNCTIONS,
-                    payload: {
-                        built: false, ran: true, debugged: true, cleared: false, stopped: true, destroyed: true,
-                    },
-                });
-                toast.dismiss(toastId);
-            }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.response?.data?.message || err.message);
-                toast.dismiss(toastId);
-            });
-        if (this.serverID);
     }
 
     stop() {
-        // TODO
-        const toastId = toast.info('LOADING.......', {
-            position: 'bottom-left',
-            autoClose: false,
+        const url = `${EXECUTION_ENGINE_URL}/stop/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`;
+        this.serverAction('post', url, {
+            built: false, ran: false, debugged: false, cleared: true, stopped: false, destroyed: true,
         });
-        this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`${EXECUTION_ENGINE_URL}/stop/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
-            .then((res) => { // eslint-disable-next-line
-                toast.success(res.data['message'])
-                this.dispatcher({
-                    type: T.SET_FUNCTIONS,
-                    payload: {
-                        built: false, ran: false, debugged: false, cleared: true, stopped: false, destroyed: true,
-                    },
-                });
-                toast.dismiss(toastId);
-            }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.response?.data?.message || err.message);
-                toast.dismiss(toastId);
-            });
-        if (this.serverID);
     }
 
     destroy() {
-        // TODO
-        const toastId = toast.info('LOADING.......', {
-            position: 'bottom-left',
-            autoClose: false,
+        const url = `${EXECUTION_ENGINE_URL}/destroy/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`;
+        this.serverAction('delete', url, {
+            built: true, ran: false, debugged: false, cleared: false, stopped: false, destroyed: false,
         });
-        this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.delete(`${EXECUTION_ENGINE_URL}/destroy/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
-            .then((res) => { // eslint-disable-next-line
-                toast.success(res.data['message'])
-                this.dispatcher({
-                    type: T.SET_FUNCTIONS,
-                    payload: {
-                        built: true, ran: false, debugged: false, cleared: false, stopped: false, destroyed: false,
-                    },
-                });
-                toast.dismiss(toastId);
-            }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.response?.data?.message || err.message);
-                toast.dismiss(toastId);
-            });
-        if (this.serverID);
     }
 
     library(fileName) {
-        // TODO
         const toastId = toast.info('LOADING.......', {
             position: 'bottom-left',
             autoClose: false,
@@ -227,7 +145,6 @@ class GraphServer extends GraphLoadSave {
                 toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
-        if (this.serverID);
     }
 
     setCurStatus() {
