@@ -1,5 +1,5 @@
 const nodeValidator = `(node, nodes, edges) => {
-    var regex = /^[A-Za-z0-9]+[:[A-Za-z0-9.]+]|[^$]$/;
+    var regex = /^[A-Za-z0-9]+(:[A-Za-z0-9_]+)*$/;
     let message = { ok: true, err: null };
     if (!regex.test(node.label)) {
         message = {
