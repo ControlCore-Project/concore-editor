@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 import Axios from 'axios';
 import { actionType as T } from '../../reducer';
+import { EXECUTION_ENGINE_URL } from '../../serverCon/config';
 import GraphLoadSave from './5-load-save';
 // import {
 //     postGraph, updateGraph, forceUpdateGraph, getGraph, getGraphWithHashCheck,
@@ -73,7 +74,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/build/${this.superState.uploadedDirName}?fetch=${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}&unlock=${this.superState.unlockCheck}&docker=${this.superState.dockerCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}&octave=${this.superState.octave}`)
+        Axios.post(`${EXECUTION_ENGINE_URL}/build/${this.superState.uploadedDirName}?fetch=${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}&unlock=${this.superState.unlockCheck}&docker=${this.superState.dockerCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}&octave=${this.superState.octave}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message']);
                 this.dispatcher({
@@ -85,7 +86,7 @@ class GraphServer extends GraphLoadSave {
                 this.dispatcher({ type: T.SET_LOGS_MESSAGE, payload: this.superState.logsmessage + res.data.output });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -98,7 +99,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/debug/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
+        Axios.post(`${EXECUTION_ENGINE_URL}/debug/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message'])
                 this.dispatcher({
@@ -109,7 +110,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -122,7 +123,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/run/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
+        Axios.post(`${EXECUTION_ENGINE_URL}/run/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message'])
                 this.dispatcher({
@@ -133,7 +134,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -146,8 +147,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/clear/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}
-        ?unlock=${this.superState.unlockCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}`)
+        Axios.post(`${EXECUTION_ENGINE_URL}/clear/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}?unlock=${this.superState.unlockCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message']);
                 this.dispatcher({
@@ -158,7 +158,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -171,7 +171,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/stop/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
+        Axios.post(`${EXECUTION_ENGINE_URL}/stop/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message'])
                 this.dispatcher({
@@ -182,7 +182,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -195,7 +195,7 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.delete(`http://127.0.0.1:5000/destroy/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
+        Axios.delete(`${EXECUTION_ENGINE_URL}/destroy/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`)
             .then((res) => { // eslint-disable-next-line
                 toast.success(res.data['message'])
                 this.dispatcher({
@@ -206,7 +206,7 @@ class GraphServer extends GraphLoadSave {
                 });
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);
@@ -219,12 +219,12 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         // this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`http://127.0.0.1:5000/library/${this.superState.uploadedDirName}?filename=${fileName}&path=${this.superState.library}`)
+        Axios.post(`${EXECUTION_ENGINE_URL}/library/${this.superState.uploadedDirName}?filename=${fileName}&path=${this.superState.library}`)
             .then((res) => { // eslint-disable-next-line
                 toast.info(res.data['message'])
                 toast.dismiss(toastId);
             }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.message);
+                toast.error(err.response?.data?.message || err.message);
                 toast.dismiss(toastId);
             });
         if (this.serverID);

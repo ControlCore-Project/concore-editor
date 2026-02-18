@@ -1,6 +1,6 @@
 const NodeStyle = {
-    width: 100,
-    height: 50,
+    width: 100, // 5 grid cells (assuming 20px grid)
+    height: 60, // 3 grid cells (assuming 20px grid)
     shape: 'rectangle',
     opacity: 1,
     backgroundColor: '#ffcc00',
@@ -9,8 +9,8 @@ const NodeStyle = {
 };
 
 const EdgeStyle = {
-    thickness: 1,
-    backgroundColor: null,
+    thickness: 2,
+    backgroundColor: '#555',
     shape: 'solid',
 };
 

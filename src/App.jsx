@@ -31,6 +31,16 @@ const app = () => {
             window.onbeforeunload = null;
         };
     }, []);
+
+    // Update document theme attribute when darkMode changes
+    useEffect(() => {
+        if (superState.darkMode) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+    }, [superState.darkMode]);
+
     return (
         <div className="container">
             <ProjectDetails superState={superState} dispatcher={dispatcher} />
