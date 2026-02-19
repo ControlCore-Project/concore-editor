@@ -88,7 +88,14 @@ class GraphServer extends GraphLoadSave {
     }
 
     build() {
-        const url = `${EXECUTION_ENGINE_URL}/build/${this.superState.uploadedDirName}?fetch=${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}&unlock=${this.superState.unlockCheck}&docker=${this.superState.dockerCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}&octave=${this.superState.octave}`;
+        const graphName = this.superState.graphs[
+            this.superState.curGraphIndex].fileName.split('.')[0];
+        const url = `${EXECUTION_ENGINE_URL}/build/${this.superState.uploadedDirName}`
+            + `?fetch=${graphName}&unlock=${this.superState.unlockCheck}`
+            + `&docker=${this.superState.dockerCheck}`
+            + `&maxtime=${this.superState.maxTime}`
+            + `&params=${this.superState.params}`
+            + `&octave=${this.superState.octave}`;
         this.serverAction('post', url, {
             built: false, ran: true, debugged: true, cleared: false, stopped: false, destroyed: true,
         }, (res) => {
@@ -97,35 +104,48 @@ class GraphServer extends GraphLoadSave {
     }
 
     debug() {
-        const url = `${EXECUTION_ENGINE_URL}/debug/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`;
+        const graphName = this.superState.graphs[
+            this.superState.curGraphIndex].fileName.split('.')[0];
+        const url = `${EXECUTION_ENGINE_URL}/debug/${graphName}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
         });
     }
 
     run() {
-        const url = `${EXECUTION_ENGINE_URL}/run/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`;
+        const graphName = this.superState.graphs[
+            this.superState.curGraphIndex].fileName.split('.')[0];
+        const url = `${EXECUTION_ENGINE_URL}/run/${graphName}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
         });
     }
 
     clear() {
-        const url = `${EXECUTION_ENGINE_URL}/clear/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}?unlock=${this.superState.unlockCheck}&maxtime=${this.superState.maxTime}&params=${this.superState.params}`;
+        const graphName = this.superState.graphs[
+            this.superState.curGraphIndex].fileName.split('.')[0];
+        const url = `${EXECUTION_ENGINE_URL}/clear/${graphName}`
+            + `?unlock=${this.superState.unlockCheck}`
+            + `&maxtime=${this.superState.maxTime}`
+            + `&params=${this.superState.params}`;
         this.serverAction('post', url, {
             built: false, ran: true, debugged: true, cleared: false, stopped: true, destroyed: true,
         });
     }
 
     stop() {
-        const url = `${EXECUTION_ENGINE_URL}/stop/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`;
+        const graphName = this.superState.graphs[
+            this.superState.curGraphIndex].fileName.split('.')[0];
+        const url = `${EXECUTION_ENGINE_URL}/stop/${graphName}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: false, destroyed: true,
         });
     }
 
     destroy() {
-        const url = `${EXECUTION_ENGINE_URL}/destroy/${this.superState.graphs[this.superState.curGraphIndex].fileName.split('.')[0]}`;
+        const graphName = this.superState.graphs[
+            this.superState.curGraphIndex].fileName.split('.')[0];
+        const url = `${EXECUTION_ENGINE_URL}/destroy/${graphName}`;
         this.serverAction('delete', url, {
             built: true, ran: false, debugged: false, cleared: false, stopped: false, destroyed: false,
         });
@@ -137,7 +157,9 @@ class GraphServer extends GraphLoadSave {
             autoClose: false,
         });
         // this.dispatcher({ type: T.SET_LOGS, payload: false });
-        Axios.post(`${EXECUTION_ENGINE_URL}/library/${this.superState.uploadedDirName}?filename=${fileName}&path=${this.superState.library}`)
+        const url = `${EXECUTION_ENGINE_URL}/library/${this.superState.uploadedDirName}`
+            + `?filename=${fileName}&path=${this.superState.library}`;
+        Axios.post(url)
             .then((res) => { // eslint-disable-next-line
                 toast.info(res.data['message'])
                 toast.dismiss(toastId);
