@@ -223,21 +223,9 @@ class GraphServer extends GraphLoadSave {
     }
 
     library(fileName) {
-        const toastId = toast.info('LOADING.......', {
-            position: 'bottom-left',
-            autoClose: false,
-        });
-        // this.dispatcher({ type: T.SET_LOGS, payload: false });
         const url = `${EXECUTION_ENGINE_URL}/library/${this.superState.uploadedDirName}`
             + `?filename=${fileName}&path=${this.superState.library}`;
-        Axios.post(url)
-            .then((res) => { // eslint-disable-next-line
-                toast.info(res.data['message'])
-                toast.dismiss(toastId);
-            }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.response?.data?.message || err.message);
-                toast.dismiss(toastId);
-            });
+        this.serverAction('post', url, null);
     }
 
     setCurStatus() {
