@@ -6,6 +6,9 @@ import GraphLoadSave from './5-load-save';
 // import {
 //     postGraph, updateGraph, forceUpdateGraph, getGraph, getGraphWithHashCheck,
 // } from '../../serverCon/crud_http';
+import {
+    postGraph, updateGraph, forceUpdateGraph, getGraph, getGraphWithHashCheck,
+} from '../../serverCon/crud_http';
 
 class GraphServer extends GraphLoadSave {
     set(config) {
@@ -66,6 +69,74 @@ class GraphServer extends GraphLoadSave {
     //         toast.success('Not on server');
     //     }
     // }
+
+    pushToServer() {
+        if (this.serverID) {
+            updateGraph(this.serverID, this.getGraphML()).then(() => {
+
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        } else {
+            postGraph(this.getGraphML()).then((serverID) => {
+                this.set({ serverID });
+                this.cy.emit('graph-modified');
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        }
+    }
+
+    forcePushToServer() {
+        // eslint-disable-next-line
+        if (!window.confirm(
+            'Forced push may result in workflow overwite and loss of changes pushed by others. Confirm?',
+        )) return;
+        if (this.serverID) {
+            forceUpdateGraph(this.serverID, this.getGraphML()).then(() => {
+
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        } else {
+            postGraph(this.getGraphML()).then((serverID) => {
+                this.set({ serverID });
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        }
+    }
+
+    forcePullFromServer() {
+        // eslint-disable-next-line
+        if (!window.confirm(
+            'Forced pull may result in workflow overwite and loss of unsaved changes. Confirm?',
+        )) return;
+        if (this.serverID) {
+            getGraph(this.serverID).then((graphXML) => {
+                this.setGraphML(graphXML);
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        } else {
+            // eslint-disable-next-line no-toast.success
+            toast.success('Not on server');
+        }
+    }
+
+    pullFromServer() {
+        if (this.actionArr.length === 0) { this.forcePullFromServer(); return; }
+        if (this.serverID) {
+            getGraphWithHashCheck(this.serverID, this.actionArr.at(-1).hash).then((graphXML) => {
+                this.setGraphML(graphXML);
+            }).catch(() => {
+
+            });
+        } else {
+            // eslint-disable-next-line no-toast.success
+            toast.success('Not on server');
+        }
+    }
 
     serverAction(method, url, successPayload, onSuccess) {
         const toastId = toast.info('LOADING.......', {
