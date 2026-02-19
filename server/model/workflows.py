@@ -32,7 +32,7 @@ class WorkFlowModel:
     def get(self, serverID):
         cl = self.collection.find_one({'serverID': serverID})
         if not cl:
-            return False, 'Record Not Found'
+            return None
         return cl['graphml']
 
     def update(self, serverID, graphml, latestHash, allHash):
