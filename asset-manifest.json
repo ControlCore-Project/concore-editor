@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/concore-editor/static/css/main.82fa7053.css",
-    "main.js": "/concore-editor/static/js/main.814256af.js",
+    "main.js": "/concore-editor/static/js/main.4aa646c5.js",
     "static/js/422.4f7d9eb7.chunk.js": "/concore-editor/static/js/422.4f7d9eb7.chunk.js",
     "service-worker.js": "/concore-editor/service-worker.js",
     "index.html": "/concore-editor/index.html",
     "main.82fa7053.css.map": "/concore-editor/static/css/main.82fa7053.css.map",
-    "main.814256af.js.map": "/concore-editor/static/js/main.814256af.js.map",
+    "main.4aa646c5.js.map": "/concore-editor/static/js/main.4aa646c5.js.map",
     "422.4f7d9eb7.chunk.js.map": "/concore-editor/static/js/422.4f7d9eb7.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.82fa7053.css",
-    "static/js/main.814256af.js"
+    "static/js/main.4aa646c5.js"
   ]
 }
