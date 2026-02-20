@@ -234,10 +234,10 @@ class GraphComponent extends GraphCanvas {
     }
 
     setEdgeNodeValidator({ nodeValidator, edgeValidator }) {
-        // eslint-disable-next-line no-eval
-        this.nodeValidator = eval(nodeValidator);
-        // eslint-disable-next-line no-eval
-        this.edgeValidator = eval(edgeValidator);
+        // eslint-disable-next-line no-new-func
+        this.nodeValidator = new Function(`return ${nodeValidator}`)();
+        // eslint-disable-next-line no-new-func
+        this.edgeValidator = new Function(`return ${edgeValidator}`)();
     }
 
     getNodesEdges() {
