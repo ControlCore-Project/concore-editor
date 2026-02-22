@@ -56,11 +56,12 @@ function Graph({
     }, [active, instance, graphID, dispatcher]);
 
     useEffect(() => {
-        if (ref.current) {
-            setContainerDim(ref.current);
-            window.addEventListener('resize', () => setContainerDim(ref.current));
-            setInstance(initialiseNewGraph());
-        }
+        if (!ref.current) return;
+        setContainerDim(ref.current);
+        const handleResize = () => setContainerDim(ref.current);
+        window.addEventListener('resize', handleResize);
+        setInstance(initialiseNewGraph());
+        return () => window.removeEventListener('resize', handleResize);
     }, [ref]);
 
     // Update theme when darkMode changes

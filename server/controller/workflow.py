@@ -1,9 +1,16 @@
-from model.workflows import *
+from model.workflows import WorkFlowModel
 from flask import request, make_response, Blueprint
 import defusedxml.ElementTree as ET
 
 workFlow = Blueprint('workflow', __name__)
 workFlowModel = WorkFlowModel()
+
+
+def isMissingWorkflow(graphml):
+    if graphml is None:
+        return True
+    # Backward-compatible guard for legacy model return type.
+    return isinstance(graphml, tuple) and len(graphml) > 0 and graphml[0] is False
 
 
 def getLasteshActionHash(root):
@@ -32,7 +39,7 @@ def postWorkflow():
 @workFlow.route("/<serverID>")
 def getWorkflow(serverID):
     graphml = workFlowModel.get(serverID)
-    if graphml is None:
+    if isMissingWorkflow(graphml):
         return "Not Found", 404
     if('X-Latest-Hash' in request.headers):
         latestHash = request.headers['X-Latest-Hash']
