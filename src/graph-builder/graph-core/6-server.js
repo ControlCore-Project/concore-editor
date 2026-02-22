@@ -158,9 +158,18 @@ class GraphServer extends GraphLoadSave {
             });
     }
 
+    getCurrentGraphName() {
+        const currentGraph = this.superState.graphs[this.superState.curGraphIndex];
+        if (!currentGraph || typeof currentGraph.fileName !== 'string' || !currentGraph.fileName.trim()) {
+            toast.error('Open a GraphML file before using server actions.');
+            return null;
+        }
+        return currentGraph.fileName.trim().split('.')[0];
+    }
+
     build() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/build/${this.superState.uploadedDirName}`
             + `?fetch=${graphName}&unlock=${this.superState.unlockCheck}`
             + `&docker=${this.superState.dockerCheck}`
@@ -175,8 +184,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     debug() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/debug/${graphName}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
@@ -184,8 +193,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     run() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/run/${graphName}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
@@ -193,8 +202,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     clear() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/clear/${graphName}`
             + `?unlock=${this.superState.unlockCheck}`
             + `&maxtime=${this.superState.maxTime}`
@@ -205,8 +214,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     stop() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/stop/${graphName}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: false, destroyed: true,
@@ -214,8 +223,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     destroy() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/destroy/${graphName}`;
         this.serverAction('delete', url, {
             built: true, ran: false, debugged: false, cleared: false, stopped: false, destroyed: false,
