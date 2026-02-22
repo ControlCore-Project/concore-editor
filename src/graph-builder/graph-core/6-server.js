@@ -51,7 +51,6 @@ class GraphServer extends GraphLoadSave {
     //             this.setGraphML(graphXML);
     //         });
     //     } else {
-    //         // eslint-disable-next-line no-toast.success
     //         toast.success('Not on server');
     //     }
     // }
@@ -65,7 +64,6 @@ class GraphServer extends GraphLoadSave {
 
     //         });
     //     } else {
-    //         // eslint-disable-next-line no-toast.success
     //         toast.success('Not on server');
     //     }
     // }
@@ -119,7 +117,6 @@ class GraphServer extends GraphLoadSave {
                 toast.error(err.response?.data?.message || err.message);
             });
         } else {
-            // eslint-disable-next-line no-toast.success
             toast.success('Not on server');
         }
     }
@@ -133,7 +130,6 @@ class GraphServer extends GraphLoadSave {
 
             });
         } else {
-            // eslint-disable-next-line no-toast.success
             toast.success('Not on server');
         }
     }
