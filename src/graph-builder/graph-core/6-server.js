@@ -170,12 +170,16 @@ class GraphServer extends GraphLoadSave {
     build() {
         const graphName = this.getCurrentGraphName();
         if (!graphName) return;
-        const url = `${EXECUTION_ENGINE_URL}/build/${this.superState.uploadedDirName}`
-            + `?fetch=${graphName}&unlock=${this.superState.unlockCheck}`
-            + `&docker=${this.superState.dockerCheck}`
-            + `&maxtime=${this.superState.maxTime}`
-            + `&params=${this.superState.params}`
-            + `&octave=${this.superState.octave}`;
+        const query = new URLSearchParams({
+            fetch: graphName,
+            unlock: this.superState.unlockCheck,
+            docker: this.superState.dockerCheck,
+            maxtime: this.superState.maxTime,
+            params: this.superState.params,
+            octave: this.superState.octave,
+        });
+        const url = `${EXECUTION_ENGINE_URL}/build/${encodeURIComponent(this.superState.uploadedDirName)}`
+            + `?${query.toString()}`;
         this.serverAction('post', url, {
             built: false, ran: true, debugged: true, cleared: false, stopped: false, destroyed: true,
         }, (res) => {
@@ -186,7 +190,7 @@ class GraphServer extends GraphLoadSave {
     debug() {
         const graphName = this.getCurrentGraphName();
         if (!graphName) return;
-        const url = `${EXECUTION_ENGINE_URL}/debug/${graphName}`;
+        const url = `${EXECUTION_ENGINE_URL}/debug/${encodeURIComponent(graphName)}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
         });
@@ -195,7 +199,7 @@ class GraphServer extends GraphLoadSave {
     run() {
         const graphName = this.getCurrentGraphName();
         if (!graphName) return;
-        const url = `${EXECUTION_ENGINE_URL}/run/${graphName}`;
+        const url = `${EXECUTION_ENGINE_URL}/run/${encodeURIComponent(graphName)}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
         });
@@ -204,10 +208,13 @@ class GraphServer extends GraphLoadSave {
     clear() {
         const graphName = this.getCurrentGraphName();
         if (!graphName) return;
-        const url = `${EXECUTION_ENGINE_URL}/clear/${graphName}`
-            + `?unlock=${this.superState.unlockCheck}`
-            + `&maxtime=${this.superState.maxTime}`
-            + `&params=${this.superState.params}`;
+        const query = new URLSearchParams({
+            unlock: this.superState.unlockCheck,
+            maxtime: this.superState.maxTime,
+            params: this.superState.params,
+        });
+        const url = `${EXECUTION_ENGINE_URL}/clear/${encodeURIComponent(graphName)}`
+            + `?${query.toString()}`;
         this.serverAction('post', url, {
             built: false, ran: true, debugged: true, cleared: false, stopped: true, destroyed: true,
         });
@@ -216,7 +223,7 @@ class GraphServer extends GraphLoadSave {
     stop() {
         const graphName = this.getCurrentGraphName();
         if (!graphName) return;
-        const url = `${EXECUTION_ENGINE_URL}/stop/${graphName}`;
+        const url = `${EXECUTION_ENGINE_URL}/stop/${encodeURIComponent(graphName)}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: false, destroyed: true,
         });
@@ -225,15 +232,19 @@ class GraphServer extends GraphLoadSave {
     destroy() {
         const graphName = this.getCurrentGraphName();
         if (!graphName) return;
-        const url = `${EXECUTION_ENGINE_URL}/destroy/${graphName}`;
+        const url = `${EXECUTION_ENGINE_URL}/destroy/${encodeURIComponent(graphName)}`;
         this.serverAction('delete', url, {
             built: true, ran: false, debugged: false, cleared: false, stopped: false, destroyed: false,
         });
     }
 
     library(fileName) {
-        const url = `${EXECUTION_ENGINE_URL}/library/${this.superState.uploadedDirName}`
-            + `?filename=${fileName}&path=${this.superState.library}`;
+        const query = new URLSearchParams({
+            filename: fileName,
+            path: this.superState.library,
+        });
+        const url = `${EXECUTION_ENGINE_URL}/library/${encodeURIComponent(this.superState.uploadedDirName)}`
+            + `?${query.toString()}`;
         this.serverAction('post', url, null);
     }
 
