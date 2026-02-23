@@ -234,12 +234,17 @@ const reducer = (state, action) => {
 
     case T.SET_FUNCTIONS: {
         const newState = { ...state };
-        newState.graphs[state.curGraphIndex].built = action.payload.built;
-        newState.graphs[state.curGraphIndex].debugged = action.payload.debugged;
-        newState.graphs[state.curGraphIndex].ran = action.payload.ran;
-        newState.graphs[state.curGraphIndex].cleared = action.payload.cleared;
-        newState.graphs[state.curGraphIndex].destroyed = action.payload.destroyed;
-        newState.graphs[state.curGraphIndex].stopped = action.payload.stopped;
+        newState.graphs = newState.graphs.map((g, index) => (
+            index === state.curGraphIndex ? {
+                ...g,
+                built: action.payload.built,
+                debugged: action.payload.debugged,
+                ran: action.payload.ran,
+                cleared: action.payload.cleared,
+                destroyed: action.payload.destroyed,
+                stopped: action.payload.stopped,
+            } : g
+        ));
         return { ...newState };
     }
 
