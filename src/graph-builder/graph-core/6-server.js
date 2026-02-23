@@ -6,6 +6,9 @@ import GraphLoadSave from './5-load-save';
 // import {
 //     postGraph, updateGraph, forceUpdateGraph, getGraph, getGraphWithHashCheck,
 // } from '../../serverCon/crud_http';
+import {
+    postGraph, updateGraph, forceUpdateGraph, getGraph, getGraphWithHashCheck,
+} from '../../serverCon/crud_http';
 
 class GraphServer extends GraphLoadSave {
     set(config) {
@@ -67,6 +70,74 @@ class GraphServer extends GraphLoadSave {
     //     }
     // }
 
+    pushToServer() {
+        if (this.serverID) {
+            updateGraph(this.serverID, this.getGraphML()).then(() => {
+
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        } else {
+            postGraph(this.getGraphML()).then((serverID) => {
+                this.set({ serverID });
+                this.cy.emit('graph-modified');
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        }
+    }
+
+    forcePushToServer() {
+        // eslint-disable-next-line
+        if (!window.confirm(
+            'Forced push may result in workflow overwite and loss of changes pushed by others. Confirm?',
+        )) return;
+        if (this.serverID) {
+            forceUpdateGraph(this.serverID, this.getGraphML()).then(() => {
+
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        } else {
+            postGraph(this.getGraphML()).then((serverID) => {
+                this.set({ serverID });
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        }
+    }
+
+    forcePullFromServer() {
+        // eslint-disable-next-line
+        if (!window.confirm(
+            'Forced pull may result in workflow overwite and loss of unsaved changes. Confirm?',
+        )) return;
+        if (this.serverID) {
+            getGraph(this.serverID).then((graphXML) => {
+                this.setGraphML(graphXML);
+            }).catch((err) => {
+                toast.error(err.response?.data?.message || err.message);
+            });
+        } else {
+            // eslint-disable-next-line no-toast.success
+            toast.success('Not on server');
+        }
+    }
+
+    pullFromServer() {
+        if (this.actionArr.length === 0) { this.forcePullFromServer(); return; }
+        if (this.serverID) {
+            getGraphWithHashCheck(this.serverID, this.actionArr.at(-1).hash).then((graphXML) => {
+                this.setGraphML(graphXML);
+            }).catch(() => {
+
+            });
+        } else {
+            // eslint-disable-next-line no-toast.success
+            toast.success('Not on server');
+        }
+    }
+
     serverAction(method, url, successPayload, onSuccess) {
         const toastId = toast.info('LOADING.......', {
             position: 'bottom-left',
@@ -87,9 +158,18 @@ class GraphServer extends GraphLoadSave {
             });
     }
 
+    getCurrentGraphName() {
+        const currentGraph = this.superState.graphs[this.superState.curGraphIndex];
+        if (!currentGraph || typeof currentGraph.fileName !== 'string' || !currentGraph.fileName.trim()) {
+            toast.error('Open a GraphML file before using server actions.');
+            return null;
+        }
+        return currentGraph.fileName.trim().split('.')[0];
+    }
+
     build() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/build/${this.superState.uploadedDirName}`
             + `?fetch=${graphName}&unlock=${this.superState.unlockCheck}`
             + `&docker=${this.superState.dockerCheck}`
@@ -104,8 +184,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     debug() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/debug/${graphName}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
@@ -113,8 +193,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     run() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/run/${graphName}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: true, destroyed: true,
@@ -122,8 +202,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     clear() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/clear/${graphName}`
             + `?unlock=${this.superState.unlockCheck}`
             + `&maxtime=${this.superState.maxTime}`
@@ -134,8 +214,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     stop() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/stop/${graphName}`;
         this.serverAction('post', url, {
             built: false, ran: false, debugged: false, cleared: true, stopped: false, destroyed: true,
@@ -143,8 +223,8 @@ class GraphServer extends GraphLoadSave {
     }
 
     destroy() {
-        const graphName = this.superState.graphs[
-            this.superState.curGraphIndex].fileName.split('.')[0];
+        const graphName = this.getCurrentGraphName();
+        if (!graphName) return;
         const url = `${EXECUTION_ENGINE_URL}/destroy/${graphName}`;
         this.serverAction('delete', url, {
             built: true, ran: false, debugged: false, cleared: false, stopped: false, destroyed: false,
@@ -152,21 +232,9 @@ class GraphServer extends GraphLoadSave {
     }
 
     library(fileName) {
-        const toastId = toast.info('LOADING.......', {
-            position: 'bottom-left',
-            autoClose: false,
-        });
-        // this.dispatcher({ type: T.SET_LOGS, payload: false });
         const url = `${EXECUTION_ENGINE_URL}/library/${this.superState.uploadedDirName}`
             + `?filename=${fileName}&path=${this.superState.library}`;
-        Axios.post(url)
-            .then((res) => { // eslint-disable-next-line
-                toast.info(res.data['message'])
-                toast.dismiss(toastId);
-            }).catch((err) => { // eslint-disable-next-line
-                toast.error(err.response?.data?.message || err.message);
-                toast.dismiss(toastId);
-            });
+        this.serverAction('post', url, null);
     }
 
     setCurStatus() {

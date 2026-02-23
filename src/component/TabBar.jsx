@@ -63,6 +63,11 @@ const TabBar = ({ superState, dispatcher }) => {
             const el = document.querySelector('.tab.tab-graph.selected > .tab-act.close');
             if (el) el.click();
         });
+        return () => {
+            hotkeys.unbind('ctrl+shift+m,command+shift+m');
+            hotkeys.unbind('ctrl+shift+e,command+shift+e');
+            hotkeys.unbind('ctrl+shift+l,command+shift+l');
+        };
     }, []);
 
     return (

@@ -175,7 +175,7 @@ const undo = (state) => {
     if (getGraphFun(state)) getGraphFun(state).undo();
 };
 const redo = (state) => {
-    getGraphFun(state).redo();
+    if (getGraphFun(state)) getGraphFun(state).redo();
 };
 
 const openShareModal = (state, setState) => {
