@@ -15,7 +15,9 @@ const TabBar = ({ superState, dispatcher }) => {
     const [tabToClose, setTabToClose] = useState(null);
 
     const closeTab = (i) => {
-        localStorageManager.remove(superState.graphs[i] ? superState.graphs[i].graphID : null);
+        const graph = superState.graphs[i];
+        if (graph && graph.instance) graph.instance.dispose();
+        localStorageManager.remove(graph ? graph.graphID : null);
         dispatcher({ type: T.REMOVE_GRAPH, payload: i });
         if (!superState.curGraphIndex && superState.graphs.length === 1) {
             dispatcher({ type: T.SET_CUR_INSTANCE, payload: null });
