@@ -1,7 +1,14 @@
 import ec from './config';
 
+function readTextOrThrow(x) {
+    return x.text().then((text) => {
+        if (x.ok) return text;
+        throw new Error(text || `Request failed with status ${x.status}`);
+    });
+}
+
 function getGraph(serverID) {
-    return fetch(`${ec.baseURL + ec.getGraph(serverID)}`).then((x) => x.text());
+    return fetch(`${ec.baseURL + ec.getGraph(serverID)}`).then((x) => readTextOrThrow(x));
 }
 
 function getGraphWithHashCheck(serverID, latestHash) {
@@ -9,10 +16,7 @@ function getGraphWithHashCheck(serverID, latestHash) {
         headers: {
             'X-Latest-Hash': latestHash,
         },
-    }).then((x) => {
-        if (x.status === 200) return x.text();
-        return Promise.reject(x.text());
-    });
+    }).then((x) => readTextOrThrow(x));
 }
 
 function postGraph(graphml) {
@@ -22,10 +26,7 @@ function postGraph(graphml) {
         },
         method: 'POST',
         body: graphml,
-    }).then((x) => {
-        if (!x.ok) return Promise.reject(x.text());
-        return x.text();
-    });
+    }).then((x) => readTextOrThrow(x));
 }
 
 function updateGraph(serverID, graphml) {
@@ -35,10 +36,7 @@ function updateGraph(serverID, graphml) {
             'Content-Type': 'application/xml',
         },
         body: graphml,
-    }).then((x) => {
-        if (!x.ok) return Promise.reject(x.text());
-        return x.text();
-    });
+    }).then((x) => readTextOrThrow(x));
 }
 
 function forceUpdateGraph(serverID, graphml) {
@@ -48,10 +46,7 @@ function forceUpdateGraph(serverID, graphml) {
             'Content-Type': 'application/xml',
         },
         body: graphml,
-    }).then((x) => {
-        if (!x.ok) return Promise.reject(x.text());
-        return x.text();
-    });
+    }).then((x) => readTextOrThrow(x));
 }
 
 export {
