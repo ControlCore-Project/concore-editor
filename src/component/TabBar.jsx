@@ -79,6 +79,7 @@ const TabBar = ({ superState, dispatcher }) => {
                 onClick={newProject.bind(this, superState, dispatcher)}
                 type="button"
                 id="new_graph"
+                aria-label="New workflow tab"
                 data-tip="New Workflow Tab (Ctrl + Shift + M)"
             >
                 <MdAdd size={25} />
@@ -88,7 +89,7 @@ const TabBar = ({ superState, dispatcher }) => {
                     key={el.graphID}
                     className={`tab tab-graph ${superState.curGraphIndex === i ? 'selected' : 'none'}`}
                     onClick={() => dispatcher({ type: T.CHANGE_TAB, payload: i })}
-                    onKeyDown={(ev) => ev.key === ' ' && dispatcher({ type: T.CHANGE_TAB, payload: i })}
+                    onKeyDown={(ev) => (ev.key === ' ' || ev.key === 'Enter') && dispatcher({ type: T.CHANGE_TAB, payload: i })}
                     role="button"
                     tabIndex={0}
                     id={`tab_${i}`}
@@ -102,6 +103,7 @@ const TabBar = ({ superState, dispatcher }) => {
                             className="tab-act edit"
                             onClick={editCur}
                             type="button"
+                            aria-label="Edit workflow details"
                             data-tip="Edit Workflow Details (Ctrl + Shift + E)"
                             data-for="header-tab"
                         >
@@ -112,6 +114,7 @@ const TabBar = ({ superState, dispatcher }) => {
                         className="tab-act close"
                         onClick={handleRequestCloseTab.bind(this, i)}
                         type="button"
+                        aria-label="Close workflow tab"
                         data-tip="Close current Workflow (Ctrl + Shift + L)"
                         data-for="header-tab"
                     >
