@@ -86,30 +86,31 @@ class GraphServer extends GraphLoadSave {
     }
 
     forcePushToServer() {
-        // eslint-disable-next-line
-        if (!window.confirm(
-            'Forced push may result in workflow overwite and loss of changes pushed by others. Confirm?',
-        )) return;
-        if (this.serverID) {
-            forceUpdateGraph(this.serverID, this.getGraphML()).then(() => {
+        this.dispatcher({
+            type: T.SET_CONFIRM_MODAL,
+            payload: {
+                open: true,
+                message: 'Forced push may result in workflow overwite and loss of changes pushed by others. Confirm?',
+                onConfirm: () => {
+                    if (this.serverID) {
+                        forceUpdateGraph(this.serverID, this.getGraphML()).then(() => {
 
-            }).catch((err) => {
-                toast.error(err.response?.data?.message || err.message);
-            });
-        } else {
-            postGraph(this.getGraphML()).then((serverID) => {
-                this.set({ serverID });
-            }).catch((err) => {
-                toast.error(err.response?.data?.message || err.message);
-            });
-        }
+                        }).catch((err) => {
+                            toast.error(err.response?.data?.message || err.message);
+                        });
+                    } else {
+                        postGraph(this.getGraphML()).then((serverID) => {
+                            this.set({ serverID });
+                        }).catch((err) => {
+                            toast.error(err.response?.data?.message || err.message);
+                        });
+                    }
+                },
+            },
+        });
     }
 
     forcePullFromServer() {
-        // eslint-disable-next-line
-        if (!window.confirm(
-            'Forced pull may result in workflow overwite and loss of unsaved changes. Confirm?',
-        )) return;
         if (this.serverID) {
             getGraph(this.serverID).then((graphXML) => {
                 this.setGraphML(graphXML);
