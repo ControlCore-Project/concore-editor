@@ -2,6 +2,7 @@
 import {
     FaSave, FaUndo, FaRedo, FaTrash, FaFileImport, FaPlus, FaDownload, FaEdit, FaRegTimesCircle, FaHistory,
     FaHammer, FaBug, FaBomb, FaToggleOn, FaThermometerEmpty, FaTrashRestore, FaCogs, FaPencilAlt, FaTerminal,
+    FaCopy, FaPaste,
 } from 'react-icons/fa';
 
 import {
@@ -12,7 +13,7 @@ import {
 import {
     createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
     createFile, readFile, clearAll, undo, redo, viewHistory, resetAfterClear,
-    toggleServer, optionModalToggle, toggleLogs, contribute,
+    toggleServer, optionModalToggle, toggleLogs, contribute, copySelected, pasteClipboard,
     // openSettingModal,
 } from './toolbarFunctions';
 
@@ -115,6 +116,25 @@ const toolbarList = (state, dispatcher) => [
         active: state.curGraphInstance && state.eleSelected,
         visibility: true,
         hotkey: 'Delete,Backspace,Del,Clear',
+    },
+    { type: 'vsep' },
+    {
+        type: 'action',
+        text: 'Copy',
+        icon: FaCopy,
+        action: copySelected,
+        active: state.curGraphInstance && state.eleSelected,
+        visibility: true,
+        hotkey: 'Ctrl+C',
+    },
+    {
+        type: 'action',
+        text: 'Paste',
+        icon: FaPaste,
+        action: pasteClipboard,
+        active: state.curGraphInstance && state.clipboard.length > 0,
+        visibility: true,
+        hotkey: 'Ctrl+V',
     },
     { type: 'vsep' },
     {

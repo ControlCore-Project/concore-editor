@@ -267,6 +267,31 @@ class GraphComponent extends GraphCanvas {
         }
     }
 
+    copySelected() {
+        const selected = this.cy.$('node[type="ordin"]:selected');
+        return selected.map((node) => ({
+            label: node.data('label'),
+            style: this.getStyle(node.id()),
+            position: { ...node.position() },
+        }));
+    }
+
+    pasteClipboard(nodes) {
+        if (!nodes.length) return;
+        const tid = this.getTid();
+        nodes.forEach((node) => {
+            this.addNode(
+                node.label,
+                node.style,
+                'ordin',
+                { x: node.position.x + 20, y: node.position.y + 20 },
+                {},
+                undefined,
+                tid,
+            );
+        });
+    }
+
     validiateNode(label, style, id, type) {
         if (id) {
             const node = this.getById(id);

@@ -39,6 +39,7 @@ const initialState = {
     logs: false,
     logsmessage: '',
     darkMode: false,
+    clipboard: [],
 };
 
 const initialGraphState = {

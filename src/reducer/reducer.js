@@ -260,6 +260,10 @@ const reducer = (state, action) => {
         return { ...state, darkMode: !state.darkMode };
     }
 
+    case T.SET_CLIPBOARD: {
+        return { ...state, clipboard: action.payload };
+    }
+
     default:
         return state;
     }
