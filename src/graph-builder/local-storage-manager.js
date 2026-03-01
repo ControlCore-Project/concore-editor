@@ -12,8 +12,10 @@ const localStorageGet = (key) => {
 const localStorageSet = (key, value) => {
     try {
         window.localStorage.setItem(key, value);
+        return true;
     } catch (e) {
         toast.error(e.message);
+        return false;
     }
 };
 
@@ -53,12 +55,18 @@ const localStorageManager = {
     get(id) {
         const raw = localStorageGet(id);
         if (raw === null) return null;
-        return JSON.parse(window.atob(raw));
+        try {
+            return JSON.parse(raw);
+        } catch {
+            return JSON.parse(window.atob(raw));
+        }
     },
     save(id, graphContent) {
         this.addGraph(id);
-        const serializedJson = JSON.stringify(graphContent);
-        localStorageSet(id, window.btoa(serializedJson));
+        if (!localStorageSet(id, JSON.stringify(graphContent))) {
+            const stripped = { ...graphContent, actionHistory: [] };
+            localStorageSet(id, JSON.stringify(stripped));
+        }
     },
     remove(id) {
         if (this.allgs.delete(id)) this.saveAllgs();
