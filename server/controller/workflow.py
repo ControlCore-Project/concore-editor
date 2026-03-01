@@ -30,7 +30,7 @@ def getAllActionHash(root):
 def postWorkflow():
     try:
         lastestHash = getLasteshActionHash(ET.fromstring(request.data))
-    except:
+    except Exception:
         return "Invalid GraphML", 400
     graphML = request.data.decode('utf')
     return workFlowModel.insert(graphML, lastestHash)
@@ -60,7 +60,7 @@ def updateWorkflow(serverID):
         latestHash = getLasteshActionHash(root)
         if(not forceUpdate):
             allHash = getAllActionHash(root)
-    except:
+    except Exception:
         return "Invalid GraphML", 400
     graphML = request.data.decode('utf')
     if(forceUpdate):
