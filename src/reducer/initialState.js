@@ -39,6 +39,7 @@ const initialState = {
     logs: false,
     logsmessage: '',
     darkMode: false,
+    confirmModal: { open: false, message: '', onConfirm: null },
 };
 
 const initialGraphState = {
