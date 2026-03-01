@@ -1,7 +1,7 @@
 import React from 'react';
 import ZoomComp from './component/ZoomSetter';
-
-// import { actionType as T } from './reducer';
+import ConfirmModal from './component/modals/ConfirmModal';
+import { actionType as T } from './reducer';
 import './graphWorkspace.css';
 // import localStorageManager from './graph-builder/local-storage-manager';
 import TabBar from './component/TabBar';
@@ -80,6 +80,16 @@ const GraphComp = (props) => {
                 ))}
                 <ZoomComp dispatcher={dispatcher} superState={superState} />
             </div>
+            <ConfirmModal
+                isOpen={superState.confirmModal.open}
+                title="Confirm"
+                message={superState.confirmModal.message}
+                onConfirm={() => {
+                    if (superState.confirmModal.onConfirm) superState.confirmModal.onConfirm();
+                    dispatcher({ type: T.SET_CONFIRM_MODAL, payload: { open: false, message: '', onConfirm: null } });
+                }}
+                onCancel={() => dispatcher({ type: T.SET_CONFIRM_MODAL, payload: { open: false, message: '', onConfirm: null } })}
+            />
         </div>
     );
 };

@@ -15,7 +15,11 @@ export default function FullScreenButton() {
     };
 
     return (
-        <button type="button" onClick={toggleFullscreen}>
+        <button
+            type="button"
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            onClick={toggleFullscreen}
+        >
             {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
         </button>
     );
