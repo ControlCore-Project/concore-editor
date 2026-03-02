@@ -265,6 +265,19 @@ const reducer = (state, action) => {
         return { ...state, clipboard: action.payload };
     }
 
+    case T.SET_SEARCH_PANEL: {
+        return { ...state, searchPanel: action.payload };
+    }
+    case T.SET_SEARCH_QUERY: {
+        return { ...state, searchQuery: action.payload };
+    }
+    case T.SET_SEARCH_RESULTS: {
+        return { ...state, searchResults: action.payload };
+    }
+    case T.SET_SEARCH_INDEX: {
+        return { ...state, searchIndex: action.payload };
+    }
+
     default:
         return state;
     }

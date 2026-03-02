@@ -2,7 +2,7 @@
 import {
     FaSave, FaUndo, FaRedo, FaTrash, FaFileImport, FaPlus, FaDownload, FaEdit, FaRegTimesCircle, FaHistory,
     FaHammer, FaBug, FaBomb, FaToggleOn, FaThermometerEmpty, FaTrashRestore, FaCogs, FaPencilAlt, FaTerminal,
-    FaCopy, FaPaste,
+    FaCopy, FaPaste, FaSearch,
 } from 'react-icons/fa';
 
 import {
@@ -13,7 +13,7 @@ import {
 import {
     createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
     createFile, readFile, clearAll, undo, redo, viewHistory, resetAfterClear,
-    toggleServer, optionModalToggle, toggleLogs, contribute, copySelected, pasteClipboard,
+    toggleServer, optionModalToggle, toggleLogs, contribute, copySelected, pasteClipboard, openSearchPanel,
     // openSettingModal,
 } from './toolbarFunctions';
 
@@ -144,6 +144,15 @@ const toolbarList = (state, dispatcher) => [
         action: viewHistory,
         active: state.curGraphInstance,
         visibility: true,
+    },
+    {
+        type: 'action',
+        text: 'Search',
+        icon: FaSearch,
+        action: openSearchPanel,
+        active: state.curGraphInstance,
+        visibility: true,
+        hotkey: 'Ctrl+F',
     },
     { type: 'vsep' },
     // server buttons

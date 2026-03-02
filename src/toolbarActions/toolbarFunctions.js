@@ -201,6 +201,10 @@ const viewHistory = (state, setState) => {
     setState({ type: T.SET_HISTORY_MODAL, payload: true });
 };
 
+const openSearchPanel = (state, setState) => {
+    setState({ type: T.SET_SEARCH_PANEL, payload: true });
+};
+
 const toggleServer = (state, dispatcher) => {
     if (state.isWorkflowOnServer) {
         dispatcher({ type: T.IS_WORKFLOW_ON_SERVER, payload: false });
@@ -214,5 +218,5 @@ export {
     createFile, readFile, readTextFile, newProject, clearAll, editDetails, undo, redo,
     openShareModal, openSettingModal, viewHistory, resetAfterClear, toggleLogs,
     copySelected, pasteClipboard,
-    toggleServer, optionModalToggle, contribute,
+    toggleServer, optionModalToggle, contribute, openSearchPanel,
 };

@@ -41,6 +41,10 @@ const initialState = {
     darkMode: false,
     clipboard: [],
     confirmModal: { open: false, message: '', onConfirm: null },
+    searchPanel: false,
+    searchQuery: '',
+    searchResults: [],
+    searchIndex: 0,
 };
 
 const initialGraphState = {
