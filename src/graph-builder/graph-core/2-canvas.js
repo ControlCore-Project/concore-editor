@@ -31,14 +31,20 @@ class GraphCanvas extends Core {
     }
 
     clearAll() {
-        if (this.cy.elements().length === 0) return true;
-        // eslint-disable-next-line no-alert
-        if (!window.confirm('Do want to clear all elements?')) return false;
-        this.cy.elements().forEach((el) => this.deleteElem(el.id(), 0));
-        // this.actionArr = [];
-        this.dispatcher({ type: T.CHANGE_RESET, payload: true });
-        this.cy.emit('graph-modified');
-        return true;
+        if (this.cy.elements().length === 0) return;
+        this.dispatcher({
+            type: T.SET_CONFIRM_MODAL,
+            payload: {
+                open: true,
+                message: 'Do you want to clear all elements?',
+                onConfirm: () => {
+                    this.cy.elements().forEach((el) => this.deleteElem(el.id(), 0));
+                    // this.actionArr = [];
+                    this.dispatcher({ type: T.CHANGE_RESET, payload: true });
+                    this.cy.emit('graph-modified');
+                },
+            },
+        });
     }
 
     resetAllComp() {
