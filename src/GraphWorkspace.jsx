@@ -1,6 +1,7 @@
 import React from 'react';
 import ZoomComp from './component/ZoomSetter';
 import ConfirmModal from './component/modals/ConfirmModal';
+import SearchPanel from './component/SearchPanel';
 import { actionType as T } from './reducer';
 import './graphWorkspace.css';
 // import localStorageManager from './graph-builder/local-storage-manager';
@@ -59,7 +60,7 @@ const GraphComp = (props) => {
             }}
         >
             <TabBar superState={superState} dispatcher={dispatcher} />
-            <div style={{ flex: 1 }} className="graph-container" ref={graphContainerRef}>
+            <div style={{ flex: 1, position: 'relative' }} className="graph-container" ref={graphContainerRef}>
                 {superState.graphs.map((el, i) => (
                     <Graph
                         el={el}
@@ -78,6 +79,7 @@ const GraphComp = (props) => {
                         authorName={el.authorName}
                     />
                 ))}
+                <SearchPanel superState={superState} dispatcher={dispatcher} />
                 <ZoomComp dispatcher={dispatcher} superState={superState} />
             </div>
             <ConfirmModal

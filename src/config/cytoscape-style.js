@@ -218,6 +218,20 @@ const getCytoscapeStyle = (darkMode = false) => {
                 'border-width': darkMode ? 3 : 'data(style.borderWidth)',
             },
         },
+        {
+            selector: '.search-match',
+            style: {
+                overlayColor: '#f5a623',
+                overlayOpacity: 0.45,
+                overlayPadding: 4,
+            },
+        },
+        {
+            selector: '.search-dim',
+            style: {
+                opacity: 0.2,
+            },
+        },
 
     ];
 };
