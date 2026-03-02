@@ -178,6 +178,17 @@ const redo = (state) => {
     if (getGraphFun(state)) getGraphFun(state).redo();
 };
 
+const copySelected = (state, dispatcher) => {
+    if (!getGraphFun(state)) return;
+    const nodes = getGraphFun(state).copySelected();
+    if (nodes.length) dispatcher({ type: T.SET_CLIPBOARD, payload: nodes });
+};
+
+const pasteClipboard = (state) => {
+    if (!getGraphFun(state) || !state.clipboard.length) return;
+    getGraphFun(state).pasteClipboard(state.clipboard);
+};
+
 const openShareModal = (state, setState) => {
     setState({ type: T.SET_SHARE_MODAL, payload: true });
 };
@@ -202,5 +213,6 @@ export {
     createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
     createFile, readFile, readTextFile, newProject, clearAll, editDetails, undo, redo,
     openShareModal, openSettingModal, viewHistory, resetAfterClear, toggleLogs,
+    copySelected, pasteClipboard,
     toggleServer, optionModalToggle, contribute,
 };
