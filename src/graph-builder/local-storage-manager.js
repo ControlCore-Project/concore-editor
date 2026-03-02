@@ -35,8 +35,10 @@ const localStorageGet = (key) => {
 const localStorageSet = (key, value) => {
     try {
         window.localStorage.setItem(key, value);
+        return true;
     } catch (e) {
         toast.error(e.message);
+        return false;
     }
 };
 
@@ -82,16 +84,20 @@ const localStorageManager = {
         const raw = localStorageGet(id);
         if (raw === null) return null;
         const parsed = parseStoredJson(raw);
-        if (parsed === null) {
-            localStorageRemove(id);
+        if (parsed !== null) return parsed;
+        // fallback for legacy plain JSON data saved before base64 encoding was introduced
+        try {
+            return JSON.parse(raw);
+        } catch {
             return null;
         }
-        return parsed;
     },
     save(id, graphContent) {
         this.addGraph(id);
-        const serializedJson = JSON.stringify(graphContent);
-        localStorageSet(id, encodeBase64(serializedJson));
+        if (!localStorageSet(id, encodeBase64(JSON.stringify(graphContent)))) {
+            const stripped = { ...graphContent, actionHistory: [] };
+            localStorageSet(id, encodeBase64(JSON.stringify(stripped)));
+        }
     },
     remove(id) {
         if (this.allgs.delete(id)) this.saveAllgs();
