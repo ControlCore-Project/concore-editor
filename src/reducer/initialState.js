@@ -40,6 +40,7 @@ const initialState = {
     logsmessage: '',
     darkMode: false,
     clipboard: [],
+    confirmModal: { open: false, message: '', onConfirm: null },
 };
 
 const initialGraphState = {

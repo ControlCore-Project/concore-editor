@@ -22,6 +22,15 @@ class FakeWorkFlowModel:
     def get(self, _server_id):
         return self.graph_response
 
+    def insert(self, graphml, latestHash):
+        return 'test01'
+
+    def update(self, serverID, graphml, latestHash, allHash):
+        return (True, latestHash)
+
+    def forceUpdate(self, serverID, graphml, latestHash):
+        return (True, latestHash)
+
 
 class WorkflowControllerTests(unittest.TestCase):
     @classmethod
@@ -76,6 +85,37 @@ class WorkflowControllerTests(unittest.TestCase):
         response = client.get('/workflow/existing-id', headers={'X-Latest-Hash': 'hash-1'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_data(as_text=True), VALID_GRAPHML)
+
+    def test_post_workflow_returns_server_id(self):
+        client = self.make_client(None)
+        response = client.post('/workflow/', data=VALID_GRAPHML,
+                               content_type='application/xml')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_data(as_text=True), 'test01')
+
+    def test_post_workflow_invalid_xml_returns_400(self):
+        client = self.make_client(None)
+        response = client.post('/workflow/', data=b'not xml',
+                               content_type='application/xml')
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_workflow_returns_200(self):
+        client = self.make_client(None)
+        response = client.post('/workflow/test01', data=VALID_GRAPHML,
+                               content_type='application/xml')
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_workflow_invalid_xml_returns_400(self):
+        client = self.make_client(None)
+        response = client.post('/workflow/test01', data=b'not xml',
+                               content_type='application/xml')
+        self.assertEqual(response.status_code, 400)
+
+    def test_force_update_workflow_returns_200(self):
+        client = self.make_client(None)
+        response = client.post('/workflow/test01?force=true', data=VALID_GRAPHML,
+                               content_type='application/xml')
+        self.assertEqual(response.status_code, 200)
 
 
 if __name__ == '__main__':
