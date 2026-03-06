@@ -48,11 +48,15 @@ class GraphLoadSave extends GraphUndoRedo {
     }
 
     static stringifyAction({ actionName, parameters }) {
-        return { actionName, parameters: window.btoa(JSON.stringify(parameters)) };
+        return { actionName, parameters: JSON.stringify(parameters) };
     }
 
     static parseAction({ actionName, parameters }) {
-        return { actionName, parameters: JSON.parse(window.atob(parameters)) };
+        try {
+            return { actionName, parameters: JSON.parse(parameters) };
+        } catch {
+            return { actionName, parameters: JSON.parse(window.atob(parameters)) };
+        }
     }
 
     jsonifyGraph() {

@@ -31,12 +31,14 @@ const setHotKeys = (actions) => {
         event.preventDefault();
         map[handler.shortcut].click();
     });
+    return keys;
 };
 
 const Header = ({ superState, dispatcher }) => {
     const actions = toolbarList(superState, dispatcher);
     React.useEffect(() => {
-        setHotKeys(actions, superState, dispatcher);
+        const keys = setHotKeys(actions);
+        return () => { if (keys) hotkeys.unbind(keys); };
     }, []);
 
     return (
