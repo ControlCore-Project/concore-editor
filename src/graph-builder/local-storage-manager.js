@@ -50,35 +50,9 @@ const localStorageRemove = (key) => {
     }
 };
 
-const getSet = (ALL_GRAPHS) => {
-    if (!localStorageGet(ALL_GRAPHS)) {
-        localStorageSet(ALL_GRAPHS, encodeBase64(JSON.stringify([])));
-    }
-    const raw = localStorageGet(ALL_GRAPHS);
-    if (!raw) return new Set();
-    const parsed = parseStoredJson(raw);
-    if (!Array.isArray(parsed)) {
-        localStorageSet(ALL_GRAPHS, encodeBase64(JSON.stringify([])));
-        return new Set();
-    }
-    return new Set(parsed);
-};
-
 const localStorageManager = {
     ALL_GRAPHS: window.btoa('ALL_GRAPHS'),
     AUTHOR_NAME: window.btoa('AUTHOR_NAME'),
-
-    allgs: getSet(window.btoa('ALL_GRAPHS')),
-
-    saveAllgs() {
-        localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify(Array.from(this.allgs))));
-    },
-
-    addEmptyIfNot() {
-        if (!localStorageGet(this.ALL_GRAPHS)) {
-            localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify([])));
-        }
-    },
 
     get(id) {
         const raw = localStorageGet(id);
@@ -100,13 +74,15 @@ const localStorageManager = {
         }
     },
     remove(id) {
-        if (this.allgs.delete(id)) this.saveAllgs();
+        const list = this.getAllGraphs().filter((g) => g !== id);
+        localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify(list)));
         localStorageRemove(id);
     },
     addGraph(id) {
-        if (this.allgs.has(id)) return;
-        this.allgs.add(id);
-        this.saveAllgs();
+        const list = this.getAllGraphs();
+        if (list.includes(id)) return;
+        list.push(id);
+        localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify(list)));
     },
     getAllGraphs() {
         const raw = localStorageGet(this.ALL_GRAPHS);
@@ -119,17 +95,10 @@ const localStorageManager = {
         return parsed;
     },
     addToFront(id) {
-        if (this.allgs.has(id)) return;
-        this.allgs.add(id);
-        const raw = localStorageGet(this.ALL_GRAPHS);
-        if (!raw) return;
-        const Garr = parseStoredJson(raw);
-        if (!Array.isArray(Garr)) {
-            this.saveAllgs();
-            return;
-        }
-        Garr.unshift(id);
-        localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify(Garr)));
+        const list = this.getAllGraphs();
+        if (list.includes(id)) return;
+        list.unshift(id);
+        localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify(list)));
     },
     getAuthorName() {
         return localStorageGet(this.AUTHOR_NAME) || '';

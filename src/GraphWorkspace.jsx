@@ -4,26 +4,23 @@ import ConfirmModal from './component/modals/ConfirmModal';
 import SearchPanel from './component/SearchPanel';
 import { actionType as T } from './reducer';
 import './graphWorkspace.css';
-// import localStorageManager from './graph-builder/local-storage-manager';
+import localStorageManager from './graph-builder/local-storage-manager';
 import TabBar from './component/TabBar';
 import Graph from './GraphArea';
 
 const GraphComp = (props) => {
     const graphContainerRef = React.useRef();
     const { dispatcher, superState } = props;
-    // const [loadedFromStorage, setLoadedFromStorage] = React.useState(false);
 
-    // The functionality for loading graphs from previous sessions is currently on hold.
-    // useEffect(() => {
-    //     const allSavedGs = localStorageManager.getAllGraphs().map((graphID) => ({
-    //         graphID,
-    //     }));
-    //     dispatcher({
-    //         type: T.ADD_GRAPH_BULK,
-    //         payload: allSavedGs,
-    //     });
-    //     // setLoadedFromStorage(true);
-    // }, []);
+    React.useEffect(() => {
+        const allIDs = localStorageManager.getAllGraphs();
+        const validIDs = allIDs.filter((id) => typeof id === 'string' && id && localStorageManager.get(id) !== null);
+        if (validIDs.length !== allIDs.length) {
+            allIDs.filter((id) => !validIDs.includes(id)).forEach((id) => localStorageManager.remove(id));
+        }
+        if (validIDs.length === 0) return;
+        dispatcher({ type: T.ADD_GRAPH_BULK, payload: validIDs.map((graphID) => ({ graphID })) });
+    }, []);
 
     // Remote server implementation - Not being used.
     // useEffect(() => {

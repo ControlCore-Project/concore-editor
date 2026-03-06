@@ -109,7 +109,8 @@ const reducer = (state, action) => {
         };
     }
     case T.ADD_GRAPH_BULK: {
-        return { ...state, graphs: [...state.graphs, ...action.payload] };
+        const newGraphs = action.payload.map((g) => ({ ...initialGraphState, ...g }));
+        return { ...state, graphs: [...state.graphs, ...newGraphs], curGraphIndex: 0 };
     }
     case T.SET_CUR_INSTANCE: {
         return { ...state, curGraphInstance: action.payload };
