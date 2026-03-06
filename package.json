@@ -44,7 +44,7 @@
     "timers-browserify": "^2.0.12",
     "util": "^0.12.5",
     "web-vitals": "^0.2.4",
-    "webpack": "^5.105.2",
+    "webpack": "^5.105.4",
     "workbox-background-sync": "^5.1.3",
     "workbox-broadcast-update": "^5.1.3",
     "workbox-cacheable-response": "^5.1.3",
