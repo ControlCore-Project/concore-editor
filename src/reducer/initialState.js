@@ -38,7 +38,9 @@ const initialState = {
     octave: false,
     logs: false,
     logsmessage: '',
-    darkMode: false,
+    darkMode: localStorage.getItem('darkMode') !== null
+        ? localStorage.getItem('darkMode') === 'true'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches,
     clipboard: [],
     confirmModal: { open: false, message: '', onConfirm: null },
     searchPanel: false,
