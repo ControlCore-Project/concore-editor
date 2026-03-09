@@ -6,42 +6,58 @@ import { readFile } from '../toolbarActions/toolbarFunctions';
 
 const app = ({ superState, dispatcher }) => {
     const fileRef = React.useRef();
+    const superStateRef = React.useRef(superState);
+    const dispatcherRef = React.useRef(dispatcher);
+
+    useEffect(() => {
+        superStateRef.current = superState;
+        dispatcherRef.current = dispatcher;
+    });
 
     useEffect(() => {
         dispatcher({ type: T.SET_FILE_REF, payload: fileRef });
         const p = document.getElementsByTagName('body')[0];
         const c = document.getElementsByClassName('drag-drop-area')[0];
         let cc = 0;
-        p.addEventListener('dragenter', (e) => {
+
+        const onDragEnter = (e) => {
             e.preventDefault();
             cc += 1;
             if (cc === 1) c.classList.remove('hidden');
-        });
-        p.addEventListener('dragleave', (e) => {
+        };
+        const onDragLeave = (e) => {
             e.preventDefault();
             cc -= 1;
             if (cc === 0) c.classList.add('hidden');
-        });
-
-        p.addEventListener('dragover', (e) => {
+        };
+        const onDragOver = (e) => { e.preventDefault(); };
+        const onDragReset = (e) => {
             e.preventDefault();
-        });
-        ['dragend', 'dragexit', 'drop'].forEach((dragEvent) => {
-            p.addEventListener(dragEvent, (e) => {
-                e.preventDefault();
-                cc = 0;
-                c.classList.add('hidden');
-            });
-        });
-
-        p.addEventListener('drop', (e) => {
+            cc = 0;
+            c.classList.add('hidden');
+        };
+        const onDrop = (e) => {
             e.preventDefault();
             fileRef.current.value = null;
             if (e.dataTransfer.files.length === 1
                 && e.dataTransfer.files[0].name.split('.').slice(-1)[0] === 'graphml') {
-                readFile(superState, dispatcher, e.dataTransfer.files[0]);
+                readFile(superStateRef.current, dispatcherRef.current, e.dataTransfer.files[0]);
             }
-        });
+        };
+
+        p.addEventListener('dragenter', onDragEnter);
+        p.addEventListener('dragleave', onDragLeave);
+        p.addEventListener('dragover', onDragOver);
+        ['dragend', 'dragexit', 'drop'].forEach((dragEvent) => p.addEventListener(dragEvent, onDragReset));
+        p.addEventListener('drop', onDrop);
+
+        return () => {
+            p.removeEventListener('dragenter', onDragEnter);
+            p.removeEventListener('dragleave', onDragLeave);
+            p.removeEventListener('dragover', onDragOver);
+            ['dragend', 'dragexit', 'drop'].forEach((dragEvent) => p.removeEventListener(dragEvent, onDragReset));
+            p.removeEventListener('drop', onDrop);
+        };
     }, []);
     return (
         <div className="drag-drop-area hidden">

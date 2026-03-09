@@ -1,9 +1,16 @@
-from model.workflows import *
+from model.workflows import WorkFlowModel
 from flask import request, make_response, Blueprint
 import defusedxml.ElementTree as ET
 
 workFlow = Blueprint('workflow', __name__)
 workFlowModel = WorkFlowModel()
+
+
+def isMissingWorkflow(graphml):
+    if graphml is None:
+        return True
+    # Backward-compatible guard for legacy model return type.
+    return isinstance(graphml, tuple) and len(graphml) > 0 and graphml[0] is False
 
 
 def getLasteshActionHash(root):
@@ -23,7 +30,7 @@ def getAllActionHash(root):
 def postWorkflow():
     try:
         lastestHash = getLasteshActionHash(ET.fromstring(request.data))
-    except:
+    except Exception:
         return "Invalid GraphML", 400
     graphML = request.data.decode('utf')
     return workFlowModel.insert(graphML, lastestHash)
@@ -32,7 +39,7 @@ def postWorkflow():
 @workFlow.route("/<serverID>")
 def getWorkflow(serverID):
     graphml = workFlowModel.get(serverID)
-    if graphml is None:
+    if isMissingWorkflow(graphml):
         return "Not Found", 404
     if('X-Latest-Hash' in request.headers):
         latestHash = request.headers['X-Latest-Hash']
@@ -53,7 +60,7 @@ def updateWorkflow(serverID):
         latestHash = getLasteshActionHash(root)
         if(not forceUpdate):
             allHash = getAllActionHash(root)
-    except:
+    except Exception:
         return "Invalid GraphML", 400
     graphML = request.data.decode('utf')
     if(forceUpdate):

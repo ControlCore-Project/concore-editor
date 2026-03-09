@@ -73,6 +73,7 @@ const reducer = (state, action) => {
     case T.ELE_SELECTED: return { ...state, eleSelected: true, eleSelectedPayload: action.payload };
     case T.ELE_UNSELECTED: return { ...state, eleSelected: false };
     case T.TURN_DRAW: return { ...state, drawModeOn: action.payload };
+    case T.SET_CONFIRM_MODAL: return { ...state, confirmModal: action.payload };
 
     case T.SET_UNDO: return { ...state, undoEnabled: action.payload };
     case T.SET_REDO: return { ...state, redoEnabled: action.payload };
@@ -108,7 +109,8 @@ const reducer = (state, action) => {
         };
     }
     case T.ADD_GRAPH_BULK: {
-        return { ...state, graphs: [...state.graphs, ...action.payload] };
+        const newGraphs = action.payload.map((g) => ({ ...initialGraphState, ...g }));
+        return { ...state, graphs: [...state.graphs, ...newGraphs], curGraphIndex: 0 };
     }
     case T.SET_CUR_INSTANCE: {
         return { ...state, curGraphInstance: action.payload };
@@ -234,12 +236,17 @@ const reducer = (state, action) => {
 
     case T.SET_FUNCTIONS: {
         const newState = { ...state };
-        newState.graphs[state.curGraphIndex].built = action.payload.built;
-        newState.graphs[state.curGraphIndex].debugged = action.payload.debugged;
-        newState.graphs[state.curGraphIndex].ran = action.payload.ran;
-        newState.graphs[state.curGraphIndex].cleared = action.payload.cleared;
-        newState.graphs[state.curGraphIndex].destroyed = action.payload.destroyed;
-        newState.graphs[state.curGraphIndex].stopped = action.payload.stopped;
+        newState.graphs = newState.graphs.map((g, index) => (
+            index === state.curGraphIndex ? {
+                ...g,
+                built: action.payload.built,
+                debugged: action.payload.debugged,
+                ran: action.payload.ran,
+                cleared: action.payload.cleared,
+                destroyed: action.payload.destroyed,
+                stopped: action.payload.stopped,
+            } : g
+        ));
         return { ...newState };
     }
 
@@ -253,6 +260,23 @@ const reducer = (state, action) => {
 
     case T.TOGGLE_DARK_MODE: {
         return { ...state, darkMode: !state.darkMode };
+    }
+
+    case T.SET_CLIPBOARD: {
+        return { ...state, clipboard: action.payload };
+    }
+
+    case T.SET_SEARCH_PANEL: {
+        return { ...state, searchPanel: action.payload };
+    }
+    case T.SET_SEARCH_QUERY: {
+        return { ...state, searchQuery: action.payload };
+    }
+    case T.SET_SEARCH_RESULTS: {
+        return { ...state, searchResults: action.payload };
+    }
+    case T.SET_SEARCH_INDEX: {
+        return { ...state, searchIndex: action.payload };
     }
 
     default:

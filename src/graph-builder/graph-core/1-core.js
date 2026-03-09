@@ -372,6 +372,15 @@ class CoreGraph {
         }
     }
 
+    dispose() {
+        if (!this.cy) return;
+        if (this.autoSaveIntervalId !== null) clearTimeout(this.autoSaveIntervalId);
+        this.autoSaveIntervalId = null;
+        this.cy.destroy();
+        this.cy = null;
+        this.dispatcher = null;
+    }
+
     reset() {
         this.resetAllComp();
         this.resetAllAction();
