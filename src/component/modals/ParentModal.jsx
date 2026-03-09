@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactModal from 'react-modal';
 import './parent-modal.css';
 
@@ -9,23 +9,26 @@ const Modal = ({
 }) => {
     const [curClass, setCurClass] = useState('');
     const [isOpen, setIsOpen] = useState(ModelOpen);
-    const [stid, setStid] = useState(null);
+    const stid = useRef(null);
     useEffect(() => {
         if (ModelOpen === true) {
             setIsOpen(true);
             setCurClass('closing');
-            clearTimeout(stid);
-            setStid(setTimeout(() => {
+            clearTimeout(stid.current);
+            document.body.style.overflow = 'hidden';
+            stid.current = setTimeout(() => {
                 setIsOpen(true);
                 setCurClass('');
-            }, 20));
+            }, 20);
         } else {
             setCurClass('closing');
-            clearTimeout(stid);
-            setStid(setTimeout(() => {
+            clearTimeout(stid.current);
+            document.body.style.overflow = '';
+            stid.current = setTimeout(() => {
                 setIsOpen(false);
-            }, 400));
+            }, 400);
         }
+        return () => clearTimeout(stid.current);
     }, [ModelOpen]);
 
     if (!isOpen) return '';
@@ -33,7 +36,7 @@ const Modal = ({
         <ReactModal
             isOpen={isOpen}
             contentLabel="onRequestClose Example"
-            // onRequestClose={closeModal} // prevent modal from closing when clicked outside
+            onRequestClose={closeModal}
             className="Modal"
             overlayClassName={`Overlay ${curClass}`}
         >
