@@ -52,18 +52,7 @@ const Header = ({ superState, dispatcher }) => {
                 </section>
                 <div
                     onClick={() => dispatcher({ type: T.TOGGLE_DARK_MODE })}
-                    style={{
-                        cursor: 'pointer',
-                        border: '1px solid #ccc',
-                        padding: '0 8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'opacity 0.2s',
-                        backgroundColor: '#eee',
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.7'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                    className="theme-toggle"
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => e.key === 'Enter' && dispatcher({ type: T.TOGGLE_DARK_MODE })}

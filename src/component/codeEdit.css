@@ -36,3 +36,8 @@
     width: 100%;
     white-space: break-spaces;
 }
+
+[data-theme='dark'] .textField {
+    background-color: #2D2D2D;
+    color: #E4E4E4;
+}
