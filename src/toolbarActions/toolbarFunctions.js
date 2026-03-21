@@ -85,11 +85,15 @@ const saveAction = (state) => {
 async function saveGraphMLFile(state) {
     if (state.curGraphInstance) {
         const graph = state.graphs[state.curGraphIndex];
-        if (graph.fileHandle) {
-            const stream = await graph.fileHandle.createWritable();
-            await stream.write(getGraphFun(state).saveToFolder());
-            await stream.close();
-            toast.success('File saved Successfully');
+        if (graph.fileHandle && graph.fileHandle.createWritable) {
+            try {
+                const stream = await graph.fileHandle.createWritable();
+                await stream.write(getGraphFun(state).saveToFolder());
+                await stream.close();
+                toast.success('File saved Successfully');
+            } catch (error) {
+                getGraphFun(state).saveWithoutFileHandle();
+            }
         } else if (!graph.fileHandle) {
             getGraphFun(state).saveWithoutFileHandle();
         } else {
