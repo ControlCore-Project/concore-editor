@@ -15,7 +15,9 @@ const TabBar = ({ superState, dispatcher }) => {
     const [tabToClose, setTabToClose] = useState(null);
 
     const closeTab = (i) => {
-        localStorageManager.remove(superState.graphs[i] ? superState.graphs[i].graphID : null);
+        const graph = superState.graphs[i];
+        if (graph && graph.instance) graph.instance.dispose();
+        localStorageManager.remove(graph ? graph.graphID : null);
         dispatcher({ type: T.REMOVE_GRAPH, payload: i });
         if (!superState.curGraphIndex && superState.graphs.length === 1) {
             dispatcher({ type: T.SET_CUR_INSTANCE, payload: null });
@@ -63,6 +65,11 @@ const TabBar = ({ superState, dispatcher }) => {
             const el = document.querySelector('.tab.tab-graph.selected > .tab-act.close');
             if (el) el.click();
         });
+        return () => {
+            hotkeys.unbind('ctrl+shift+m,command+shift+m');
+            hotkeys.unbind('ctrl+shift+e,command+shift+e');
+            hotkeys.unbind('ctrl+shift+l,command+shift+l');
+        };
     }, []);
 
     return (
@@ -72,6 +79,7 @@ const TabBar = ({ superState, dispatcher }) => {
                 onClick={newProject.bind(this, superState, dispatcher)}
                 type="button"
                 id="new_graph"
+                aria-label="New workflow tab"
                 data-tip="New Workflow Tab (Ctrl + Shift + M)"
             >
                 <MdAdd size={25} />
@@ -81,7 +89,7 @@ const TabBar = ({ superState, dispatcher }) => {
                     key={el.graphID}
                     className={`tab tab-graph ${superState.curGraphIndex === i ? 'selected' : 'none'}`}
                     onClick={() => dispatcher({ type: T.CHANGE_TAB, payload: i })}
-                    onKeyDown={(ev) => ev.key === ' ' && dispatcher({ type: T.CHANGE_TAB, payload: i })}
+                    onKeyDown={(ev) => (ev.key === ' ' || ev.key === 'Enter') && dispatcher({ type: T.CHANGE_TAB, payload: i })}
                     role="button"
                     tabIndex={0}
                     id={`tab_${i}`}
@@ -95,6 +103,7 @@ const TabBar = ({ superState, dispatcher }) => {
                             className="tab-act edit"
                             onClick={editCur}
                             type="button"
+                            aria-label="Edit workflow details"
                             data-tip="Edit Workflow Details (Ctrl + Shift + E)"
                             data-for="header-tab"
                         >
@@ -105,6 +114,7 @@ const TabBar = ({ superState, dispatcher }) => {
                         className="tab-act close"
                         onClick={handleRequestCloseTab.bind(this, i)}
                         type="button"
+                        aria-label="Close workflow tab"
                         data-tip="Close current Workflow (Ctrl + Shift + L)"
                         data-for="header-tab"
                     >

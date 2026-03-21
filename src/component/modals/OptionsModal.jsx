@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ParentModal from './ParentModal';
 import { actionType as T } from '../../reducer';
 import './optionsModal.css';
@@ -10,6 +10,25 @@ const OptionsModal = ({ superState, dispatcher }) => {
     const [param, setParam] = useState('');
     const [maxT, setmaxT] = useState('');
     const [library, setLibrary] = useState('');
+
+    useEffect(() => {
+        if (!superState.optionsModal) return;
+        setUnlock(Boolean(superState.unlockCheck));
+        setDocker(Boolean(superState.dockerCheck));
+        setOctave(Boolean(superState.octave));
+        setParam(superState.params || '');
+        setmaxT(superState.maxTime || '');
+        setLibrary(superState.library || '');
+    }, [
+        superState.optionsModal,
+        superState.unlockCheck,
+        superState.dockerCheck,
+        superState.octave,
+        superState.params,
+        superState.maxTime,
+        superState.library,
+    ]);
+
     const close = () => {
         dispatcher({ type: T.SET_OPTIONS_MODAL, payload: false });
         dispatcher(

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from './ParentModal';
+import ConfirmModal from './ConfirmModal';
 import './settings.css';
 import { actionType as T } from '../../reducer';
 import GA from '../../graph-builder/graph-actions';
@@ -21,6 +22,8 @@ const HistoryModal = ({ superState, dispatcher }) => {
         return res;
     };
     const [filterAction, setFilterAction] = useState(mapActionToTrue());
+    const [restoreConfirmOpen, setRestoreConfirmOpen] = useState(false);
+    const [pendingRestoreIndex, setPendingRestoreIndex] = useState(null);
 
     const getLabelFromID = (x) => {
         if (superState.curGraphInstance) {
@@ -71,20 +74,33 @@ const HistoryModal = ({ superState, dispatcher }) => {
         [GA.SET_BENDW]: 'EdgeBend',
     };
 
-    const restoreState = (index) => {
-        // eslint-disable-next-line no-alert
-        if (window.confirm('Are you sure to restore the selected state?')) {
-            let tempCurState = curState;
-            while (index > tempCurState) {
-                superState.curGraphInstance.undoSingleAction();
-                tempCurState += 1;
-            }
-            while (index < tempCurState) {
-                superState.curGraphInstance.redoSingleAction();
-                tempCurState -= 1;
-            }
-            setcurState(tempCurState);
+    const doRestore = (index) => {
+        let tempCurState = curState;
+        while (index > tempCurState) {
+            superState.curGraphInstance.undoSingleAction();
+            tempCurState += 1;
         }
+        while (index < tempCurState) {
+            superState.curGraphInstance.redoSingleAction();
+            tempCurState -= 1;
+        }
+        setcurState(tempCurState);
+    };
+
+    const restoreState = (index) => {
+        setPendingRestoreIndex(index);
+        setRestoreConfirmOpen(true);
+    };
+
+    const handleRestoreConfirm = () => {
+        doRestore(pendingRestoreIndex);
+        setRestoreConfirmOpen(false);
+        setPendingRestoreIndex(null);
+    };
+
+    const handleRestoreCancel = () => {
+        setRestoreConfirmOpen(false);
+        setPendingRestoreIndex(null);
     };
     const prefixTid = (tid, str, authorName, index, hash) => {
         const DT = new Date(parseInt(tid, 10));
@@ -127,11 +143,19 @@ const HistoryModal = ({ superState, dispatcher }) => {
 
     const close = () => dispatcher({ type: T.SET_HISTORY_MODAL, payload: false });
     return (
-        <Modal
-            ModelOpen={superState.viewHistory}
-            closeModal={close}
-            title="History"
-        >
+        <>
+            <ConfirmModal
+                isOpen={restoreConfirmOpen}
+                title="Restore State"
+                message="Are you sure you want to restore the selected state?"
+                onConfirm={handleRestoreConfirm}
+                onCancel={handleRestoreCancel}
+            />
+            <Modal
+                ModelOpen={superState.viewHistory}
+                closeModal={close}
+                title="History"
+            >
             <div className="hist-container">
                 <fieldset>
                     <legend>Filters</legend>
@@ -168,7 +192,8 @@ const HistoryModal = ({ superState, dispatcher }) => {
                     </table>
                 </div>
             </div>
-        </Modal>
+            </Modal>
+        </>
     );
 };
 

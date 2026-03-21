@@ -85,11 +85,15 @@ const saveAction = (state) => {
 async function saveGraphMLFile(state) {
     if (state.curGraphInstance) {
         const graph = state.graphs[state.curGraphIndex];
-        if (graph.fileHandle) {
-            const stream = await graph.fileHandle.createWritable();
-            await stream.write(getGraphFun(state).saveToFolder());
-            await stream.close();
-            toast.success('File saved Successfully');
+        if (graph.fileHandle && graph.fileHandle.createWritable) {
+            try {
+                const stream = await graph.fileHandle.createWritable();
+                await stream.write(getGraphFun(state).saveToFolder());
+                await stream.close();
+                toast.success('File saved Successfully');
+            } catch (error) {
+                getGraphFun(state).saveWithoutFileHandle();
+            }
         } else if (!graph.fileHandle) {
             getGraphFun(state).saveWithoutFileHandle();
         } else {
@@ -175,7 +179,18 @@ const undo = (state) => {
     if (getGraphFun(state)) getGraphFun(state).undo();
 };
 const redo = (state) => {
-    getGraphFun(state).redo();
+    if (getGraphFun(state)) getGraphFun(state).redo();
+};
+
+const copySelected = (state, dispatcher) => {
+    if (!getGraphFun(state)) return;
+    const nodes = getGraphFun(state).copySelected();
+    if (nodes.length) dispatcher({ type: T.SET_CLIPBOARD, payload: nodes });
+};
+
+const pasteClipboard = (state) => {
+    if (!getGraphFun(state) || !state.clipboard.length) return;
+    getGraphFun(state).pasteClipboard(state.clipboard);
 };
 
 const openShareModal = (state, setState) => {
@@ -190,6 +205,10 @@ const viewHistory = (state, setState) => {
     setState({ type: T.SET_HISTORY_MODAL, payload: true });
 };
 
+const openSearchPanel = (state, setState) => {
+    setState({ type: T.SET_SEARCH_PANEL, payload: true });
+};
+
 const toggleServer = (state, dispatcher) => {
     if (state.isWorkflowOnServer) {
         dispatcher({ type: T.IS_WORKFLOW_ON_SERVER, payload: false });
@@ -202,5 +221,6 @@ export {
     createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
     createFile, readFile, readTextFile, newProject, clearAll, editDetails, undo, redo,
     openShareModal, openSettingModal, viewHistory, resetAfterClear, toggleLogs,
-    toggleServer, optionModalToggle, contribute,
+    copySelected, pasteClipboard,
+    toggleServer, optionModalToggle, contribute, openSearchPanel,
 };

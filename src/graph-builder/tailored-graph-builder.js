@@ -195,6 +195,35 @@ class TailoredGraph extends CoreGraph {
         return c1.edgesWith(c2);
     }
 
+    searchElements(query) {
+        this.clearSearch();
+        if (!query || !query.trim()) return [];
+
+        const q = query.trim().toLowerCase();
+        const all = this.cy.$('node[type="ordin"], edge[type="ordin"]');
+        const matches = all.filter((ele) => {
+            const label = (ele.data('label') || '').toLowerCase();
+            return label.includes(q);
+        });
+        const nonMatches = all.not(matches);
+
+        matches.addClass('search-match');
+        nonMatches.addClass('search-dim');
+
+        return matches.map((ele) => ele.id());
+    }
+
+    clearSearch() {
+        this.cy.$('.search-match').removeClass('search-match');
+        this.cy.$('.search-dim').removeClass('search-dim');
+    }
+
+    flyToElement(id) {
+        const ele = this.getById(id);
+        if (!ele || !ele.length) return;
+        this.cy.animate({ center: { eles: ele }, zoom: this.cy.zoom() }, { duration: 250 });
+    }
+
     getNodesEdges() {
         const nodes = this.cy.$('node[type="ordin"]').map((node) => ({
             label: node.data('label'),
