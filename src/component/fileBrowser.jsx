@@ -20,6 +20,13 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
     const [dirButton, setDirButton] = useState(false);
     const [fileState, setFileState] = useState([]);
 
+    const getLocalFileState = (state) => state.map((file) => ({
+        key: file.key,
+        modified: file.modified,
+        size: file.size,
+        fileName: file.fileObj ? file.fileObj.name : null,
+    }));
+
     useEffect(() => {
         if ('showDirectoryPicker' in window) {
             setDirButton(true);
@@ -35,7 +42,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
         //     setFileState({ files: allFiles });
         // }
         try {
-            window.localStorage.setItem('fileList', JSON.stringify(fileState));
+            window.localStorage.setItem('fileList', JSON.stringify(getLocalFileState(fileState)));
         } catch (e) {
             toast.error(e.message);
         }
@@ -47,13 +54,14 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
 
     const handleSelectFile = (data) => {
         const fileExtensions = ['jpeg', 'jpg', 'png', 'exe'];
-        if (fileExtensions.includes(data.fileObj.name.split('.').pop())) {
+        const fileExt = data.fileObj.name.split('.').pop().toLowerCase();
+        if (fileExtensions.includes(fileExt)) {
             // eslint-disable-next-line no-alert
             alert('Wrong file extension');
             return;
         }
 
-        if (data.fileObj.name.split('.').pop() === 'graphml') {
+        if (fileExt === 'graphml') {
             let foundi = -1;
             superState.graphs.forEach((g, i) => {
                 if ((g.fileName === data.fileObj.name)) {
@@ -251,7 +259,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
 
                         setFileState(filesArray);
                         try {
-                            window.localStorage.setItem('fileList', JSON.stringify(filesArray));
+                            window.localStorage.setItem('fileList', JSON.stringify(getLocalFileState(filesArray)));
                         } catch (e) {
                             toast.error(e.message);
                         }
