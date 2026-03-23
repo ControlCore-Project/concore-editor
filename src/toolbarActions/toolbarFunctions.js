@@ -3,7 +3,8 @@ import parser from '../graph-builder/graphml/parser';
 import { actionType as T } from '../reducer';
 
 const getGraphFun = (superState) => superState.curGraphInstance;
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE_MB = 10;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const createNode = (state, setState) => {
     setState({
@@ -108,7 +109,7 @@ async function saveGraphMLFile(state) {
 const readFile = async (state, setState, file, fileHandle) => {
     if (file) {
         if (file.size > MAX_FILE_SIZE) {
-            toast.error('File size exceeds 10MB');
+            toast.error(`File size exceeds ${MAX_FILE_SIZE_MB}MB`);
             return;
         }
         const fr = new FileReader();
@@ -133,7 +134,7 @@ const readFile = async (state, setState, file, fileHandle) => {
 const readTextFile = (state, setState, file, fileHandle) => {
     if (file) {
         if (file.size > MAX_FILE_SIZE) {
-            toast.error('File size exceeds 10MB');
+            toast.error(`File size exceeds ${MAX_FILE_SIZE_MB}MB`);
             return;
         }
         setState({
