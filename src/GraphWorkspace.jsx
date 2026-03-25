@@ -70,6 +70,7 @@ const GraphComp = (props) => {
                         graphID={el.graphID}
                         serverID={el.serverID}
                         graphML={el.graphML}
+                        importedJson={el.importedJson || null}
                         projectName={el.projectName}
                         fileHandle={el.fileHandle}
                         fileName={el.fileName}
@@ -87,7 +88,10 @@ const GraphComp = (props) => {
                     if (superState.confirmModal.onConfirm) superState.confirmModal.onConfirm();
                     dispatcher({ type: T.SET_CONFIRM_MODAL, payload: { open: false, message: '', onConfirm: null } });
                 }}
-                onCancel={() => dispatcher({ type: T.SET_CONFIRM_MODAL, payload: { open: false, message: '', onConfirm: null } })}
+                onCancel={() => dispatcher({
+                    type: T.SET_CONFIRM_MODAL,
+                    payload: { open: false, message: '', onConfirm: null },
+                })}
             />
         </div>
     );

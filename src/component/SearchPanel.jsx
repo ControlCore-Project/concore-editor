@@ -4,7 +4,9 @@ import './searchPanel.css';
 
 const SearchPanel = ({ superState, dispatcher }) => {
     const inputRef = useRef();
-    const { searchPanel, searchQuery, searchResults, searchIndex, curGraphInstance } = superState;
+    const {
+        searchPanel, searchQuery, searchResults, searchIndex, curGraphInstance,
+    } = superState;
 
     useEffect(() => {
         if (searchPanel && inputRef.current) inputRef.current.focus();
@@ -62,6 +64,11 @@ const SearchPanel = ({ superState, dispatcher }) => {
     const current = total > 0 ? searchIndex + 1 : 0;
     const hasQuery = searchQuery.trim().length > 0;
 
+    let searchCounterMessage = '';
+    if (hasQuery) {
+        searchCounterMessage = total > 0 ? `${current} of ${total}` : 'No results';
+    }
+
     return (
         <div className="search-panel">
             <input
@@ -72,9 +79,23 @@ const SearchPanel = ({ superState, dispatcher }) => {
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
             />
-            <span className="search-counter">{hasQuery ? (total > 0 ? `${current} of ${total}` : 'No results') : ''}</span>
-            <button type="button" onClick={() => step(-1)} disabled={total < 2} title="Previous (Shift+Enter)">▲</button>
-            <button type="button" onClick={() => step(1)} disabled={total < 2} title="Next (Enter)">▼</button>
+            <span className="search-counter">{searchCounterMessage}</span>
+            <button
+                type="button"
+                onClick={() => step(-1)}
+                disabled={total < 2}
+                title="Previous (Shift+Enter)"
+            >
+                ▲
+            </button>
+            <button
+                type="button"
+                onClick={() => step(1)}
+                disabled={total < 2}
+                title="Next (Enter)"
+            >
+                ▼
+            </button>
             <button type="button" onClick={close} title="Close (Esc)">✕</button>
         </div>
     );

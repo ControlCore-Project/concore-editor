@@ -89,7 +89,8 @@ const TabBar = ({ superState, dispatcher }) => {
                     key={el.graphID}
                     className={`tab tab-graph ${superState.curGraphIndex === i ? 'selected' : 'none'}`}
                     onClick={() => dispatcher({ type: T.CHANGE_TAB, payload: i })}
-                    onKeyDown={(ev) => (ev.key === ' ' || ev.key === 'Enter') && dispatcher({ type: T.CHANGE_TAB, payload: i })}
+                    onKeyDown={(ev) => (ev.key === ' ' || ev.key === 'Enter')
+                        && dispatcher({ type: T.CHANGE_TAB, payload: i })}
                     role="button"
                     tabIndex={0}
                     id={`tab_${i}`}

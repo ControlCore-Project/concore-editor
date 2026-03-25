@@ -156,42 +156,42 @@ const HistoryModal = ({ superState, dispatcher }) => {
                 closeModal={close}
                 title="History"
             >
-            <div className="hist-container">
-                <fieldset>
-                    <legend>Filters</legend>
-                    {
-                        actions.map((action) => (
-                            <label htmlFor={action} className="filter_checkbox" key={action}>
-                                <input
-                                    type="checkbox"
-                                    name="filter"
-                                    checked={filterAction[action]}
-                                    onChange={() => setFilterAction({
-                                        ...filterAction,
-                                        [action]: !filterAction[action],
-                                    })}
-                                />
-                                {stringifyActionType[action]}
-                            </label>
-                        ))
-                    }
-                </fieldset>
-                <div className="hist-list">
-                    <table style={{ listStyleType: 'circle' }}>
-                        <tbody>
-                            {historyView.map((h, i) => (
-                                <tr
-                                    className={`hist-element ${i === curState ? 'active' : ''}`}
-                                    // eslint-disable-next-line react/no-array-index-key
-                                    key={i}
-                                >
-                                    {h}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="hist-container">
+                    <fieldset>
+                        <legend>Filters</legend>
+                        {
+                            actions.map((action) => (
+                                <label htmlFor={action} className="filter_checkbox" key={action}>
+                                    <input
+                                        type="checkbox"
+                                        name="filter"
+                                        checked={filterAction[action]}
+                                        onChange={() => setFilterAction({
+                                            ...filterAction,
+                                            [action]: !filterAction[action],
+                                        })}
+                                    />
+                                    {stringifyActionType[action]}
+                                </label>
+                            ))
+                        }
+                    </fieldset>
+                    <div className="hist-list">
+                        <table style={{ listStyleType: 'circle' }}>
+                            <tbody>
+                                {historyView.map((h, i) => (
+                                    <tr
+                                        className={`hist-element ${i === curState ? 'active' : ''}`}
+                                        // eslint-disable-next-line react/no-array-index-key
+                                        key={i}
+                                    >
+                                        {h}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
             </Modal>
         </>
     );

@@ -205,11 +205,17 @@ class GraphLoadSave extends GraphUndoRedo {
         content.edges.forEach((edge) => {
             this.addEdge({ ...edge, sourceID: edge.source, targetID: edge.target }, 0);
         });
-        content.actionHistory.forEach(({
-            inverse, equivalent, tid,
-        }) => {
-            this.addAction(GraphLoadSave.parseAction(inverse), GraphLoadSave.parseAction(equivalent), tid);
-        });
+        if (content.actionHistory && content.actionHistory.length) {
+            content.actionHistory.forEach(({
+                inverse, equivalent, tid,
+            }) => {
+                this.addAction(
+                    GraphLoadSave.parseAction(inverse),
+                    GraphLoadSave.parseAction(equivalent),
+                    tid,
+                );
+            });
+        }
         this.setProjectName(content.projectName);
         this.setServerID(this.serverID || content.serverID);
         this.setProjectAuthor(content.authorName);
