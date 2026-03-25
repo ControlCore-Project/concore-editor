@@ -39,9 +39,10 @@ const app = ({ superState, dispatcher }) => {
         const onDrop = (e) => {
             e.preventDefault();
             fileRef.current.value = null;
-            if (e.dataTransfer.files.length === 1
-                && e.dataTransfer.files[0].name.split('.').slice(-1)[0] === 'graphml') {
-                readFile(superStateRef.current, dispatcherRef.current, e.dataTransfer.files[0]);
+            const droppedFile = e.dataTransfer.files[0];
+            const ext = droppedFile && droppedFile.name.split('.').slice(-1)[0];
+            if (e.dataTransfer.files.length === 1 && (ext === 'graphml' || ext === 'json')) {
+                readFile(superStateRef.current, dispatcherRef.current, droppedFile);
             }
         };
 
@@ -69,8 +70,8 @@ const app = ({ superState, dispatcher }) => {
                         ref={fileRef}
                         onClick={(e) => { e.target.value = null; }}
                         style={{ display: 'none' }}
-                        accept=".graphml"
-                        onChange={(e) => readFile(superState, dispatcher, e)}
+                        accept=".graphml,.json"
+                        onChange={(e) => readFile(superState, dispatcher, e.target.files[0])}
                     />
                     <span className="arrow">&#10230;</span>
                     <h1 className="text">Drop the File anywhere to open</h1>

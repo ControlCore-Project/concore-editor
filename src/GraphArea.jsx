@@ -4,7 +4,8 @@ import MyGraph from './graph-builder';
 import { actionType as T } from './reducer';
 
 function Graph({
-    el, superState, dispatcher, graphID, serverID, graphML, projectName, graphContainerRef, active, authorName,
+    el, superState, dispatcher, graphID, serverID, graphML, importedJson,
+    projectName, graphContainerRef, active, authorName,
 }) {
     const [instance, setInstance] = useState(null);
     const ref = useRef();
@@ -34,6 +35,7 @@ function Graph({
             myGraph.forcePullFromServer();
         }
         if (graphML) myGraph.setGraphML(graphML);
+        if (importedJson) myGraph.loadJson(importedJson);
         myGraph.setCurStatus();
         myGraph.cy.on('zoom', () => {
             dispatcher({ type: T.SET_ZOOM_LEVEL, payload: (myGraph.cy.zoom() * 100).toFixed(0) });

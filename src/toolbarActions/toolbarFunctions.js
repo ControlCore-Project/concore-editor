@@ -1,3 +1,4 @@
+import { saveAs } from 'file-saver';
 import { toast } from 'react-toastify';
 import parser from '../graph-builder/graphml/parser';
 import { actionType as T } from '../reducer';
@@ -84,6 +85,41 @@ const saveAction = (state) => {
     getGraphFun(state).saveToDisk();
 };
 
+const saveAsJson = (state) => {
+    if (!getGraphFun(state)) {
+        toast.error('No graph open to export.');
+        return;
+    }
+    try {
+        const graphJson = getGraphFun(state).jsonifyGraph();
+        const cleanExport = {
+            projectName: graphJson.projectName || 'Untitled',
+            authorName: graphJson.authorName || '',
+            nodes: graphJson.nodes.map((n) => ({
+                id: n.id,
+                label: n.label,
+                position: n.position,
+                style: n.style,
+            })),
+            edges: graphJson.edges.map((e) => ({
+                id: e.id,
+                label: e.label,
+                source: e.source,
+                target: e.target,
+                style: e.style,
+            })),
+        };
+        const str = JSON.stringify(cleanExport, null, 2);
+        const bytes = new TextEncoder().encode(str);
+        const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' });
+        const fileName = `${cleanExport.projectName}.json`;
+        saveAs(blob, fileName);
+        toast.success('Exported as JSON successfully!');
+    } catch (error) {
+        toast.error('Failed to export JSON.');
+    }
+};
+
 async function saveGraphMLFile(state) {
     if (state.curGraphInstance) {
         const graph = state.graphs[state.curGraphIndex];
@@ -114,7 +150,8 @@ const readFile = async (state, setState, file, fileHandle) => {
         }
         const fr = new FileReader();
         const projectName = file.name;
-        if (file.name.split('.').pop() === 'graphml') {
+        const ext = file.name.split('.').pop();
+        if (ext === 'graphml') {
             fr.onload = (x) => {
                 parser(x.target.result).then(({ authorName }) => {
                     setState({
@@ -127,6 +164,26 @@ const readFile = async (state, setState, file, fileHandle) => {
             };
             if (fileHandle) fr.readAsText(await fileHandle.getFile());
             else fr.readAsText(file);
+        } else if (ext === 'json') {
+            fr.onload = (x) => {
+                try {
+                    const parsed = JSON.parse(x.target.result);
+                    setState({
+                        type: T.ADD_GRAPH,
+                        payload: {
+                            projectName: parsed.projectName || file.name,
+                            graphML: null,
+                            fileHandle: null,
+                            fileName: file.name,
+                            authorName: parsed.authorName || '',
+                            importedJson: parsed,
+                        },
+                    });
+                } catch {
+                    toast.error('Invalid JSON file.');
+                }
+            };
+            fr.readAsText(file);
         }
     }
 };
@@ -232,5 +289,5 @@ export {
     createFile, readFile, readTextFile, newProject, clearAll, editDetails, undo, redo,
     openShareModal, openSettingModal, viewHistory, resetAfterClear, toggleLogs,
     copySelected, pasteClipboard,
-    toggleServer, optionModalToggle, contribute, openSearchPanel,
+    toggleServer, optionModalToggle, contribute, openSearchPanel, saveAsJson,
 };

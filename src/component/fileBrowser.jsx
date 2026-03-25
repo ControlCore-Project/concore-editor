@@ -61,7 +61,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             return;
         }
 
-        if (fileExt === 'graphml') {
+        if (fileExt === 'graphml' || fileExt === 'json') {
             let foundi = -1;
             superState.graphs.forEach((g, i) => {
                 if ((g.fileName === data.fileObj.name)) {
@@ -136,9 +136,10 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
         const pickerOpts = {
             types: [
                 {
-                    description: 'Graphml',
+                    description: 'Graph Files',
                     accept: {
                         'text/graphml': ['.graphml'],
+                        'application/json': ['.json'],
                     },
                 },
             ],
@@ -206,7 +207,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                         ref={fileRef}
                         onClick={(e) => { e.target.value = null; }}
                         style={{ display: 'none' }}
-                        accept=".graphml"
+                        accept=".graphml,.json"
                         onChange={(e) => readFile(superState, dispatcher, e.target.files[0])}
                     />
                 )}

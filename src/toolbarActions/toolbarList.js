@@ -14,6 +14,7 @@ import {
     createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
     createFile, readFile, clearAll, undo, redo, viewHistory, resetAfterClear,
     toggleServer, optionModalToggle, toggleLogs, contribute, copySelected, pasteClipboard, openSearchPanel,
+    saveAsJson,
     // openSettingModal,
 } from './toolbarFunctions';
 
@@ -303,6 +304,7 @@ const toolbarList = (state, dispatcher) => [
         action: (s, d) => [
             { fn: () => downloadImg(s, d, 'JPG'), name: 'JPG' },
             { fn: () => downloadImg(s, d, 'PNG'), name: 'PNG' },
+            { fn: () => saveAsJson(s, d), name: 'JSON' },
         ],
         visibility: true,
         active: state.curGraphInstance,
