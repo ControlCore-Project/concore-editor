@@ -160,6 +160,8 @@ const readFile = async (state, setState, file, fileHandle) => {
                             projectName, graphML: x.target.result, fileHandle, fileName: file.name, authorName,
                         },
                     });
+                }).catch(() => {
+                    toast.error('Invalid GraphML file.');
                 });
             };
             if (fileHandle) fr.readAsText(await fileHandle.getFile());
