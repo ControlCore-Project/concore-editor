@@ -231,6 +231,8 @@ class GraphLoadSave extends GraphUndoRedo {
             localStorageManager.save(this.id, graphObject);
             this.loadGraphFromLocalStorage();
             this.lastSavedActionIndex = this.curActionIndex;
+        }).catch(() => {
+            toast.error('Invalid GraphML file.');
         });
     }
 
