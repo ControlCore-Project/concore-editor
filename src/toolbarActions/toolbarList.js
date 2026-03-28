@@ -303,7 +303,11 @@ const toolbarList = (state, dispatcher) => [
         icon: FaDownload,
         action: (s, d) => [
             { fn: () => downloadImg(s, d, 'JPG'), name: 'JPG' },
+            { fn: () => downloadImg(s, d, 'JPG-EMBEDDED'), name: 'JPG (with GraphML)' },
             { fn: () => downloadImg(s, d, 'PNG'), name: 'PNG' },
+            { fn: () => downloadImg(s, d, 'PNG-EMBEDDED'), name: 'PNG (with GraphML)' },
+            { fn: () => downloadImg(s, d, 'SVG'), name: 'SVG' },
+            { fn: () => downloadImg(s, d, 'SVG-EMBEDDED'), name: 'SVG (with GraphML)' },
             { fn: () => saveAsJson(s, d), name: 'JSON' },
         ],
         visibility: true,

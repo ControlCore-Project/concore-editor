@@ -1,6 +1,7 @@
 import cytoscape from 'cytoscape';
 import edgehandles from 'cytoscape-edgehandles';
 import gridGuide from 'cytoscape-grid-guide';
+import svg from 'cytoscape-svg';
 import Konva from 'konva';
 import nodeEditing from 'cytoscape-node-editing';
 import $ from 'jquery';
@@ -43,6 +44,9 @@ class CoreGraph {
         }
         if (typeof cytoscape('core', 'gridGuide') !== 'function') {
             gridGuide(cytoscape);
+        }
+        if (typeof cytoscape('core', 'svg') !== 'function') {
+            cytoscape.use(svg);
         }
         // if (cy) this.cy = cy;
         this.cy = cytoscape({ ...cyOptions(darkMode), container: element });

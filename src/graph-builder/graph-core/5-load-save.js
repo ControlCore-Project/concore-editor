@@ -1,5 +1,8 @@
 import { saveAs } from 'file-saver';
 import { toast } from 'react-toastify';
+import extractChunks from 'png-chunks-extract';
+import encodeChunks from 'png-chunks-encode';
+import textChunk from 'png-chunk-text';
 import localStorageManager from '../local-storage-manager';
 import graphmlBuilder from '../graphml/builder';
 import BendingDistanceWeight from '../calculations/bending-dist-weight';
@@ -30,8 +33,75 @@ class GraphLoadSave extends GraphUndoRedo {
     downloadImg(format) {
         this.cy.emit('hide-bend');
         this.cy.$('.eh-handle').remove();
-        if (format === 'PNG') saveAs(this.cy.png({ full: true }), `${this.getName()}-DHGWorkflow.png`);
-        if (format === 'JPG') saveAs(this.cy.jpg({ full: true }), `${this.getName()}-DHGWorkflow.jpg`);
+        if (format === 'JPG') {
+            saveAs(this.cy.jpg({ full: true }), `${this.getName()}-DHGWorkflow.jpg`);
+            return;
+        }
+        if (format === 'PNG') {
+            saveAs(this.cy.png({ full: true }), `${this.getName()}-DHGWorkflow.png`);
+            return;
+        }
+        if (format === 'PNG-EMBEDDED') {
+            const b64Uri = this.cy.png({ full: true });
+            const b64Data = b64Uri.split(',')[1];
+            const buffer = new Uint8Array(window.atob(b64Data).split('').map((c) => c.charCodeAt(0)));
+            const chunks = extractChunks(buffer);
+            chunks.splice(-1, 0, textChunk.encode('graphml', this.getGraphML()));
+            const newBuffer = new Uint8Array(encodeChunks(chunks));
+            const blob = new Blob([newBuffer], { type: 'image/png' });
+            saveAs(blob, `${this.getName()}.graphml.png`);
+            return;
+        }
+        if (format === 'SVG') {
+            const blob = new Blob([this.cy.svg({ full: true })], { type: 'image/svg+xml;charset=utf-8' });
+            saveAs(blob, `${this.getName()}-DHGWorkflow.svg`);
+            return;
+        }
+        if (format === 'SVG-EMBEDDED') {
+            const svgStr = this.cy.svg({ full: true });
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(svgStr, 'image/svg+xml');
+            const metadata = doc.createElementNS('http://www.w3.org/2000/svg', 'metadata');
+            metadata.setAttribute('data-graphml', this.getGraphML());
+            doc.documentElement.insertBefore(metadata, doc.documentElement.firstChild);
+            const newSvg = new XMLSerializer().serializeToString(doc);
+            const blob = new Blob([newSvg], { type: 'image/svg+xml;charset=utf-8' });
+            saveAs(blob, `${this.getName()}.graphml.svg`);
+            return;
+        }
+        if (format === 'JPG-EMBEDDED') {
+            const b64Uri = this.cy.jpg({ full: true });
+            const b64Data = b64Uri.split(',')[1];
+            const buffer = new Uint8Array(window.atob(b64Data).split('').map((c) => c.charCodeAt(0)));
+            const graphMLStr = this.getGraphML();
+            const graphMLBytes = new TextEncoder().encode(graphMLStr);
+
+            const comSegments = [];
+            for (let i = 0; i < graphMLBytes.length; i += 65533) {
+                const chunk = graphMLBytes.slice(i, i + 65533);
+                const segmentLen = chunk.length + 2;
+                const seg = new Uint8Array(4 + chunk.length);
+                seg[0] = 0xFF;
+                seg[1] = 0xFE;
+                seg[2] = Math.floor(segmentLen / 256);
+                seg[3] = segmentLen % 256;
+                seg.set(chunk, 4);
+                comSegments.push(seg);
+            }
+
+            const totalComSize = comSegments.reduce((sum, seg) => sum + seg.length, 0);
+            const newBuffer = new Uint8Array(buffer.length + totalComSize);
+            newBuffer.set(buffer.slice(0, 2), 0); // FF D8
+            let offset = 2;
+            comSegments.forEach((seg) => {
+                newBuffer.set(seg, offset);
+                offset += seg.length;
+            });
+            newBuffer.set(buffer.slice(2), offset);
+
+            const blob = new Blob([newBuffer], { type: 'image/jpeg' });
+            saveAs(blob, `${this.getName()}.graphml.jpg`);
+        }
     }
 
     shouldNodeBeSaved(nodeID) {
