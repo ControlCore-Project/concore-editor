@@ -37,7 +37,7 @@ const Switcher = ({
         tabIndex={tabIndex}
         className={`tool ${active ? 'active' : ''}`}
         onClick={action}
-        onKeyDown={(ev) => ev.key === ' ' && action()}
+        onKeyDown={(ev) => (ev.key === ' ' || ev.key === 'Enter') && action()}
     >
         {Icon && <div className="icon"><Icon size="20" /></div>}
         <Switch
@@ -60,7 +60,7 @@ const ActionButton = ({
         tabIndex={tabIndex}
         className={`tool ${active ? 'active' : ''}`}
         onClick={() => (active && action())}
-        onKeyDown={(ev) => active && ev.key === ' ' && action()}
+        onKeyDown={(ev) => active && (ev.key === ' ' || ev.key === 'Enter') && action()}
         data-tip={hotkey ? hotkey.split(',')[0] : ''}
         style={{ display: `${visibility ? '' : 'none'}` }}
     >

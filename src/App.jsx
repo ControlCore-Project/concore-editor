@@ -32,13 +32,13 @@ const app = () => {
         };
     }, []);
 
-    // Update document theme attribute when darkMode changes
     useEffect(() => {
         if (superState.darkMode) {
             document.documentElement.setAttribute('data-theme', 'dark');
         } else {
             document.documentElement.removeAttribute('data-theme');
         }
+        localStorage.setItem('darkMode', superState.darkMode);
     }, [superState.darkMode]);
 
     return (

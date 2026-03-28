@@ -2,6 +2,7 @@
 import {
     FaSave, FaUndo, FaRedo, FaTrash, FaFileImport, FaPlus, FaDownload, FaEdit, FaRegTimesCircle, FaHistory,
     FaHammer, FaBug, FaBomb, FaToggleOn, FaThermometerEmpty, FaTrashRestore, FaCogs, FaPencilAlt, FaTerminal,
+    FaCopy, FaPaste, FaSearch,
 } from 'react-icons/fa';
 
 import {
@@ -12,7 +13,8 @@ import {
 import {
     createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
     createFile, readFile, clearAll, undo, redo, viewHistory, resetAfterClear,
-    toggleServer, optionModalToggle, toggleLogs, contribute,
+    toggleServer, optionModalToggle, toggleLogs, contribute, copySelected, pasteClipboard, openSearchPanel,
+    saveAsJson,
     // openSettingModal,
 } from './toolbarFunctions';
 
@@ -119,11 +121,39 @@ const toolbarList = (state, dispatcher) => [
     { type: 'vsep' },
     {
         type: 'action',
+        text: 'Copy',
+        icon: FaCopy,
+        action: copySelected,
+        active: state.curGraphInstance && state.eleSelected,
+        visibility: true,
+        hotkey: 'Ctrl+C',
+    },
+    {
+        type: 'action',
+        text: 'Paste',
+        icon: FaPaste,
+        action: pasteClipboard,
+        active: state.curGraphInstance && state.clipboard.length > 0,
+        visibility: true,
+        hotkey: 'Ctrl+V',
+    },
+    { type: 'vsep' },
+    {
+        type: 'action',
         text: 'History',
         icon: FaHistory,
         action: viewHistory,
         active: state.curGraphInstance,
         visibility: true,
+    },
+    {
+        type: 'action',
+        text: 'Search',
+        icon: FaSearch,
+        action: openSearchPanel,
+        active: state.curGraphInstance,
+        visibility: true,
+        hotkey: 'Ctrl+F',
     },
     { type: 'vsep' },
     // server buttons
@@ -274,6 +304,7 @@ const toolbarList = (state, dispatcher) => [
         action: (s, d) => [
             { fn: () => downloadImg(s, d, 'JPG'), name: 'JPG' },
             { fn: () => downloadImg(s, d, 'PNG'), name: 'PNG' },
+            { fn: () => saveAsJson(s, d), name: 'JSON' },
         ],
         visibility: true,
         active: state.curGraphInstance,

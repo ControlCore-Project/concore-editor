@@ -48,11 +48,15 @@ class GraphLoadSave extends GraphUndoRedo {
     }
 
     static stringifyAction({ actionName, parameters }) {
-        return { actionName, parameters: window.btoa(JSON.stringify(parameters)) };
+        return { actionName, parameters: JSON.stringify(parameters) };
     }
 
     static parseAction({ actionName, parameters }) {
-        return { actionName, parameters: JSON.parse(window.atob(parameters)) };
+        try {
+            return { actionName, parameters: JSON.parse(parameters) };
+        } catch {
+            return { actionName, parameters: JSON.parse(window.atob(parameters)) };
+        }
     }
 
     jsonifyGraph() {
@@ -201,11 +205,17 @@ class GraphLoadSave extends GraphUndoRedo {
         content.edges.forEach((edge) => {
             this.addEdge({ ...edge, sourceID: edge.source, targetID: edge.target }, 0);
         });
-        content.actionHistory.forEach(({
-            inverse, equivalent, tid,
-        }) => {
-            this.addAction(GraphLoadSave.parseAction(inverse), GraphLoadSave.parseAction(equivalent), tid);
-        });
+        if (content.actionHistory && content.actionHistory.length) {
+            content.actionHistory.forEach(({
+                inverse, equivalent, tid,
+            }) => {
+                this.addAction(
+                    GraphLoadSave.parseAction(inverse),
+                    GraphLoadSave.parseAction(equivalent),
+                    tid,
+                );
+            });
+        }
         this.setProjectName(content.projectName);
         this.setServerID(this.serverID || content.serverID);
         this.setProjectAuthor(content.authorName);
@@ -221,6 +231,8 @@ class GraphLoadSave extends GraphUndoRedo {
             localStorageManager.save(this.id, graphObject);
             this.loadGraphFromLocalStorage();
             this.lastSavedActionIndex = this.curActionIndex;
+        }).catch(() => {
+            toast.error('Invalid GraphML file.');
         });
     }
 

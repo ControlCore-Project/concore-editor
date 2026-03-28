@@ -20,6 +20,13 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
     const [dirButton, setDirButton] = useState(false);
     const [fileState, setFileState] = useState([]);
 
+    const getLocalFileState = (state) => state.map((file) => ({
+        key: file.key,
+        modified: file.modified,
+        size: file.size,
+        fileName: file.fileObj ? file.fileObj.name : null,
+    }));
+
     useEffect(() => {
         if ('showDirectoryPicker' in window) {
             setDirButton(true);
@@ -35,7 +42,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
         //     setFileState({ files: allFiles });
         // }
         try {
-            window.localStorage.setItem('fileList', JSON.stringify(fileState));
+            window.localStorage.setItem('fileList', JSON.stringify(getLocalFileState(fileState)));
         } catch (e) {
             toast.error(e.message);
         }
@@ -47,13 +54,14 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
 
     const handleSelectFile = (data) => {
         const fileExtensions = ['jpeg', 'jpg', 'png', 'exe'];
-        if (fileExtensions.includes(data.fileObj.name.split('.').pop())) {
+        const fileExt = data.fileObj.name.split('.').pop().toLowerCase();
+        if (fileExtensions.includes(fileExt)) {
             // eslint-disable-next-line no-alert
             alert('Wrong file extension');
             return;
         }
 
-        if (data.fileObj.name.split('.').pop() === 'graphml') {
+        if (fileExt === 'graphml' || fileExt === 'json') {
             let foundi = -1;
             superState.graphs.forEach((g, i) => {
                 if ((g.fileName === data.fileObj.name)) {
@@ -94,37 +102,44 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
     };
 
     const newFeature = async () => {
-        const dirHandle = await window.showDirectoryPicker();
-        let state = [];
-        // eslint-disable-next-line no-restricted-syntax
-        for await (const [key, value] of dirHandle.entries()) {
-            if (value.kind === 'file') {
-                const fileData = await value.getFile();
-                state = state.concat([{
-                    key: `${dirHandle.name}/${key}`,
-                    modified: fileData.lastModified,
-                    size: fileData.size,
-                    fileObj: fileData,
-                    fileHandle: value,
-                }]);
-            } else if (value.kind === 'directory') {
-                const res = await handleFileInDirs(dirHandle.name, value);
-                state = state.concat(res);
+        try {
+            const dirHandle = await window.showDirectoryPicker();
+            let state = [];
+            // eslint-disable-next-line no-restricted-syntax
+            for await (const [key, value] of dirHandle.entries()) {
+                if (value.kind === 'file') {
+                    const fileData = await value.getFile();
+                    state = state.concat([{
+                        key: `${dirHandle.name}/${key}`,
+                        modified: fileData.lastModified,
+                        size: fileData.size,
+                        fileObj: fileData,
+                        fileHandle: value,
+                    }]);
+                } else if (value.kind === 'directory') {
+                    const res = await handleFileInDirs(dirHandle.name, value);
+                    state = state.concat(res);
+                }
+            }
+            setFileState([]);
+            setFileState(state);
+            dispatcher({ type: T.SET_DIR_NAME, payload: state[0].key.split('/')[0] });
+            dispatcher({ type: T.SET_FILE_STATE, payload: state });
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                toast.info('Switch to Edge/Chrome!');
             }
         }
-        setFileState([]);
-        setFileState(state);
-        dispatcher({ type: T.SET_DIR_NAME, payload: state[0].key.split('/')[0] });
-        dispatcher({ type: T.SET_FILE_STATE, payload: state });
     };
 
     const newFeatureFile = async () => {
         const pickerOpts = {
             types: [
                 {
-                    description: 'Graphml',
+                    description: 'Graph Files',
                     accept: {
                         'text/graphml': ['.graphml'],
+                        'application/json': ['.json'],
                     },
                 },
             ],
@@ -161,6 +176,10 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                         onChange={(e) => {
                             const { files } = e.target;
                             if (files && files.length > 0) {
+                                if (!files[0].webkitRelativePath) {
+                                    toast.info('Switch to Edge/Chrome!');
+                                    return;
+                                }
                                 tempFilesRef.current = files;
                                 const folderName = files[0].webkitRelativePath.split('/')[0];
                                 setPendingFolderName(folderName);
@@ -188,7 +207,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                         ref={fileRef}
                         onClick={(e) => { e.target.value = null; }}
                         style={{ display: 'none' }}
-                        accept=".graphml"
+                        accept=".graphml,.json"
                         onChange={(e) => readFile(superState, dispatcher, e.target.files[0])}
                     />
                 )}
@@ -241,7 +260,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
 
                         setFileState(filesArray);
                         try {
-                            window.localStorage.setItem('fileList', JSON.stringify(filesArray));
+                            window.localStorage.setItem('fileList', JSON.stringify(getLocalFileState(filesArray)));
                         } catch (e) {
                             toast.error(e.message);
                         }

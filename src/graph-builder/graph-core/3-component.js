@@ -234,10 +234,10 @@ class GraphComponent extends GraphCanvas {
     }
 
     setEdgeNodeValidator({ nodeValidator, edgeValidator }) {
-        // eslint-disable-next-line no-eval
-        this.nodeValidator = eval(nodeValidator);
-        // eslint-disable-next-line no-eval
-        this.edgeValidator = eval(edgeValidator);
+        // eslint-disable-next-line no-new-func
+        this.nodeValidator = new Function(`return ${nodeValidator}`)();
+        // eslint-disable-next-line no-new-func
+        this.edgeValidator = new Function(`return ${edgeValidator}`)();
     }
 
     getNodesEdges() {
@@ -265,6 +265,31 @@ class GraphComponent extends GraphCanvas {
         } catch (e) {
             return { ok: false, err: `Error raised at validator: ${e.message}` };
         }
+    }
+
+    copySelected() {
+        const selected = this.cy.$('node[type="ordin"]:selected');
+        return selected.map((node) => ({
+            label: node.data('label'),
+            style: this.getStyle(node.id()),
+            position: { ...node.position() },
+        }));
+    }
+
+    pasteClipboard(nodes) {
+        if (!nodes.length) return;
+        const tid = this.getTid();
+        nodes.forEach((node) => {
+            this.addNode(
+                node.label,
+                node.style,
+                'ordin',
+                { x: node.position.x + 20, y: node.position.y + 20 },
+                {},
+                undefined,
+                tid,
+            );
+        });
     }
 
     validiateNode(label, style, id, type) {
