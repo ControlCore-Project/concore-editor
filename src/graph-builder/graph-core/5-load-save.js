@@ -43,8 +43,11 @@ class GraphLoadSave extends GraphUndoRedo {
         }
         if (format === 'PNG-EMBEDDED') {
             const b64Uri = this.cy.png({ full: true });
-            const b64Data = b64Uri.split(',')[1];
-            const buffer = new Uint8Array(window.atob(b64Data).split('').map((c) => c.charCodeAt(0)));
+            const binaryString = window.atob(b64Uri.split(',')[1]);
+            const buffer = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i += 1) {
+                buffer[i] = binaryString.charCodeAt(i);
+            }
             const chunks = extractChunks(buffer);
             chunks.splice(-1, 0, textChunk.encode('graphml', this.getGraphML()));
             const newBuffer = new Uint8Array(encodeChunks(chunks));
@@ -54,8 +57,11 @@ class GraphLoadSave extends GraphUndoRedo {
         }
         if (format === 'JPG-EMBEDDED') {
             const b64Uri = this.cy.jpg({ full: true });
-            const b64Data = b64Uri.split(',')[1];
-            const buffer = new Uint8Array(window.atob(b64Data).split('').map((c) => c.charCodeAt(0)));
+            const binaryString = window.atob(b64Uri.split(',')[1]);
+            const buffer = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i += 1) {
+                buffer[i] = binaryString.charCodeAt(i);
+            }
             const graphMLStr = this.getGraphML();
             const graphMLBytes = new TextEncoder().encode(graphMLStr);
 

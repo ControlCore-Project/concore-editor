@@ -223,16 +223,28 @@ const readFile = async (state, setState, file, fileHandle) => {
                 try {
                     const buffer = new Uint8Array(x.target.result);
                     let pos = 2; // skip SOI
-                    let graphMLData = '';
+                    const comSegments = [];
                     while (pos < buffer.length) {
                         if (buffer[pos] !== 0xFF) break;
                         const marker = buffer[pos + 1];
                         if (marker === 0xDA) break; // SOS - Start of Scan
                         const len = (buffer[pos + 2] * 256) + buffer[pos + 3];
                         if (marker === 0xFE) { // COM Comment segment
-                            graphMLData += new TextDecoder().decode(buffer.slice(pos + 4, pos + 2 + len));
+                            comSegments.push(buffer.slice(pos + 4, pos + 2 + len));
                         }
                         pos += 2 + len;
+                    }
+
+                    let graphMLData = '';
+                    if (comSegments.length > 0) {
+                        const totalLength = comSegments.reduce((sum, seg) => sum + seg.length, 0);
+                        const allBytes = new Uint8Array(totalLength);
+                        let offset = 0;
+                        for (let i = 0; i < comSegments.length; i += 1) {
+                            allBytes.set(comSegments[i], offset);
+                            offset += comSegments[i].length;
+                        }
+                        graphMLData = new TextDecoder().decode(allBytes);
                     }
 
                     if (graphMLData) {
