@@ -52,23 +52,6 @@ class GraphLoadSave extends GraphUndoRedo {
             saveAs(blob, `${this.getName()}.graphml.png`);
             return;
         }
-        if (format === 'SVG') {
-            const blob = new Blob([this.cy.svg({ full: true })], { type: 'image/svg+xml;charset=utf-8' });
-            saveAs(blob, `${this.getName()}-DHGWorkflow.svg`);
-            return;
-        }
-        if (format === 'SVG-EMBEDDED') {
-            const svgStr = this.cy.svg({ full: true });
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(svgStr, 'image/svg+xml');
-            const metadata = doc.createElementNS('http://www.w3.org/2000/svg', 'metadata');
-            metadata.setAttribute('data-graphml', this.getGraphML());
-            doc.documentElement.insertBefore(metadata, doc.documentElement.firstChild);
-            const newSvg = new XMLSerializer().serializeToString(doc);
-            const blob = new Blob([newSvg], { type: 'image/svg+xml;charset=utf-8' });
-            saveAs(blob, `${this.getName()}.graphml.svg`);
-            return;
-        }
         if (format === 'JPG-EMBEDDED') {
             const b64Uri = this.cy.jpg({ full: true });
             const b64Data = b64Uri.split(',')[1];

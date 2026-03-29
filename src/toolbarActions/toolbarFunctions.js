@@ -218,36 +218,6 @@ const readFile = async (state, setState, file, fileHandle) => {
             };
             if (fileHandle) fr.readAsArrayBuffer(await fileHandle.getFile());
             else fr.readAsArrayBuffer(file);
-        } else if (ext === 'svg') {
-            fr.onload = (x) => {
-                try {
-                    const parserDOM = new DOMParser();
-                    const svgDoc = parserDOM.parseFromString(x.target.result, 'image/svg+xml');
-                    const metadata = svgDoc.getElementsByTagName('metadata')[0];
-                    const graphML = metadata ? metadata.getAttribute('data-graphml') : null;
-                    if (graphML) {
-                        parser(graphML).then(({ authorName }) => {
-                            setState({
-                                type: T.ADD_GRAPH,
-                                payload: {
-                                    projectName,
-                                    graphML,
-                                    fileHandle: null,
-                                    fileName: file.name,
-                                    authorName,
-                                },
-                            });
-                            toast.success('Imported embedded GraphML from SVG!');
-                        }).catch(() => toast.error('Embedded GraphML inside SVG is invalid.'));
-                    } else {
-                        toast.error('This SVG does not contain an embedded GraphML Workflow.');
-                    }
-                } catch (err) {
-                    toast.error('Could not parse the SVG file.');
-                }
-            };
-            if (fileHandle) fr.readAsText(await fileHandle.getFile());
-            else fr.readAsText(file);
         } else if (ext === 'jpg' || ext === 'jpeg') {
             fr.onload = (x) => {
                 try {

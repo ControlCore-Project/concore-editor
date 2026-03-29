@@ -41,7 +41,7 @@ const app = ({ superState, dispatcher }) => {
             fileRef.current.value = null;
             const droppedFile = e.dataTransfer.files[0];
             const ext = droppedFile && droppedFile.name.split('.').slice(-1)[0]?.toLowerCase();
-            const allowed = ['graphml', 'json', 'png', 'svg', 'jpg', 'jpeg'];
+            const allowed = ['graphml', 'json', 'png', 'jpg', 'jpeg'];
             if (e.dataTransfer.files.length === 1 && allowed.includes(ext)) {
                 readFile(superStateRef.current, dispatcherRef.current, droppedFile);
             }
@@ -71,7 +71,7 @@ const app = ({ superState, dispatcher }) => {
                         ref={fileRef}
                         onClick={(e) => { e.target.value = null; }}
                         style={{ display: 'none' }}
-                        accept=".graphml,.json,.png,.svg,.jpg,.jpeg"
+                        accept=".graphml,.json,.png,.jpg,.jpeg"
                         onChange={(e) => readFile(superState, dispatcher, e.target.files[0])}
                     />
                     <span className="arrow">&#10230;</span>

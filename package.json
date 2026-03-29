@@ -17,7 +17,6 @@
     "cytoscape-edgehandles": "^3.6.0",
     "cytoscape-grid-guide": "^2.3.2",
     "cytoscape-node-editing": "^4.0.0",
-    "cytoscape-svg": "^0.4.0",
     "file-saver": "^2.0.5",
     "hotkeys-js": "^3.8.7",
     "jquery": "^3.0.0",
