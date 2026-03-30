@@ -40,8 +40,9 @@ const app = ({ superState, dispatcher }) => {
             e.preventDefault();
             fileRef.current.value = null;
             const droppedFile = e.dataTransfer.files[0];
-            const ext = droppedFile && droppedFile.name.split('.').slice(-1)[0];
-            if (e.dataTransfer.files.length === 1 && (ext === 'graphml' || ext === 'json')) {
+            const ext = droppedFile && droppedFile.name.split('.').slice(-1)[0]?.toLowerCase();
+            const allowed = ['graphml', 'json', 'png', 'jpg', 'jpeg'];
+            if (e.dataTransfer.files.length === 1 && allowed.includes(ext)) {
                 readFile(superStateRef.current, dispatcherRef.current, droppedFile);
             }
         };
@@ -70,7 +71,7 @@ const app = ({ superState, dispatcher }) => {
                         ref={fileRef}
                         onClick={(e) => { e.target.value = null; }}
                         style={{ display: 'none' }}
-                        accept=".graphml,.json"
+                        accept=".graphml,.json,.png,.jpg,.jpeg"
                         onChange={(e) => readFile(superState, dispatcher, e.target.files[0])}
                     />
                     <span className="arrow">&#10230;</span>

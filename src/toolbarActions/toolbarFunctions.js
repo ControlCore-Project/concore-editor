@@ -1,5 +1,7 @@
 import { saveAs } from 'file-saver';
 import { toast } from 'react-toastify';
+import extractChunks from 'png-chunks-extract';
+import textChunk from 'png-chunk-text';
 import parser from '../graph-builder/graphml/parser';
 import { actionType as T } from '../reducer';
 
@@ -150,7 +152,7 @@ const readFile = async (state, setState, file, fileHandle) => {
         }
         const fr = new FileReader();
         const projectName = file.name;
-        const ext = file.name.split('.').pop();
+        const ext = file.name.split('.').pop()?.toLowerCase();
         if (ext === 'graphml') {
             fr.onload = (x) => {
                 parser(x.target.result).then(({ authorName }) => {
@@ -186,6 +188,88 @@ const readFile = async (state, setState, file, fileHandle) => {
                 }
             };
             fr.readAsText(file);
+        } else if (ext === 'png') {
+            fr.onload = (x) => {
+                try {
+                    const buffer = new Uint8Array(x.target.result);
+                    const chunks = extractChunks(buffer);
+                    const textChunks = chunks.filter((c) => c.name === 'tEXt').map((c) => textChunk.decode(c));
+                    const graphMLMeta = textChunks.find((c) => c.keyword === 'graphml');
+                    if (graphMLMeta && graphMLMeta.text) {
+                        parser(graphMLMeta.text).then(({ authorName }) => {
+                            setState({
+                                type: T.ADD_GRAPH,
+                                payload: {
+                                    projectName,
+                                    graphML: graphMLMeta.text,
+                                    fileHandle: null,
+                                    fileName: file.name,
+                                    authorName,
+                                },
+                            });
+                            toast.success('Imported embedded GraphML from Image!');
+                        }).catch(() => toast.error('Embedded GraphML inside PNG is invalid.'));
+                    } else {
+                        toast.error('This PNG does not contain an embedded GraphML Workflow.');
+                    }
+                } catch (err) {
+                    toast.error('Could not parse the PNG file.');
+                }
+            };
+            if (fileHandle) fr.readAsArrayBuffer(await fileHandle.getFile());
+            else fr.readAsArrayBuffer(file);
+        } else if (ext === 'jpg' || ext === 'jpeg') {
+            fr.onload = (x) => {
+                try {
+                    const buffer = new Uint8Array(x.target.result);
+                    let pos = 2; // skip SOI
+                    const comSegments = [];
+                    while (pos < buffer.length) {
+                        if (buffer[pos] !== 0xFF) break;
+                        const marker = buffer[pos + 1];
+                        if (marker === 0xDA) break; // SOS - Start of Scan
+                        const len = (buffer[pos + 2] * 256) + buffer[pos + 3];
+                        if (marker === 0xFE) { // COM Comment segment
+                            comSegments.push(buffer.slice(pos + 4, pos + 2 + len));
+                        }
+                        pos += 2 + len;
+                    }
+
+                    let graphMLData = '';
+                    if (comSegments.length > 0) {
+                        const totalLength = comSegments.reduce((sum, seg) => sum + seg.length, 0);
+                        const allBytes = new Uint8Array(totalLength);
+                        let offset = 0;
+                        for (let i = 0; i < comSegments.length; i += 1) {
+                            allBytes.set(comSegments[i], offset);
+                            offset += comSegments[i].length;
+                        }
+                        graphMLData = new TextDecoder().decode(allBytes);
+                    }
+
+                    if (graphMLData) {
+                        parser(graphMLData).then(({ authorName }) => {
+                            setState({
+                                type: T.ADD_GRAPH,
+                                payload: {
+                                    projectName,
+                                    graphML: graphMLData,
+                                    fileHandle: null,
+                                    fileName: file.name,
+                                    authorName,
+                                },
+                            });
+                            toast.success('Imported embedded GraphML from JPEG!');
+                        }).catch(() => toast.error('Embedded GraphML inside JPEG is invalid.'));
+                    } else {
+                        toast.error('This JPEG does not contain an embedded GraphML Workflow.');
+                    }
+                } catch (err) {
+                    toast.error('Could not parse the JPEG file.');
+                }
+            };
+            if (fileHandle) fr.readAsArrayBuffer(await fileHandle.getFile());
+            else fr.readAsArrayBuffer(file);
         }
     }
 };

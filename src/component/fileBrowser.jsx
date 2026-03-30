@@ -53,7 +53,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
     }, [superState.fileState]);
 
     const handleSelectFile = (data) => {
-        const fileExtensions = ['jpeg', 'jpg', 'png', 'exe'];
+        const fileExtensions = ['exe'];
         const fileExt = data.fileObj.name.split('.').pop().toLowerCase();
         if (fileExtensions.includes(fileExt)) {
             // eslint-disable-next-line no-alert
@@ -61,7 +61,8 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
             return;
         }
 
-        if (fileExt === 'graphml' || fileExt === 'json') {
+        const allowedExts = ['graphml', 'json', 'png', 'jpg', 'jpeg'];
+        if (allowedExts.includes(fileExt)) {
             let foundi = -1;
             superState.graphs.forEach((g, i) => {
                 if ((g.fileName === data.fileObj.name)) {
@@ -140,6 +141,8 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                     accept: {
                         'text/graphml': ['.graphml'],
                         'application/json': ['.json'],
+                        'image/png': ['.png'],
+                        'image/jpeg': ['.jpg', '.jpeg'],
                     },
                 },
             ],
@@ -207,7 +210,7 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
                         ref={fileRef}
                         onClick={(e) => { e.target.value = null; }}
                         style={{ display: 'none' }}
-                        accept=".graphml,.json"
+                        accept=".graphml,.json,.png,.jpg,.jpeg"
                         onChange={(e) => readFile(superState, dispatcher, e.target.files[0])}
                     />
                 )}
