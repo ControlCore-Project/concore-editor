@@ -99,6 +99,13 @@ class GraphUndoRedo extends GraphComponent {
             ),
         });
         this.curActionIndex += 1;
+
+        if (this.actionArr.length > 100) {
+            const drop = this.actionArr.length - 100;
+            this.actionArr.splice(0, drop);
+            this.curActionIndex -= drop;
+        }
+
         this.informUI();
     }
 

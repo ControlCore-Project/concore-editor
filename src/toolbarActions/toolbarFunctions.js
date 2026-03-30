@@ -1,8 +1,13 @@
+import { saveAs } from 'file-saver';
 import { toast } from 'react-toastify';
+import extractChunks from 'png-chunks-extract';
+import textChunk from 'png-chunk-text';
 import parser from '../graph-builder/graphml/parser';
 import { actionType as T } from '../reducer';
 
 const getGraphFun = (superState) => superState.curGraphInstance;
+const MAX_FILE_SIZE_MB = 10;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const createNode = (state, setState) => {
     setState({
@@ -82,14 +87,53 @@ const saveAction = (state) => {
     getGraphFun(state).saveToDisk();
 };
 
+const saveAsJson = (state) => {
+    if (!getGraphFun(state)) {
+        toast.error('No graph open to export.');
+        return;
+    }
+    try {
+        const graphJson = getGraphFun(state).jsonifyGraph();
+        const cleanExport = {
+            projectName: graphJson.projectName || 'Untitled',
+            authorName: graphJson.authorName || '',
+            nodes: graphJson.nodes.map((n) => ({
+                id: n.id,
+                label: n.label,
+                position: n.position,
+                style: n.style,
+            })),
+            edges: graphJson.edges.map((e) => ({
+                id: e.id,
+                label: e.label,
+                source: e.source,
+                target: e.target,
+                style: e.style,
+            })),
+        };
+        const str = JSON.stringify(cleanExport, null, 2);
+        const bytes = new TextEncoder().encode(str);
+        const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' });
+        const fileName = `${cleanExport.projectName}.json`;
+        saveAs(blob, fileName);
+        toast.success('Exported as JSON successfully!');
+    } catch (error) {
+        toast.error('Failed to export JSON.');
+    }
+};
+
 async function saveGraphMLFile(state) {
     if (state.curGraphInstance) {
         const graph = state.graphs[state.curGraphIndex];
-        if (graph.fileHandle) {
-            const stream = await graph.fileHandle.createWritable();
-            await stream.write(getGraphFun(state).saveToFolder());
-            await stream.close();
-            toast.success('File saved Successfully');
+        if (graph.fileHandle && graph.fileHandle.createWritable) {
+            try {
+                const stream = await graph.fileHandle.createWritable();
+                await stream.write(getGraphFun(state).saveToFolder());
+                await stream.close();
+                toast.success('File saved Successfully');
+            } catch (error) {
+                getGraphFun(state).saveWithoutFileHandle();
+            }
         } else if (!graph.fileHandle) {
             getGraphFun(state).saveWithoutFileHandle();
         } else {
@@ -102,9 +146,14 @@ async function saveGraphMLFile(state) {
 
 const readFile = async (state, setState, file, fileHandle) => {
     if (file) {
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error(`File size exceeds ${MAX_FILE_SIZE_MB}MB`);
+            return;
+        }
         const fr = new FileReader();
         const projectName = file.name;
-        if (file.name.split('.').pop() === 'graphml') {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (ext === 'graphml') {
             fr.onload = (x) => {
                 parser(x.target.result).then(({ authorName }) => {
                     setState({
@@ -113,16 +162,124 @@ const readFile = async (state, setState, file, fileHandle) => {
                             projectName, graphML: x.target.result, fileHandle, fileName: file.name, authorName,
                         },
                     });
+                }).catch(() => {
+                    toast.error('Invalid GraphML file.');
                 });
             };
             if (fileHandle) fr.readAsText(await fileHandle.getFile());
             else fr.readAsText(file);
+        } else if (ext === 'json') {
+            fr.onload = (x) => {
+                try {
+                    const parsed = JSON.parse(x.target.result);
+                    setState({
+                        type: T.ADD_GRAPH,
+                        payload: {
+                            projectName: parsed.projectName || file.name,
+                            graphML: null,
+                            fileHandle: null,
+                            fileName: file.name,
+                            authorName: parsed.authorName || '',
+                            importedJson: parsed,
+                        },
+                    });
+                } catch {
+                    toast.error('Invalid JSON file.');
+                }
+            };
+            fr.readAsText(file);
+        } else if (ext === 'png') {
+            fr.onload = (x) => {
+                try {
+                    const buffer = new Uint8Array(x.target.result);
+                    const chunks = extractChunks(buffer);
+                    const textChunks = chunks.filter((c) => c.name === 'tEXt').map((c) => textChunk.decode(c));
+                    const graphMLMeta = textChunks.find((c) => c.keyword === 'graphml');
+                    if (graphMLMeta && graphMLMeta.text) {
+                        parser(graphMLMeta.text).then(({ authorName }) => {
+                            setState({
+                                type: T.ADD_GRAPH,
+                                payload: {
+                                    projectName,
+                                    graphML: graphMLMeta.text,
+                                    fileHandle: null,
+                                    fileName: file.name,
+                                    authorName,
+                                },
+                            });
+                            toast.success('Imported embedded GraphML from Image!');
+                        }).catch(() => toast.error('Embedded GraphML inside PNG is invalid.'));
+                    } else {
+                        toast.error('This PNG does not contain an embedded GraphML Workflow.');
+                    }
+                } catch (err) {
+                    toast.error('Could not parse the PNG file.');
+                }
+            };
+            if (fileHandle) fr.readAsArrayBuffer(await fileHandle.getFile());
+            else fr.readAsArrayBuffer(file);
+        } else if (ext === 'jpg' || ext === 'jpeg') {
+            fr.onload = (x) => {
+                try {
+                    const buffer = new Uint8Array(x.target.result);
+                    let pos = 2; // skip SOI
+                    const comSegments = [];
+                    while (pos < buffer.length) {
+                        if (buffer[pos] !== 0xFF) break;
+                        const marker = buffer[pos + 1];
+                        if (marker === 0xDA) break; // SOS - Start of Scan
+                        const len = (buffer[pos + 2] * 256) + buffer[pos + 3];
+                        if (marker === 0xFE) { // COM Comment segment
+                            comSegments.push(buffer.slice(pos + 4, pos + 2 + len));
+                        }
+                        pos += 2 + len;
+                    }
+
+                    let graphMLData = '';
+                    if (comSegments.length > 0) {
+                        const totalLength = comSegments.reduce((sum, seg) => sum + seg.length, 0);
+                        const allBytes = new Uint8Array(totalLength);
+                        let offset = 0;
+                        for (let i = 0; i < comSegments.length; i += 1) {
+                            allBytes.set(comSegments[i], offset);
+                            offset += comSegments[i].length;
+                        }
+                        graphMLData = new TextDecoder().decode(allBytes);
+                    }
+
+                    if (graphMLData) {
+                        parser(graphMLData).then(({ authorName }) => {
+                            setState({
+                                type: T.ADD_GRAPH,
+                                payload: {
+                                    projectName,
+                                    graphML: graphMLData,
+                                    fileHandle: null,
+                                    fileName: file.name,
+                                    authorName,
+                                },
+                            });
+                            toast.success('Imported embedded GraphML from JPEG!');
+                        }).catch(() => toast.error('Embedded GraphML inside JPEG is invalid.'));
+                    } else {
+                        toast.error('This JPEG does not contain an embedded GraphML Workflow.');
+                    }
+                } catch (err) {
+                    toast.error('Could not parse the JPEG file.');
+                }
+            };
+            if (fileHandle) fr.readAsArrayBuffer(await fileHandle.getFile());
+            else fr.readAsArrayBuffer(file);
         }
     }
 };
 
 const readTextFile = (state, setState, file, fileHandle) => {
     if (file) {
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error(`File size exceeds ${MAX_FILE_SIZE_MB}MB`);
+            return;
+        }
         setState({
             type: T.EDIT_TEXTFILE,
             payload: { show: true, fileObj: file, fileHandle },
@@ -175,7 +332,18 @@ const undo = (state) => {
     if (getGraphFun(state)) getGraphFun(state).undo();
 };
 const redo = (state) => {
-    getGraphFun(state).redo();
+    if (getGraphFun(state)) getGraphFun(state).redo();
+};
+
+const copySelected = (state, dispatcher) => {
+    if (!getGraphFun(state)) return;
+    const nodes = getGraphFun(state).copySelected();
+    if (nodes.length) dispatcher({ type: T.SET_CLIPBOARD, payload: nodes });
+};
+
+const pasteClipboard = (state) => {
+    if (!getGraphFun(state) || !state.clipboard.length) return;
+    getGraphFun(state).pasteClipboard(state.clipboard);
 };
 
 const openShareModal = (state, setState) => {
@@ -190,6 +358,10 @@ const viewHistory = (state, setState) => {
     setState({ type: T.SET_HISTORY_MODAL, payload: true });
 };
 
+const openSearchPanel = (state, setState) => {
+    setState({ type: T.SET_SEARCH_PANEL, payload: true });
+};
+
 const toggleServer = (state, dispatcher) => {
     if (state.isWorkflowOnServer) {
         dispatcher({ type: T.IS_WORKFLOW_ON_SERVER, payload: false });
@@ -202,5 +374,6 @@ export {
     createNode, editElement, deleteElem, downloadImg, saveAction, saveGraphMLFile,
     createFile, readFile, readTextFile, newProject, clearAll, editDetails, undo, redo,
     openShareModal, openSettingModal, viewHistory, resetAfterClear, toggleLogs,
-    toggleServer, optionModalToggle, contribute,
+    copySelected, pasteClipboard,
+    toggleServer, optionModalToggle, contribute, openSearchPanel, saveAsJson,
 };

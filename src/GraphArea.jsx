@@ -4,7 +4,8 @@ import MyGraph from './graph-builder';
 import { actionType as T } from './reducer';
 
 function Graph({
-    el, superState, dispatcher, graphID, serverID, graphML, projectName, graphContainerRef, active, authorName,
+    el, superState, dispatcher, graphID, serverID, graphML, importedJson,
+    projectName, graphContainerRef, active, authorName,
 }) {
     const [instance, setInstance] = useState(null);
     const ref = useRef();
@@ -34,6 +35,7 @@ function Graph({
             myGraph.forcePullFromServer();
         }
         if (graphML) myGraph.setGraphML(graphML);
+        if (importedJson) myGraph.loadJson(importedJson);
         myGraph.setCurStatus();
         myGraph.cy.on('zoom', () => {
             dispatcher({ type: T.SET_ZOOM_LEVEL, payload: (myGraph.cy.zoom() * 100).toFixed(0) });
@@ -56,11 +58,18 @@ function Graph({
     }, [active, instance, graphID, dispatcher]);
 
     useEffect(() => {
+        const handleResize = () => setContainerDim(ref.current);
+        let graph = null;
         if (ref.current) {
             setContainerDim(ref.current);
-            window.addEventListener('resize', () => setContainerDim(ref.current));
-            setInstance(initialiseNewGraph());
+            window.addEventListener('resize', handleResize);
+            graph = initialiseNewGraph();
+            setInstance(graph);
         }
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            if (graph) graph.dispose();
+        };
     }, [ref]);
 
     // Update theme when darkMode changes

@@ -16,7 +16,7 @@ const FileEditModal = ({ superState, dispatcher }) => {
     const [showFilenameModal, setShowFilenameModal] = useState(false);
 
     useEffect(() => {
-        if (navigator.userAgent.indexOf('Edg') !== -1 || navigator.userAgent.indexOf('Chrome') !== -1) {
+        if ('showSaveFilePicker' in window) {
             setDirButton(true);
         }
     }, []);
@@ -28,11 +28,16 @@ const FileEditModal = ({ superState, dispatcher }) => {
     };
 
     async function submit() {
-        if (superState.fileHandle) {
+        if (!superState.fileHandle || !superState.fileHandle.createWritable) {
+            toast.warn('Switch to Edge/Chrome!');
+            dispatcher({ type: T.EDIT_TEXTFILE, payload: { show: false } });
+            return;
+        }
+        try {
             const stream = await superState.fileHandle.createWritable();
             await stream.write(codeStuff);
             await stream.close();
-        } else {
+        } catch (error) {
             toast.warn('Switch to Edge/Chrome!');
         }
         dispatcher({ type: T.EDIT_TEXTFILE, payload: { show: false } });
