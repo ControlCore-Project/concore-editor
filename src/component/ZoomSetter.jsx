@@ -19,9 +19,10 @@ const ZoomComp = ({ superState, dispatcher }) => {
                 <div
                     role="button"
                     tabIndex={0}
+                    aria-label="Reset zoom"
                     className="zoom-box zoom-btn"
                     onClick={() => myGraph.resetZoom()}
-                    onKeyDown={(ev) => ev.key === ' ' && (myGraph.resetZoom())}
+                    onKeyDown={(ev) => (ev.key === ' ' || ev.key === 'Enter') && myGraph.resetZoom()}
                 >
                     <BiReset />
 
@@ -29,9 +30,10 @@ const ZoomComp = ({ superState, dispatcher }) => {
                 <div
                     role="button"
                     tabIndex={0}
+                    aria-label="Fit to screen"
                     className="zoom-box zoom-btn"
                     onClick={() => myGraph.fitZoom()}
-                    onKeyDown={(ev) => ev.key === ' ' && (myGraph.resetZoom())}
+                    onKeyDown={(ev) => (ev.key === ' ' || ev.key === 'Enter') && myGraph.fitZoom()}
                 >
                     <BiRectangle />
 
