@@ -1,5 +1,28 @@
 import { toast } from 'react-toastify';
 
+const encodeBase64 = (value) => {
+    const bytes = new TextEncoder().encode(value);
+    let binary = '';
+    bytes.forEach((byte) => {
+        binary += String.fromCharCode(byte);
+    });
+    return window.btoa(binary);
+};
+
+const decodeBase64 = (value) => {
+    const binary = window.atob(value);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+};
+
+const parseStoredJson = (raw) => {
+    try {
+        return JSON.parse(decodeBase64(raw));
+    } catch (e) {
+        return null;
+    }
+};
+
 const localStorageGet = (key) => {
     try {
         return window.localStorage.getItem(key);
@@ -12,8 +35,10 @@ const localStorageGet = (key) => {
 const localStorageSet = (key, value) => {
     try {
         window.localStorage.setItem(key, value);
+        return true;
     } catch (e) {
         toast.error(e.message);
+        return false;
     }
 };
 
@@ -25,63 +50,55 @@ const localStorageRemove = (key) => {
     }
 };
 
-const getSet = (ALL_GRAPHS) => {
-    if (!localStorageGet(ALL_GRAPHS)) {
-        localStorageSet(ALL_GRAPHS, window.btoa(JSON.stringify([])));
-    }
-    const raw = localStorageGet(ALL_GRAPHS);
-    if (!raw) return new Set();
-    return new Set(JSON.parse(window.atob(raw)));
-};
-
 const localStorageManager = {
     ALL_GRAPHS: window.btoa('ALL_GRAPHS'),
     AUTHOR_NAME: window.btoa('AUTHOR_NAME'),
 
-    allgs: getSet(window.btoa('ALL_GRAPHS')),
-
-    saveAllgs() {
-        localStorageSet(this.ALL_GRAPHS, window.btoa(JSON.stringify(Array.from(this.allgs))));
-    },
-
-    addEmptyIfNot() {
-        if (!localStorageGet(this.ALL_GRAPHS)) {
-            localStorageSet(this.ALL_GRAPHS, window.btoa(JSON.stringify([])));
-        }
-    },
-
     get(id) {
         const raw = localStorageGet(id);
         if (raw === null) return null;
-        return JSON.parse(window.atob(raw));
+        const parsed = parseStoredJson(raw);
+        if (parsed !== null) return parsed;
+        // fallback for legacy plain JSON data saved before base64 encoding was introduced
+        try {
+            return JSON.parse(raw);
+        } catch {
+            return null;
+        }
     },
     save(id, graphContent) {
         this.addGraph(id);
-        const serializedJson = JSON.stringify(graphContent);
-        localStorageSet(id, window.btoa(serializedJson));
+        if (!localStorageSet(id, encodeBase64(JSON.stringify(graphContent)))) {
+            const stripped = { ...graphContent, actionHistory: [] };
+            localStorageSet(id, encodeBase64(JSON.stringify(stripped)));
+        }
     },
     remove(id) {
-        if (this.allgs.delete(id)) this.saveAllgs();
+        const list = this.getAllGraphs().filter((g) => g !== id);
+        localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify(list)));
         localStorageRemove(id);
     },
     addGraph(id) {
-        if (this.allgs.has(id)) return;
-        this.allgs.add(id);
-        this.saveAllgs();
+        const list = this.getAllGraphs();
+        if (list.includes(id)) return;
+        list.push(id);
+        localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify(list)));
     },
     getAllGraphs() {
         const raw = localStorageGet(this.ALL_GRAPHS);
         if (!raw) return [];
-        return JSON.parse(window.atob(raw));
+        const parsed = parseStoredJson(raw);
+        if (!Array.isArray(parsed)) {
+            localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify([])));
+            return [];
+        }
+        return parsed;
     },
     addToFront(id) {
-        if (this.allgs.has(id)) return;
-        this.allgs.add(id);
-        const raw = localStorageGet(this.ALL_GRAPHS);
-        if (!raw) return;
-        const Garr = JSON.parse(window.atob(raw));
-        Garr.unshift(id);
-        localStorageSet(this.ALL_GRAPHS, window.btoa(JSON.stringify(Garr)));
+        const list = this.getAllGraphs();
+        if (list.includes(id)) return;
+        list.unshift(id);
+        localStorageSet(this.ALL_GRAPHS, encodeBase64(JSON.stringify(list)));
     },
     getAuthorName() {
         return localStorageGet(this.AUTHOR_NAME) || '';
