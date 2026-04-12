@@ -134,6 +134,7 @@ const GraphComp = (props) => {
                 isOpen={superState.confirmModal.open}
                 title="Confirm"
                 message={superState.confirmModal.message}
+                actions={superState.confirmModal.actions}
                 onConfirm={() => {
                     if (superState.confirmModal.onConfirm) superState.confirmModal.onConfirm();
                     dispatcher({ type: T.SET_CONFIRM_MODAL, payload: { open: false, message: '', onConfirm: null } });
