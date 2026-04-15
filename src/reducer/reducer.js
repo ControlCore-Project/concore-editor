@@ -110,8 +110,19 @@ const reducer = (state, action) => {
         };
     }
     case T.ADD_GRAPH_BULK: {
-        const newGraphs = action.payload.map((g) => ({ ...initialGraphState, ...g }));
-        return { ...state, graphs: [...state.graphs, ...newGraphs], curGraphIndex: 0 };
+        const payload = Array.isArray(action.payload)
+            ? { graphs: action.payload, activeGraphID: null }
+            : action.payload;
+        const newGraphs = payload.graphs.map((g) => ({ ...initialGraphState, ...g }));
+        const graphs = [...state.graphs, ...newGraphs];
+        const activeGraphIndex = payload.activeGraphID
+            ? graphs.findIndex((g) => g.graphID === payload.activeGraphID)
+            : -1;
+        return {
+            ...state,
+            graphs,
+            curGraphIndex: activeGraphIndex >= 0 ? activeGraphIndex : 0,
+        };
     }
     case T.SET_CUR_INSTANCE: {
         return { ...state, curGraphInstance: action.payload };

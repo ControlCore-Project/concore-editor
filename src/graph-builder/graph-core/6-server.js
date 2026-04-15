@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 import Axios from 'axios';
 import { actionType as T } from '../../reducer';
-import { EXECUTION_ENGINE_URL } from '../../serverCon/config';
+import serverConConfig, { EXECUTION_ENGINE_URL } from '../../serverCon/config';
 import GraphLoadSave from './5-load-save';
 // import {
 //     postGraph, updateGraph, forceUpdateGraph, getGraph, getGraphWithHashCheck,
@@ -11,6 +11,86 @@ import {
 } from '../../serverCon/crud_http';
 
 class GraphServer extends GraphLoadSave {
+    static isSyncConflictError(err) {
+        const msg = (err && err.message ? err.message : '').toLowerCase();
+        return msg.includes('different history')
+            || msg.includes('latest changes')
+            || msg.includes('can not update');
+    }
+
+    showSyncConflictModal(reason) {
+        const localHash = this.actionArr.length ? this.actionArr.at(-1).hash : 'None';
+        const setModal = (remoteHash) => {
+            const message = [
+                reason || 'Sync conflict detected.',
+                `Local hash: ${localHash}`,
+                `Remote hash: ${remoteHash || 'Remote history is newer/different'}`,
+                'Choose how to resolve this conflict.',
+            ].join('\n');
+            this.dispatcher({
+                type: T.SET_CONFIRM_MODAL,
+                payload: {
+                    open: true,
+                    message,
+                    actions: [
+                        {
+                            label: 'Pull remote',
+                            className: 'confirm-btn',
+                            onClick: () => this.forcePullFromServer(),
+                        },
+                        {
+                            label: 'Force push local',
+                            className: 'confirm-btn',
+                            onClick: () => {
+                                if (this.serverID) {
+                                    forceUpdateGraph(this.serverID, this.getGraphML()).catch((err) => {
+                                        toast.error(err.response?.data?.message || err.message);
+                                    });
+                                } else {
+                                    postGraph(this.getGraphML()).then((serverID) => {
+                                        this.set({ serverID });
+                                    }).catch((err) => {
+                                        toast.error(err.response?.data?.message || err.message);
+                                    });
+                                }
+                            },
+                        },
+                        {
+                            label: 'Open remote in new tab',
+                            className: 'cancel-btn',
+                            onClick: () => {
+                                if (!this.serverID) return;
+                                const remotePath = serverConConfig.getGraph(this.serverID);
+                                const remoteURL = `${serverConConfig.baseURL}${remotePath}`;
+                                window.open(remoteURL, '_blank', 'noopener,noreferrer');
+                            },
+                        },
+                        {
+                            label: 'Cancel',
+                            className: 'cancel-btn',
+                            onClick: null,
+                        },
+                    ],
+                },
+            });
+        };
+        if (!this.serverID) {
+            setModal('Unknown');
+            return;
+        }
+        getGraph(this.serverID).then((graphXML) => {
+            try {
+                const doc = new DOMParser().parseFromString(graphXML, 'application/xml');
+                const hashes = doc.getElementsByTagName('hash');
+                setModal(hashes.length ? (hashes[hashes.length - 1].textContent || '') : '');
+            } catch {
+                setModal('Unavailable');
+            }
+        }).catch(() => {
+            setModal('Unavailable');
+        });
+    }
+
     set(config) {
         const { serverID } = config;
         super.set(config);
@@ -73,6 +153,10 @@ class GraphServer extends GraphLoadSave {
             updateGraph(this.serverID, this.getGraphML()).then(() => {
 
             }).catch((err) => {
+                if (GraphServer.isSyncConflictError(err)) {
+                    this.showSyncConflictModal('Cannot push: local and remote histories diverged.');
+                    return;
+                }
                 toast.error(err.response?.data?.message || err.message);
             });
         } else {
@@ -127,8 +211,12 @@ class GraphServer extends GraphLoadSave {
         if (this.serverID) {
             getGraphWithHashCheck(this.serverID, this.actionArr.at(-1).hash).then((graphXML) => {
                 this.setGraphML(graphXML);
-            }).catch(() => {
-
+            }).catch((err) => {
+                if (GraphServer.isSyncConflictError(err)) {
+                    this.showSyncConflictModal('Cannot pull: local and remote histories diverged.');
+                    return;
+                }
+                toast.error(err.response?.data?.message || err.message);
             });
         } else {
             toast.success('Not on server');

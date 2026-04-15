@@ -53,6 +53,10 @@ const LocalFileBrowser = ({ superState, dispatcher }) => {
     }, [superState.fileState]);
 
     const handleSelectFile = (data) => {
+        if (!data.fileObj) {
+            toast.info('File handle is not available after reload. Re-open the file/directory.');
+            return;
+        }
         const fileExtensions = ['exe'];
         const fileExt = data.fileObj.name.split('.').pop().toLowerCase();
         if (fileExtensions.includes(fileExt)) {
