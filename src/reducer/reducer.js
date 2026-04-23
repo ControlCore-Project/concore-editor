@@ -270,6 +270,22 @@ const reducer = (state, action) => {
         return { ...newState };
     }
 
+    case T.SET_GRAPH_SYNC_STATE: {
+        const newState = { ...state };
+        newState.graphs = newState.graphs.map((g) => (
+            g.graphID === action.payload.graphID
+                ? {
+                    ...g,
+                    syncStatus: {
+                        ...(g.syncStatus || initialGraphState.syncStatus),
+                        ...action.payload.syncStatus,
+                    },
+                }
+                : g
+        ));
+        return { ...newState };
+    }
+
     case T.TOGGLE_DARK_MODE: {
         return { ...state, darkMode: !state.darkMode };
     }

@@ -1,6 +1,7 @@
 import React from 'react';
 import ZoomComp from './component/ZoomSetter';
 import ConfirmModal from './component/modals/ConfirmModal';
+import SyncStatusPanel from './component/SyncStatusPanel';
 import SearchPanel from './component/SearchPanel';
 import { actionType as T } from './reducer';
 import './graphWorkspace.css';
@@ -129,6 +130,7 @@ const GraphComp = (props) => {
                 ))}
                 <SearchPanel superState={superState} dispatcher={dispatcher} />
                 <ZoomComp dispatcher={dispatcher} superState={superState} />
+                <SyncStatusPanel superState={superState} />
             </div>
             <ConfirmModal
                 isOpen={superState.confirmModal.open}
