@@ -52,6 +52,7 @@ const actionType = {
     SET_SEARCH_QUERY: 'SET_SEARCH_QUERY',
     SET_SEARCH_RESULTS: 'SET_SEARCH_RESULTS',
     SET_SEARCH_INDEX: 'SET_SEARCH_INDEX',
+    SET_GRAPH_SYNC_STATE: 'SET_GRAPH_SYNC_STATE',
 };
 
 export default zealit(actionType);

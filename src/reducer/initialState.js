@@ -66,6 +66,13 @@ const initialGraphState = {
     destroyed: false,
     cleared: false,
     stopped: false,
+    syncStatus: {
+        state: 'dirty',
+        localHash: '',
+        remoteHash: '',
+        lastResult: 'Not synced yet',
+        reason: '',
+    },
 };
 
 export { initialState, initialGraphState };
