@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { EXECUTION_ENGINE_URL } from '../../serverCon/config';
@@ -20,15 +20,26 @@ const ContributeDetails = ({ superState, dispatcher }) => {
     const [desc, setDesc] = useState('');
     const [branch, setBranch] = useState('');
     const [showAdvanceOptions, setShowAdvanceOptions] = useState(false);
+    const prevOpenRef = useRef(false);
 
     useEffect(() => {
-        if (superState.contributeModal) {
+        if (superState.contributeModal && !prevOpenRef.current) {
             const activeGraph = superState.graphs[superState.curGraphIndex] ?? {};
             setStudy(activeGraph.projectName ?? '');
             setPath(superState.uploadedDirName ?? '');
             setAuth(activeGraph.authorName ?? '');
+            setTitle('');
+            setDesc('');
+            setBranch('');
+            setShowAdvanceOptions(false);
         }
-    }, [superState.contributeModal]);
+        prevOpenRef.current = superState.contributeModal;
+    }, [
+        superState.contributeModal,
+        superState.graphs,
+        superState.curGraphIndex,
+        superState.uploadedDirName,
+    ]);
     const submit = async (e) => {
         if (study === '' || path === '' || auth === '') {
             toast.info('Please Provide necessary inputs');
