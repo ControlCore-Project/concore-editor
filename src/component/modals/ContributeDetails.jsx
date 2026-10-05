@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { EXECUTION_ENGINE_URL } from '../../serverCon/config';
@@ -10,13 +10,36 @@ const ContributeDetails = ({ superState, dispatcher }) => {
     const closeModal = () => {
         dispatcher({ type: T.SET_CONTRIBUTE_MODAL, payload: false });
     };
-    const [study, setStudy] = useState('');
-    const [path, setPath] = useState('');
-    const [auth, setAuth] = useState('');
+
+    const curGraph = superState.graphs[superState.curGraphIndex] ?? {};
+
+    const [study, setStudy] = useState(curGraph.projectName ?? '');
+    const [path, setPath] = useState(superState.uploadedDirName ?? '');
+    const [auth, setAuth] = useState(curGraph.authorName ?? '');
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
     const [branch, setBranch] = useState('');
     const [showAdvanceOptions, setShowAdvanceOptions] = useState(false);
+    const prevOpenRef = useRef(false);
+
+    useEffect(() => {
+        if (superState.contributeModal && !prevOpenRef.current) {
+            const activeGraph = superState.graphs[superState.curGraphIndex] ?? {};
+            setStudy(activeGraph.projectName ?? '');
+            setPath(superState.uploadedDirName ?? '');
+            setAuth(activeGraph.authorName ?? '');
+            setTitle('');
+            setDesc('');
+            setBranch('');
+            setShowAdvanceOptions(false);
+        }
+        prevOpenRef.current = superState.contributeModal;
+    }, [
+        superState.contributeModal,
+        superState.graphs,
+        superState.curGraphIndex,
+        superState.uploadedDirName,
+    ]);
     const submit = async (e) => {
         if (study === '' || path === '' || auth === '') {
             toast.info('Please Provide necessary inputs');

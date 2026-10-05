@@ -32,6 +32,11 @@ class FakeWorkFlowModel:
         return (True, latestHash)
 
 
+class FakeWorkFlowModelUpdateMissing(FakeWorkFlowModel):
+    def update(self, serverID, graphml, latestHash, allHash):
+        return (False, 'serverID do not exists.')
+
+
 class WorkflowControllerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -62,6 +67,12 @@ class WorkflowControllerTests(unittest.TestCase):
         app.register_blueprint(self.workflow_module.workFlow, url_prefix='/workflow')
         return app.test_client()
 
+    def make_client_with_model(self, model):
+        self.workflow_module.workFlowModel = model
+        app = Flask(__name__)
+        app.register_blueprint(self.workflow_module.workFlow, url_prefix='/workflow')
+        return app.test_client()
+
     def test_missing_workflow_returns_404_for_none(self):
         client = self.make_client(None)
         response = client.get('/workflow/missing-id')
@@ -78,7 +89,8 @@ class WorkflowControllerTests(unittest.TestCase):
         client = self.make_client(VALID_GRAPHML)
         response = client.get('/workflow/existing-id', headers={'X-Latest-Hash': 'unknown-hash'})
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.get_data(as_text=True), 'Different History')
+        self.assertEqual(response.get_json()['code'], 'SYNC_CONFLICT')
+        self.assertEqual(response.get_json()['message'], 'Different History')
 
     def test_hash_header_returns_200_for_matching_history(self):
         client = self.make_client(VALID_GRAPHML)
@@ -116,6 +128,13 @@ class WorkflowControllerTests(unittest.TestCase):
         response = client.post('/workflow/test01?force=true', data=VALID_GRAPHML,
                                content_type='application/xml')
         self.assertEqual(response.status_code, 200)
+
+    def test_update_workflow_non_conflict_error_returns_plain_400(self):
+        client = self.make_client_with_model(FakeWorkFlowModelUpdateMissing(None))
+        response = client.post('/workflow/test01', data=VALID_GRAPHML,
+                               content_type='application/xml')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.get_data(as_text=True), 'serverID do not exists.')
 
 
 if __name__ == '__main__':
