@@ -3,7 +3,22 @@ import ec from './config';
 function readTextOrThrow(x) {
     return x.text().then((text) => {
         if (x.ok) return text;
-        throw new Error(text || `Request failed with status ${x.status}`);
+        let data = null;
+        try {
+            data = text ? JSON.parse(text) : null;
+        } catch {
+            data = null;
+        }
+        const err = new Error(
+            (data && data.message)
+            || text
+            || `Request failed with status ${x.status}`,
+        );
+        err.status = x.status;
+        err.body = text;
+        err.data = data;
+        err.code = data && data.code ? data.code : null;
+        throw err;
     });
 }
 

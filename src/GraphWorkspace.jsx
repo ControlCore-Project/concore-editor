@@ -1,6 +1,7 @@
 import React from 'react';
 import ZoomComp from './component/ZoomSetter';
 import ConfirmModal from './component/modals/ConfirmModal';
+import SyncStatusPanel from './component/SyncStatusPanel';
 import SearchPanel from './component/SearchPanel';
 import { actionType as T } from './reducer';
 import './graphWorkspace.css';
@@ -13,14 +14,64 @@ const GraphComp = (props) => {
     const { dispatcher, superState } = props;
 
     React.useEffect(() => {
-        const allIDs = localStorageManager.getAllGraphs();
-        const validIDs = allIDs.filter((id) => typeof id === 'string' && id && localStorageManager.get(id) !== null);
-        if (validIDs.length !== allIDs.length) {
-            allIDs.filter((id) => !validIDs.includes(id)).forEach((id) => localStorageManager.remove(id));
-        }
-        if (validIDs.length === 0) return;
-        dispatcher({ type: T.ADD_GRAPH_BULK, payload: validIDs.map((graphID) => ({ graphID })) });
+        let mounted = true;
+        const restoreWorkspace = async () => {
+            await localStorageManager.initialize();
+            if (!mounted) return;
+
+            const session = localStorageManager.getSession();
+            const allIDs = Array.isArray(session?.openGraphIDs) && session.openGraphIDs.length
+                ? session.openGraphIDs
+                : localStorageManager.getAllGraphs();
+            const validIDs = allIDs.filter(
+                (id) => typeof id === 'string' && id && localStorageManager.get(id) !== null,
+            );
+            if (validIDs.length !== allIDs.length) {
+                allIDs.filter((id) => !validIDs.includes(id)).forEach((id) => localStorageManager.remove(id));
+            }
+
+            if (Array.isArray(session?.fileState)) {
+                dispatcher({ type: T.SET_FILE_STATE, payload: session.fileState });
+            }
+            if (typeof session?.uploadedDirName === 'string') {
+                dispatcher({ type: T.SET_DIR_NAME, payload: session.uploadedDirName });
+            }
+
+            if (validIDs.length === 0) return;
+            dispatcher({
+                type: T.ADD_GRAPH_BULK,
+                payload: {
+                    graphs: validIDs.map((graphID) => ({ graphID })),
+                    activeGraphID: session?.activeGraphID || null,
+                },
+            });
+        };
+        restoreWorkspace();
+
+        return () => {
+            mounted = false;
+        };
     }, []);
+
+    React.useEffect(() => {
+        const openGraphIDs = superState.graphs
+            .map((graph) => graph.graphID)
+            .filter((graphID) => typeof graphID === 'string' && graphID);
+        const activeGraphID = superState.curGraphIndex >= 0 && superState.curGraphIndex < superState.graphs.length
+            ? superState.graphs[superState.curGraphIndex].graphID
+            : null;
+        localStorageManager.saveSession({
+            openGraphIDs,
+            activeGraphID,
+            fileState: superState.fileState,
+            uploadedDirName: superState.uploadedDirName,
+        });
+    }, [
+        superState.graphs,
+        superState.curGraphIndex,
+        superState.fileState,
+        superState.uploadedDirName,
+    ]);
 
     // Remote server implementation - Not being used.
     // useEffect(() => {
@@ -79,11 +130,13 @@ const GraphComp = (props) => {
                 ))}
                 <SearchPanel superState={superState} dispatcher={dispatcher} />
                 <ZoomComp dispatcher={dispatcher} superState={superState} />
+                <SyncStatusPanel superState={superState} />
             </div>
             <ConfirmModal
                 isOpen={superState.confirmModal.open}
                 title="Confirm"
                 message={superState.confirmModal.message}
+                actions={superState.confirmModal.actions}
                 onConfirm={() => {
                     if (superState.confirmModal.onConfirm) superState.confirmModal.onConfirm();
                     dispatcher({ type: T.SET_CONFIRM_MODAL, payload: { open: false, message: '', onConfirm: null } });

@@ -1,5 +1,5 @@
 from model.workflows import WorkFlowModel
-from flask import request, make_response, Blueprint
+from flask import request, make_response, Blueprint, jsonify
 import defusedxml.ElementTree as ET
 
 workFlow = Blueprint('workflow', __name__)
@@ -26,6 +26,15 @@ def getAllActionHash(root):
     return list(map(lambda ah: ah.find(f'{{{xmlns}}}hash').text, root.find(f'{{{xmlns}}}graph').findall(f'{{{xmlns}}}actionHistory')))
 
 
+def syncConflict(message='Different History'):
+    return jsonify({'code': 'SYNC_CONFLICT', 'message': message}), 400
+
+
+def isConflictMessage(message):
+    msg = (message or '').lower()
+    return 'latest changes' in msg or 'different history' in msg
+
+
 @workFlow.route("/", methods=['POST'])
 def postWorkflow():
     try:
@@ -45,7 +54,7 @@ def getWorkflow(serverID):
         latestHash = request.headers['X-Latest-Hash']
         allHash = getAllActionHash(ET.fromstring(graphml))
         if(latestHash not in allHash):
-            return 'Different History', 400
+            return syncConflict()
     r = make_response(graphml)
     r.headers.set('Content-Type', "application/xml")
     return r
@@ -67,4 +76,8 @@ def updateWorkflow(serverID):
         res = workFlowModel.forceUpdate(serverID, graphML, latestHash)
     else:
         res = workFlowModel.update(serverID, graphML, latestHash, allHash)
-    return res[1], 200 if res[0] else 400
+    if res[0]:
+        return res[1], 200
+    if isConflictMessage(res[1]):
+        return syncConflict(res[1])
+    return res[1], 400
